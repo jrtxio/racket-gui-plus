@@ -10,8 +10,8 @@
 (require "input.rkt")
 (require "time-picker.rkt")
 (require "toast-info.rkt")
-(require "todo-list.rkt")
 (require "progress-bar.rkt")
+(require "sidebar-list.rkt")
 
 ;; 导出所有公共接口
 (provide (all-from-out "calendar.rkt"))
@@ -20,18 +20,15 @@
 (provide (all-from-out "input.rkt"))
 (provide (all-from-out "time-picker.rkt"))
 (provide (all-from-out "toast-info.rkt"))
-(provide (all-from-out "todo-list.rkt"))
 (provide (all-from-out "progress-bar.rkt"))
+(provide (all-from-out "sidebar-list.rkt"))
 
 (provide calendar%
-         ;modern-sidebar%
-         ;sidebar-item
          filter-button%
          modern-input%
          time-picker%
          modern-toast%
          show-toast
-         checkbox-canvas%
-         todo-item%
-         todo-list%
-         modern-progress-bar%)
+         modern-progress-bar%
+         sidebar-list%
+         list-item)

@@ -32,20 +32,30 @@
                            [stretchable-width #t]
                            [stretchable-height #t]))
 
-;; 1. 侧边栏控件示例 (暂时注释)
-;(define sidebar
-;  (new modern-sidebar%  
-;       [parent sidebar-panel]
-;       [callback (lambda (item)
-;                  (define label (sidebar-item-label item))
-;                  (show-toast (format "选择了: ~a" label) #:type 'info))]))
-;
+;; ============================================================
+;; 1. 侧边栏列表控件示例
+;; ============================================================
+(new message%  
+     [parent sidebar-panel]
+     [label "1. 侧边栏列表控件"]
+     [font (make-object font% 14 'default 'normal 'bold)])
+
+(define sidebar-list
+  (new sidebar-list%  
+       [parent sidebar-panel]
+       [on-select (lambda (item)
+                   (show-toast (format "选择了: ~a" (match item [(list-item label _ _ _) label])) #:type 'info))]))
+
 ;; 添加菜单项
-;(send sidebar add-item (sidebar-item "日历控件" "#FF3B30" 0 #f))
-;(send sidebar add-item (sidebar-item "过滤按钮" "#FF9500" 0 #f))
-;(send sidebar add-item (sidebar-item "输入框" "#34C759" 0 #f))
-;(send sidebar add-item (sidebar-item "提示框" "#007AFF" 0 #f))
-;(send sidebar add-item (sidebar-item "待办事项" "#AF52DE" 0 #f))
+(define mock-items
+  (list (list-item "日历控件" "#FF3B30" 1 #f)
+        (list-item "过滤按钮" "#FF9500" 2 #f)
+        (list-item "输入框" "#34C759" 3 #f)
+        (list-item "提示框" "#007AFF" 4 #f)
+        (list-item "待办事项" "#AF52DE" 5 #f)
+        (list-item "进度条" "#5AC8FA" 6 #f)))
+
+(send sidebar-list set-items! mock-items)
 
 ;; 2. 日历控件示例
 (new message%  
@@ -124,22 +134,22 @@
      [callback (lambda (btn evt)
                 (show-toast "这是一条信息。" #:type 'info))])
 
-;; 6. 待办事项列表控件示例
-(new message%
-     [parent content-panel]
-     [label "6. 待办事项列表控件"]
-     [font (make-object font% 16 'default 'normal 'bold)])
-
-(define todo-list
-  (new todo-list%
-       [parent content-panel]
-       [on-change (lambda (items)
-                   (show-toast (format "任务列表更新: ~a 项任务" (length items)) #:type 'info))]))
-
+;; 6. 待办事项列表控件示例 (暂时注释)
+;(new message%
+;     [parent content-panel]
+;     [label "6. 待办事项列表控件"]
+;     [font (make-object font% 16 'default 'normal 'bold)])
+;
+;(define todo-list
+;  (new todo-list%
+;       [parent content-panel]
+;       [on-change (lambda (items)
+;                   (show-toast (format "任务列表更新: ~a 项任务" (length items)) #:type 'info))]))
+;
 ;; 添加示例任务
-(send todo-list add-item "学习 Racket 编程")
-(send todo-list add-item "使用 GUI Plus 库")
-(send todo-list add-item "创建应用程序")
+;(send todo-list add-item "学习 Racket 编程")
+;(send todo-list add-item "使用 GUI Plus 库")
+;(send todo-list add-item "创建应用程序")
 
 ;; 7. 时间选择器控件示例
 (new message%
