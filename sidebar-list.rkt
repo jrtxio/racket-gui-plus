@@ -21,13 +21,17 @@
 (define sidebar-list%
   (class canvas%
     (init-field [items '()]
-                [on-select (λ (i) #f)])
+                [on-select (λ (i) #f)]
+                [on-rename (λ (i new-label) #f)]
+                [on-delete (λ (i) #f)])
 
     (super-new [style '(no-focus)]
                [min-width 200])
 
     (define selected-index 0)
     (define hover-index -1)
+    (define context-menu #f)
+    (define context-menu-item-index -1)
     
     (define/override (on-paint)
       (define dc (send this get-dc))
@@ -87,6 +91,79 @@
             (define-values (tw _1 _2 _3) (send dc get-text-extent count-str))
             (send dc draw-text count-str (- w margin 12.0 tw) (+ y 8.0))))))
 
+    ;; 创建上下文菜单
+    (define (create-context-menu)
+      (unless context-menu
+        (set! context-menu (new popup-menu%))
+        
+        ;; 重命名菜单项
+        (new menu-item% [parent context-menu] [label "重命名"]
+             [callback (lambda (menu-item event)
+                         (when (>= context-menu-item-index 0) (rename-item context-menu-item-index)))])
+        
+        ;; 删除菜单项
+        (new menu-item% [parent context-menu] [label "删除"]
+             [callback (lambda (menu-item event)
+                         (when (>= context-menu-item-index 0) (delete-item context-menu-item-index)))])
+        ))
+    
+    ;; 重命名项目
+    (define (rename-item idx)
+      (when (and (>= idx 0) (< idx (length items)))
+        (define old-item (list-ref items idx))
+        (define old-label (list-item-label old-item))
+        
+        ;; 创建重命名对话框
+        (define dialog (new dialog% [label "重命名"] [width 300]))
+        (define panel (new vertical-panel% [parent dialog] [border 10] [spacing 10]))
+        
+        (new message% [parent panel] [label "输入新名称："])
+        (define input (new text-field% [parent panel] [label ""] [init-value old-label]))
+        
+        (define button-panel (new horizontal-panel% [parent panel] [alignment '(center center)] [spacing 10]))
+        (new button% [parent button-panel] [label "确定"]
+             [callback (lambda (btn evt)
+                         (define new-label (send input get-value))
+                         (when (not (string=? new-label ""))
+                           ;; 更新项目
+                           (define new-item (list-item new-label (list-item-color old-item) (list-item-count old-item) (list-item-data old-item)))
+                           (define new-items (list-set items idx new-item))
+                           (set! items new-items)
+                           (on-rename new-item new-label)
+                           (send this refresh))
+                         (send dialog show #f))])
+        (new button% [parent button-panel] [label "取消"]
+             [callback (lambda (btn evt)
+                         (send dialog show #f))])
+        
+        (send dialog show #t)))
+    
+    ;; 删除项目
+    (define (delete-item idx)
+      (when (and (>= idx 0) (< idx (length items)))
+        (define item (list-ref items idx))
+        (define label (list-item-label item))
+        
+        ;; 显示确认对话框
+        (define result (message-box "确认删除" (format "确定要删除 '~a' 吗？" label) #f '(yes-no caution)))
+        (when (eq? result 'yes)
+          ;; 删除项目
+          (define new-items (append (take items idx) (drop items (+ idx 1))))
+          (set! items new-items)
+          
+          ;; 更新选中索引
+          (when (>= selected-index idx)
+            (set! selected-index (max 0 (- selected-index 1))))
+          
+          (on-delete item)
+          (send this refresh))))
+    
+    ;; 显示上下文菜单
+    (define (show-context-menu x y idx)
+      (set! context-menu-item-index idx)
+      (create-context-menu)
+      (send (send this get-top-level-window) popup-menu context-menu x y))
+    
     (define/override (on-event event)
       (define x (send event get-x))
       (define y (send event get-y))
@@ -106,7 +183,10 @@
          (when is-over-item
            (set! selected-index idx)
            (on-select (list-ref items idx))
-           (send this refresh))]))
+           (send this refresh))]
+        [(right-down)
+         (when is-over-item
+           (show-context-menu x y idx))]))
      
     ;; ---------------- 公共方法 ----------------
     (define/public (set-items! new-items)
