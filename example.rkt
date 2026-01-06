@@ -134,22 +134,54 @@
      [callback (lambda (btn evt)
                 (show-toast "这是一条信息。" #:type 'info))])
 
-;; 6. 待办事项列表控件示例 (暂时注释)
-;(new message%
-;     [parent content-panel]
-;     [label "6. 待办事项列表控件"]
-;     [font (make-object font% 16 'default 'normal 'bold)])
-;
-;(define todo-list
-;  (new todo-list%
-;       [parent content-panel]
-;       [on-change (lambda (items)
-;                   (show-toast (format "任务列表更新: ~a 项任务" (length items)) #:type 'info))]))
-;
+;; 6. 待办事项列表控件示例
+(new message%  
+     [parent content-panel]
+     [label "6. 待办事项列表控件"]
+     [font (make-object font% 16 'default 'normal 'bold)])
+
+(define todo-list
+  (new todo-list%  
+       [parent content-panel]
+       [on-change (lambda (items)
+                   (show-toast (format "任务列表更新: ~a 项任务" (length items)) #:type 'info))]
+       [min-height 200]))
+
 ;; 添加示例任务
-;(send todo-list add-item "学习 Racket 编程")
-;(send todo-list add-item "使用 GUI Plus 库")
-;(send todo-list add-item "创建应用程序")
+(send todo-list add-item "点击文字可以直接编辑任务内容")
+(send todo-list add-item "点击右侧 ⓘ 图标设置日期和备注" #f "2024-12-31" "这是一个示例备注")
+(send todo-list add-item "已完成的任务会显示灰色斜体" #t)
+(send todo-list add-item "尝试添加新任务吧！")
+
+;; 添加底部输入栏
+(define todo-input-panel (new horizontal-panel%
+                             [parent content-panel]
+                             [stretchable-height #f]
+                             [border 10]))
+
+(define todo-input-field
+  (new text-field%
+       [parent todo-input-panel]
+       [label ""]
+       [init-value ""]
+       [style '(single)]
+       [callback (lambda (field evt)
+                  (when (equal? (send evt get-event-type) 'text-field-enter)
+                    (define txt (send field get-value))
+                    (unless (string=? (string-trim txt) "")
+                      (send todo-list add-item txt)
+                      (send field set-value ""))))]))
+
+(define todo-add-btn
+  (new button%
+       [parent todo-input-panel]
+       [label "添加任务"]
+       [stretchable-width #f]
+       [callback (lambda (btn evt)
+                  (define txt (send todo-input-field get-value))
+                  (unless (string=? (string-trim txt) "")
+                    (send todo-list add-item txt)
+                    (send todo-input-field set-value "")))]))
 
 ;; 7. 时间选择器控件示例
 (new message%
