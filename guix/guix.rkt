@@ -112,4 +112,8 @@
          checkbox-canvas%
          task-details-dialog%
          todo-item%
-         todo-list%)
+         todo-list%
+         
+         ;; Button alias for consistency with PRD and examples
+         button%
+         modern-button%)
