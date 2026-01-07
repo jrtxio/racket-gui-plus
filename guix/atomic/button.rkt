@@ -14,16 +14,16 @@
   (class canvas% 
     (inherit get-client-size get-parent)
     
-    ;;; 初始化参数
+    ;;; Initialization parameters
     (init parent
           [label "Button"]
-          [type 'primary]      ; 按钮类型: 'primary, 'secondary, 'text
-          [theme-aware? #t]    ; 是否响应主题变化
-          [radius 'medium]     ; 边框半径: 'small, 'medium, 'large
-          [enabled? #t]        ; 是否启用
-          [callback #f])       ; 点击回调
+          [type 'primary]      ; Button type: 'primary, 'secondary, 'text
+          [theme-aware? #t]    ; Whether to respond to theme changes
+          [radius 'medium]     ; Border radius: 'small, 'medium, 'large
+          [enabled? #t]        ; Whether to enable
+          [callback #f])       ; Click callback
     
-    ;;; 实例变量
+    ;;; Instance variables
     (define current-parent parent)
     (define current-label label)
     (define current-type type)
@@ -34,7 +34,7 @@
     (define pressed? #f)
     (define theme-aware theme-aware?)
     
-    ;;; 构造函数
+    ;;; Constructor
     (super-new 
      [parent parent]
      [paint-callback 
@@ -44,11 +44,11 @@
      [min-width 100]
      [min-height (button-height)])
     
-    ;;; 主题管理
+    ;;; Theme management
     (when theme-aware
       (register-widget this))
     
-    ;;; 获取当前边框半径值
+    ;;; Get current border radius value
     (define (get-radius-value)
       (case current-radius
         [(small) (border-radius-small)]
@@ -56,28 +56,28 @@
         [(large) (border-radius-large)]
         [else (border-radius-medium)]))
     
-    ;;; 根据按钮类型和状态获取背景颜色
+    ;;; Get background color based on button type and state
     (define (get-background-color)
       (if enabled-state
           (case current-type
             [(primary)
              (if pressed?
-                 (make-object color% 0 90 200)  ; 按下状态颜色
-                 (color-accent))]  ; 正常状态颜色
+                 (make-object color% 0 90 200)  ; Pressed state color
+                 (color-accent))]  ; Normal state color
             [(secondary)
              (if pressed?
                  (if (equal? (current-theme) light-theme)
                      (make-object color% 220 220 225)
                      (make-object color% 50 50 55))
                  (color-bg-light))]
-            [(text) (make-object color% 0 0 0 0)]  ; 透明背景
+            [(text) (make-object color% 0 0 0 0)]  ; Transparent background
             [else (color-accent)])
-          ; 禁用状态
+          ; Disabled state
           (if (equal? (current-theme) light-theme)
               (make-object color% 230 230 235)
               (make-object color% 35 35 38))))
     
-    ;;; 根据按钮类型和状态获取文本颜色
+    ;;; Get text color based on button type and state
     (define (get-text-color)
       (if enabled-state
           (case current-type
@@ -85,22 +85,22 @@
             [(secondary) (color-accent)]
             [(text) (color-accent)]
             [else (color-text-main)])
-          ; 禁用状态
+          ; Disabled state
           (if (equal? (current-theme) light-theme)
               (make-object color% 170 170 170)
               (make-object color% 80 80 85))))
     
-    ;;; 根据按钮类型获取边框颜色
+    ;;; Get border color based on button type
     (define (get-border-color)
       (if enabled-state
           (case current-type
-            [(primary) (make-object color% 0 0 0 0)]  ; 主按钮无边框
+            [(primary) (make-object color% 0 0 0 0)]  ; Primary button has no border
             [(secondary) (color-border)]
-            [(text) (make-object color% 0 0 0 0)]  ; 文本按钮无边框
+            [(text) (make-object color% 0 0 0 0)]  ; Text button has no border
             [else (color-border)])
           (make-object color% 0 0 0 0)))
     
-    ;;; 绘制方法
+    ;;; Drawing method
     (define (on-paint dc)
       (let-values ([(width height) (get-client-size)])
       (let* ([radius (get-radius-value)]
@@ -108,7 +108,7 @@
              [text-color (get-text-color)]
              [border-color (get-border-color)])
         
-        ; 绘制背景
+        ; Draw background
         (send dc set-brush bg-color 'solid)
         (send dc set-pen border-color 1 'solid)
         (send dc draw-rounded-rectangle 0 0 width height radius)
@@ -118,7 +118,7 @@
         (send dc set-font (font-regular))
         (send dc draw-text current-label 10 (- (/ height 2) 7)))))
     
-    ;;; 处理鼠标事件
+    ;;; Handle mouse events
     (define (handle-mouse-event event)
       (case (send event get-event-type)
         [(enter)
@@ -137,52 +137,52 @@
          (set! pressed? #f)
          (refresh)]))
     
-    ;;; 覆盖事件处理
+    ;;; Override event handling
     (define/override (on-event event)
       (handle-mouse-event event)
       (super on-event event))
     
-    ;;; 刷新方法 - 响应主题变化
+    ;;; Refresh method - respond to theme changes
     (define/override (refresh)
       (super refresh))
     
-    ;;; 设置按钮类型
+    ;;; Set button type
     (define/public (set-type! new-type)
       (set! current-type new-type)
       (refresh))
     
-    ;;; 获取按钮类型
+    ;;; Get button type
     (define/public (get-type)
       current-type)
     
-    ;;; 设置标签
+    ;;; Set label
     (define/public (set-button-label! new-label)
       (set! current-label new-label)
       (send this refresh))
     
-    ;;; 获取标签
+    ;;; Get label
     (define/public (get-button-label)
       current-label)
     
-    ;;; 设置边框半径
+    ;;; Set border radius
     (define/public (set-radius! new-radius)
       (set! current-radius new-radius)
       (refresh))
     
-    ;;; 获取边框半径
+    ;;; Get border radius
     (define/public (get-radius)
       current-radius)
     
-    ;;; 设置启用状态
+    ;;; Set enabled state
     (define/public (set-enabled! [on? #t])
       (set! enabled-state on?)
       (send this refresh))
     
-    ;;; 检查是否启用
+    ;;; Check if enabled
     (define/public (get-enabled-state)
       enabled-state)
     
-    ;;; 设置回调函数
+    ;;; Set callback function
     (define/public (set-callback! callback)
       (set! callback-proc callback))
     

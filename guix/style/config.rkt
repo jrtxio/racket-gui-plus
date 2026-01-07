@@ -226,7 +226,7 @@
 ;; Convenient Access to Current Theme Properties
 ;; ===========================
 
-;; Border radius配置
+;; Border radius configuration
 (define (border-radius-small) (theme-border-radius-small (current-theme)))
 (define (border-radius-medium) (theme-border-radius-medium (current-theme)))
 (define (border-radius-large) (theme-border-radius-large (current-theme)))

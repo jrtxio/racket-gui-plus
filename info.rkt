@@ -9,6 +9,6 @@
 (define homepage "https://github.com/jrtxio/guix")
 (define scribblings '((lib "scribblings/guix.scrbl" "guix")))
 
-;; 配置包的集合映射
+;; Configure package collection mapping
 (define collection-links
   `(("guix" ,(build-path "guix"))))
