@@ -3,17 +3,9 @@
 (require racket/class
          "../style-config.rkt")
 
-;; --- 风格配置面板 ---;
+;; --- 风格配置面板 ---
 (define TARGET-Y-START 50)
-(define SPACING SPACING-LARGE)
-
-;; 调色盘:采用了苹果风格的亮色模式
-(define (color-bg)        (COLOR-BG-OVERLAY))
-(define (color-border)    (COLOR-BORDER))
-(define (color-text-main) (COLOR-TEXT-MAIN))
-(define (color-success)   (COLOR-SUCCESS))
-(define (color-error)     (COLOR-ERROR))
-(define (color-info)      (COLOR-ACCENT))
+(define SPACING (spacing-large))
 
 ;; --- 控件实现 ---
 (define modern-toast%
@@ -22,15 +14,15 @@
     
     (super-new [label ""]
                [style '(no-resize-border no-caption float)]
-               [width (TOAST-WIDTH)]
-               [height (TOAST-HEIGHT)])
+               [width (toast-width)]
+               [height (toast-height)])
     
     (define is-hovered #f)
     (define accent-color
-      ((case type
-         [(success) color-success]
-         [(error)   color-error]
-         [else      color-info])))
+      (case type
+        [(success) (color-success)]
+        [(error)   (color-error)]
+        [else      (color-accent)]))
 
     (define canvas
       (new (class canvas%
@@ -44,7 +36,7 @@
               (send dc set-smoothing 'smoothed)
               (let-values ([(w h) (send c get-client-size)])
                 ;; 关键修复:先用系统背景色填充整个区域
-                (send dc set-brush (COLOR-BG-LIGHT) 'solid)
+                (send dc set-brush (color-bg-light) 'solid)
                 (send dc set-pen "white" 0 'transparent)
                 (send dc draw-rectangle 0 0 w h)
                 
@@ -53,10 +45,10 @@
                 (send bg-path rounded-rectangle 
                       1 1 
                       (- w 2) (- h 2)
-                      (- (BORDER-RADIUS-LARGE) 1))
+                      (- (border-radius-large) 1))
                 
                 ;; 1. 绘制主体背景
-                (send dc set-brush (color-bg) 'solid)
+                (send dc set-brush (color-bg-overlay) 'solid)
                 (send dc set-pen "white" 0 'transparent)
                 (send dc draw-path bg-path)
                 
@@ -65,7 +57,7 @@
                 (send border-path rounded-rectangle 
                       0.5 0.5 
                       (- w 1) (- h 1)
-                      (BORDER-RADIUS-LARGE))
+                      (border-radius-large))
                 
                 (send dc set-brush "white" 'transparent)
                 (send dc set-pen (color-border) 1 'solid)
@@ -95,8 +87,8 @@
 
     (define/public (update-pos index)
       (let-values ([(sw sh) (get-display-size)])
-        (let ([target-x (inexact->exact (round (/ (- sw (TOAST-WIDTH)) 2)))]
-              [target-y (+ TARGET-Y-START (* index (+ (TOAST-HEIGHT) (SPACING))))])
+        (let ([target-x (inexact->exact (round (/ (- sw (toast-width)) 2)))]
+              [target-y (+ TARGET-Y-START (* index (+ (toast-height) SPACING)))])
           (send this move target-x target-y))))
 
     (define/public (launch index)
@@ -141,10 +133,10 @@
                           [alignment '(center center)]
                           [spacing 15]))
   
-  (define title (new message%
+  (define title (new message% 
                      [parent main-panel]
                      [label "测试通知弹窗"]
-                     [font FONT-LARGE]))
+                     [font (font-large)]))
   
   (new message% [parent main-panel] [label ""] [min-height 20])
   
@@ -180,9 +172,9 @@
   
   (new message% [parent main-panel] [label ""] [min-height 10])
   
-  (new message%
+  (new message% 
        [parent main-panel]
        [label "提示:通知会在3.5秒后自动关闭\n鼠标悬停可暂停倒计时"]
-       [font FONT-SMALL])
+       [font (font-small)])
   
   (send frame show #t))

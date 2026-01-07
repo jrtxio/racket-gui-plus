@@ -4,7 +4,7 @@
 
 (define modern-progress-bar%
   (class canvas%
-    (init-field [progress 0.0] [target 0.0] [min-width 200] [min-height (PROGRESS-BAR-HEIGHT)])
+    (init-field [progress 0.0] [target 0.0] [min-width 200] [min-height (progress-bar-height)])
     
     (define/public (set-progress v)
       (set! target (max 0.0 (min 1.0 v))))
@@ -23,13 +23,13 @@
       (send dc set-smoothing 'smoothed)
       (send dc clear)
       
-      (define draw-h (PROGRESS-BAR-HEIGHT))
+      (define draw-h (progress-bar-height))
       (define y (/ (- h draw-h) 2))
       (define radius (/ draw-h 2))
       (define bar-width (* w progress))
       
-      (define bg-color (COLOR-BG-LIGHT))
-      (define fg-color (COLOR-ACCENT))
+      (define bg-color (color-bg-light))
+      (define fg-color (color-accent))
       
       (send dc set-pen "transparent" 0 'solid)
       

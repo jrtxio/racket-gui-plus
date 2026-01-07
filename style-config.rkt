@@ -1,11 +1,11 @@
 #lang racket/gui
 
-;; --- 统一样式配置 ---;;
+;; --- 统一样式配置 ---
 ;; 采用苹果风格的设计语言
 ;; 支持主题切换（light/dark）
 
-(require racket/class)
-(require racket/list)
+(require racket/class
+         racket/list)
 
 ;; ===========================
 ;; 主题定义
@@ -60,7 +60,7 @@
   spacing-small
   spacing-medium
   spacing-large
-))
+  ))
 
 ;; ===========================
 ;; 亮色主题
@@ -68,52 +68,52 @@
 (define light-theme
   (theme
    ;; 圆角配置
-   6   ; BORDER-RADIUS-SMALL
-   10  ; BORDER-RADIUS-MEDIUM
-   14  ; BORDER-RADIUS-LARGE
+   6   ; border-radius-small
+   10  ; border-radius-medium
+   14  ; border-radius-large
    
    ;; 背景色
-   (make-object color% 255 255 255)      ; COLOR-BG-WHITE
-   (make-object color% 242 242 247)      ; COLOR-BG-LIGHT
-   (make-object color% 255 255 255 0.95) ; COLOR-BG-OVERLAY
+   (make-object color% 255 255 255)      ; color-bg-white
+   (make-object color% 242 242 247)      ; color-bg-light
+   (make-object color% 255 255 255 0.95) ; color-bg-overlay
    
    ;; 边框色
-   (make-object color% 200 200 200)      ; COLOR-BORDER
-   (make-object color% 170 170 170)      ; COLOR-BORDER-HOVER
-   (make-object color% 0 122 255)        ; COLOR-BORDER-FOCUS
+   (make-object color% 200 200 200)      ; color-border
+   (make-object color% 170 170 170)      ; color-border-hover
+   (make-object color% 0 122 255)        ; color-border-focus
    
    ;; 文字色
-   (make-object color% 44 44 46)         ; COLOR-TEXT-MAIN
-   (make-object color% 100 100 100)      ; COLOR-TEXT-LIGHT
-   (make-object color% 160 160 160)      ; COLOR-TEXT-PLACEHOLDER
+   (make-object color% 44 44 46)         ; color-text-main
+   (make-object color% 100 100 100)      ; color-text-light
+   (make-object color% 160 160 160)      ; color-text-placeholder
    
    ;; 功能色
-   (make-object color% 0 122 255)        ; COLOR-ACCENT
-   (make-object color% 52 199 89)        ; COLOR-SUCCESS
-   (make-object color% 255 59 48)        ; COLOR-ERROR
-   (make-object color% 255 149 0)        ; COLOR-WARNING
+   (make-object color% 0 122 255)        ; color-accent
+   (make-object color% 52 199 89)        ; color-success
+   (make-object color% 255 59 48)        ; color-error
+   (make-object color% 255 149 0)        ; color-warning
    
    ;; 字体配置
-   10  ; FONT-SIZE-SMALL
-   13  ; FONT-SIZE-REGULAR
-   14  ; FONT-SIZE-MEDIUM
-   16  ; FONT-SIZE-LARGE
+   10  ; font-size-small
+   13  ; font-size-regular
+   14  ; font-size-medium
+   16  ; font-size-large
    (send the-font-list find-or-create-font 10 'default 'normal 'normal)
    (send the-font-list find-or-create-font 13 'default 'normal 'normal)
    (send the-font-list find-or-create-font 14 'default 'normal 'bold)
    (send the-font-list find-or-create-font 16 'default 'normal 'bold)
    
    ;; 控件尺寸配置
-   40  ; INPUT-HEIGHT
-   40  ; BUTTON-HEIGHT
-   12  ; PROGRESS-BAR-HEIGHT
-   68  ; TOAST-HEIGHT
-   340 ; TOAST-WIDTH
+   40  ; input-height
+   40  ; button-height
+   12  ; progress-bar-height
+   68  ; toast-height
+   340 ; toast-width
    
    ;; 间距配置
-   4   ; SPACING-SMALL
-   10  ; SPACING-MEDIUM
-   14  ; SPACING-LARGE
+   4   ; spacing-small
+   10  ; spacing-medium
+   14  ; spacing-large
    ))
 
 ;; ===========================
@@ -122,52 +122,52 @@
 (define dark-theme
   (theme
    ;; 圆角配置
-   6   ; BORDER-RADIUS-SMALL
-   10  ; BORDER-RADIUS-MEDIUM
-   14  ; BORDER-RADIUS-LARGE
+   6   ; border-radius-small
+   10  ; border-radius-medium
+   14  ; border-radius-large
    
    ;; 背景色
-   (make-object color% 28 28 30)         ; COLOR-BG-WHITE
-   (make-object color% 44 44 46)         ; COLOR-BG-LIGHT
-   (make-object color% 28 28 30 0.95)    ; COLOR-BG-OVERLAY
+   (make-object color% 28 28 30)         ; color-bg-white
+   (make-object color% 44 44 46)         ; color-bg-light
+   (make-object color% 28 28 30 0.95)    ; color-bg-overlay
    
    ;; 边框色
-   (make-object color% 60 60 60)         ; COLOR-BORDER
-   (make-object color% 80 80 80)         ; COLOR-BORDER-HOVER
-   (make-object color% 0 122 255)        ; COLOR-BORDER-FOCUS
+   (make-object color% 60 60 60)         ; color-border
+   (make-object color% 80 80 80)         ; color-border-hover
+   (make-object color% 0 122 255)        ; color-border-focus
    
    ;; 文字色
-   (make-object color% 255 255 255)      ; COLOR-TEXT-MAIN
-   (make-object color% 170 170 170)      ; COLOR-TEXT-LIGHT
-   (make-object color% 100 100 100)      ; COLOR-TEXT-PLACEHOLDER
+   (make-object color% 255 255 255)      ; color-text-main
+   (make-object color% 170 170 170)      ; color-text-light
+   (make-object color% 100 100 100)      ; color-text-placeholder
    
    ;; 功能色
-   (make-object color% 0 122 255)        ; COLOR-ACCENT
-   (make-object color% 52 199 89)        ; COLOR-SUCCESS
-   (make-object color% 255 59 48)        ; COLOR-ERROR
-   (make-object color% 255 149 0)        ; COLOR-WARNING
+   (make-object color% 0 122 255)        ; color-accent
+   (make-object color% 52 199 89)        ; color-success
+   (make-object color% 255 59 48)        ; color-error
+   (make-object color% 255 149 0)        ; color-warning
    
    ;; 字体配置
-   10  ; FONT-SIZE-SMALL
-   13  ; FONT-SIZE-REGULAR
-   14  ; FONT-SIZE-MEDIUM
-   16  ; FONT-SIZE-LARGE
+   10  ; font-size-small
+   13  ; font-size-regular
+   14  ; font-size-medium
+   16  ; font-size-large
    (send the-font-list find-or-create-font 10 'default 'normal 'normal)
    (send the-font-list find-or-create-font 13 'default 'normal 'normal)
    (send the-font-list find-or-create-font 14 'default 'normal 'bold)
    (send the-font-list find-or-create-font 16 'default 'normal 'bold)
    
    ;; 控件尺寸配置
-   40  ; INPUT-HEIGHT
-   40  ; BUTTON-HEIGHT
-   12  ; PROGRESS-BAR-HEIGHT
-   68  ; TOAST-HEIGHT
-   340 ; TOAST-WIDTH
+   40  ; input-height
+   40  ; button-height
+   12  ; progress-bar-height
+   68  ; toast-height
+   340 ; toast-width
    
    ;; 间距配置
-   4   ; SPACING-SMALL
-   10  ; SPACING-MEDIUM
-   14  ; SPACING-LARGE
+   4   ; spacing-small
+   10  ; spacing-medium
+   14  ; spacing-large
    ))
 
 ;; ===========================
@@ -227,52 +227,52 @@
 ;; ===========================
 
 ;; 圆角配置
-(define (BORDER-RADIUS-SMALL) (theme-border-radius-small (current-theme)))
-(define (BORDER-RADIUS-MEDIUM) (theme-border-radius-medium (current-theme)))
-(define (BORDER-RADIUS-LARGE) (theme-border-radius-large (current-theme)))
+(define (border-radius-small) (theme-border-radius-small (current-theme)))
+(define (border-radius-medium) (theme-border-radius-medium (current-theme)))
+(define (border-radius-large) (theme-border-radius-large (current-theme)))
 
 ;; 背景色
-(define (COLOR-BG-WHITE) (theme-color-bg-white (current-theme)))
-(define (COLOR-BG-LIGHT) (theme-color-bg-light (current-theme)))
-(define (COLOR-BG-OVERLAY) (theme-color-bg-overlay (current-theme)))
+(define (color-bg-white) (theme-color-bg-white (current-theme)))
+(define (color-bg-light) (theme-color-bg-light (current-theme)))
+(define (color-bg-overlay) (theme-color-bg-overlay (current-theme)))
 
 ;; 边框色
-(define (COLOR-BORDER) (theme-color-border (current-theme)))
-(define (COLOR-BORDER-HOVER) (theme-color-border-hover (current-theme)))
-(define (COLOR-BORDER-FOCUS) (theme-color-border-focus (current-theme)))
+(define (color-border) (theme-color-border (current-theme)))
+(define (color-border-hover) (theme-color-border-hover (current-theme)))
+(define (color-border-focus) (theme-color-border-focus (current-theme)))
 
 ;; 文字色
-(define (COLOR-TEXT-MAIN) (theme-color-text-main (current-theme)))
-(define (COLOR-TEXT-LIGHT) (theme-color-text-light (current-theme)))
-(define (COLOR-TEXT-PLACEHOLDER) (theme-color-text-placeholder (current-theme)))
+(define (color-text-main) (theme-color-text-main (current-theme)))
+(define (color-text-light) (theme-color-text-light (current-theme)))
+(define (color-text-placeholder) (theme-color-text-placeholder (current-theme)))
 
 ;; 功能色
-(define (COLOR-ACCENT) (theme-color-accent (current-theme)))
-(define (COLOR-SUCCESS) (theme-color-success (current-theme)))
-(define (COLOR-ERROR) (theme-color-error (current-theme)))
-(define (COLOR-WARNING) (theme-color-warning (current-theme)))
+(define (color-accent) (theme-color-accent (current-theme)))
+(define (color-success) (theme-color-success (current-theme)))
+(define (color-error) (theme-color-error (current-theme)))
+(define (color-warning) (theme-color-warning (current-theme)))
 
 ;; 字体配置
-(define (FONT-SIZE-SMALL) (theme-font-size-small (current-theme)))
-(define (FONT-SIZE-REGULAR) (theme-font-size-regular (current-theme)))
-(define (FONT-SIZE-MEDIUM) (theme-font-size-medium (current-theme)))
-(define (FONT-SIZE-LARGE) (theme-font-size-large (current-theme)))
-(define (FONT-SMALL) (theme-font-small (current-theme)))
-(define (FONT-REGULAR) (theme-font-regular (current-theme)))
-(define (FONT-MEDIUM) (theme-font-medium (current-theme)))
-(define (FONT-LARGE) (theme-font-large (current-theme)))
+(define (font-size-small) (theme-font-size-small (current-theme)))
+(define (font-size-regular) (theme-font-size-regular (current-theme)))
+(define (font-size-medium) (theme-font-size-medium (current-theme)))
+(define (font-size-large) (theme-font-size-large (current-theme)))
+(define (font-small) (theme-font-small (current-theme)))
+(define (font-regular) (theme-font-regular (current-theme)))
+(define (font-medium) (theme-font-medium (current-theme)))
+(define (font-large) (theme-font-large (current-theme)))
 
 ;; 控件尺寸配置
-(define (INPUT-HEIGHT) (theme-input-height (current-theme)))
-(define (BUTTON-HEIGHT) (theme-button-height (current-theme)))
-(define (PROGRESS-BAR-HEIGHT) (theme-progress-bar-height (current-theme)))
-(define (TOAST-HEIGHT) (theme-toast-height (current-theme)))
-(define (TOAST-WIDTH) (theme-toast-width (current-theme)))
+(define (input-height) (theme-input-height (current-theme)))
+(define (button-height) (theme-button-height (current-theme)))
+(define (progress-bar-height) (theme-progress-bar-height (current-theme)))
+(define (toast-height) (theme-toast-height (current-theme)))
+(define (toast-width) (theme-toast-width (current-theme)))
 
 ;; 间距配置
-(define (SPACING-SMALL) (theme-spacing-small (current-theme)))
-(define (SPACING-MEDIUM) (theme-spacing-medium (current-theme)))
-(define (SPACING-LARGE) (theme-spacing-large (current-theme)))
+(define (spacing-small) (theme-spacing-small (current-theme)))
+(define (spacing-medium) (theme-spacing-medium (current-theme)))
+(define (spacing-large) (theme-spacing-large (current-theme)))
 
 ;; ===========================
 ;; 导出所有样式常量和主题功能
@@ -295,43 +295,43 @@
  refresh-all-widgets
  
  ;; 圆角（函数形式，动态获取当前主题值）
- BORDER-RADIUS-SMALL
- BORDER-RADIUS-MEDIUM
- BORDER-RADIUS-LARGE
+ border-radius-small
+ border-radius-medium
+ border-radius-large
  
  ;; 颜色（函数形式，动态获取当前主题值）
- COLOR-BG-WHITE
- COLOR-BG-LIGHT
- COLOR-BG-OVERLAY
- COLOR-BORDER
- COLOR-BORDER-HOVER
- COLOR-BORDER-FOCUS
- COLOR-TEXT-MAIN
- COLOR-TEXT-LIGHT
- COLOR-TEXT-PLACEHOLDER
- COLOR-ACCENT
- COLOR-SUCCESS
- COLOR-ERROR
- COLOR-WARNING
+ color-bg-white
+ color-bg-light
+ color-bg-overlay
+ color-border
+ color-border-hover
+ color-border-focus
+ color-text-main
+ color-text-light
+ color-text-placeholder
+ color-accent
+ color-success
+ color-error
+ color-warning
  
  ;; 字体（函数形式，动态获取当前主题值）
- FONT-SIZE-SMALL
- FONT-SIZE-REGULAR
- FONT-SIZE-MEDIUM
- FONT-SIZE-LARGE
- FONT-SMALL
- FONT-REGULAR
- FONT-MEDIUM
- FONT-LARGE
+ font-size-small
+ font-size-regular
+ font-size-medium
+ font-size-large
+ font-small
+ font-regular
+ font-medium
+ font-large
  
  ;; 控件尺寸（函数形式，动态获取当前主题值）
- INPUT-HEIGHT
- BUTTON-HEIGHT
- PROGRESS-BAR-HEIGHT
- TOAST-HEIGHT
- TOAST-WIDTH
+ input-height
+ button-height
+ progress-bar-height
+ toast-height
+ toast-width
  
  ;; 间距（函数形式，动态获取当前主题值）
- SPACING-SMALL
- SPACING-MEDIUM
- SPACING-LARGE)
+ spacing-small
+ spacing-medium
+ spacing-large)

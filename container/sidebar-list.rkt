@@ -40,8 +40,8 @@
       (send dc set-smoothing 'smoothed)
       
       ;; 绘制整个侧边栏的底色
-      (send dc set-brush (COLOR-BG-LIGHT) 'solid)
-      (send dc set-pen (COLOR-BG-LIGHT) 1 'solid)
+      (send dc set-brush (color-bg-light) 'solid)
+      (send dc set-pen (color-bg-light) 1 'solid)
       (send dc draw-rectangle 0 0 w h)
       
       (for ([item (in-list items)] [i (in-naturals)])
@@ -58,8 +58,8 @@
           ;; 1. 背景绘制
           (cond
             [is-selected
-             (send dc set-brush (COLOR-ACCENT) 'solid)
-             (send dc set-pen (COLOR-ACCENT) 1 'solid)]
+             (send dc set-brush (color-accent) 'solid)
+             (send dc set-pen (color-accent) 1 'solid)]
             [is-hover
              ;; 悬停使用淡淡的灰色
              (send dc set-brush (make-object color% 0 0 0 0.05) 'solid)
@@ -69,7 +69,7 @@
              (send dc set-brush "white" 'transparent)
              (send dc set-pen "white" 1 'transparent)])
           
-          (send dc draw-rounded-rectangle rect-x y rect-w item-h (BORDER-RADIUS-SMALL))
+          (send dc draw-rounded-rectangle rect-x y rect-w item-h (border-radius-small))
           
           ;; 2. 圆形图标
           (let ([dot-size 18.0]
@@ -80,14 +80,14 @@
             (send dc draw-ellipse dot-x dot-y dot-size dot-size))
           
           ;; 3. 文字
-          (send dc set-text-foreground (if is-selected "white" (COLOR-TEXT-MAIN)))
-          (send dc set-font (make-object font% (FONT-SIZE-REGULAR) 'default 'normal (if is-selected 'bold 'normal)))
+          (send dc set-text-foreground (if is-selected "white" (color-text-main)))
+          (send dc set-font (make-object font% (font-size-regular) 'default 'normal (if is-selected 'bold 'normal)))
           (send dc draw-text (list-item-label item) (+ rect-x 36.0) (+ y 7.0))
           
           ;; 4. 计数器
           (let* ([count-str (number->string (list-item-count item))]
-                 [text-color (if is-selected "white" (COLOR-TEXT-PLACEHOLDER))])
-            (send dc set-font (FONT-SMALL))
+                 [text-color (if is-selected "white" (color-text-placeholder))])
+            (send dc set-font (font-small))
             (send dc set-text-foreground text-color)
             (define-values (tw _1 _2 _3) (send dc get-text-extent count-str))
             (send dc draw-text count-str (- w margin 12.0 tw) (+ y 8.0))))))
