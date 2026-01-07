@@ -1,1 +1,8 @@
-;; 暂时不导出，等实现完成后再导�?;; (provide stack-view%)
+#lang racket/gui
+
+;; Stack view component
+;; Modern stack container for displaying multiple views
+
+(provide stack-view%)
+
+(define stack-view%

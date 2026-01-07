@@ -1,1 +1,8 @@
-;; 暂时不导出，等实现完成后再导�?;; (provide stepper%)
+#lang racket/gui
+
+;; Stepper component
+;; Modern stepper with increment/decrement functionality
+
+(provide stepper%)
+
+(define stepper%

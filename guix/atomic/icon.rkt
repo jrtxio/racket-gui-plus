@@ -1,1 +1,8 @@
-;; 暂时不导出，等实现完成后再导�?;; (provide icon%)
+#lang racket/gui
+
+;; Icon component
+;; Icon component with support for different sizes and styles
+
+(provide icon%)
+
+(define icon%

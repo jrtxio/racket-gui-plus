@@ -1,1 +1,8 @@
-;; 暂时不导出，等实现完成后再导�?;; (provide switch%)
+#lang racket/gui
+
+;; Switch component
+;; Modern switch toggle with customizable styles
+
+(provide switch%)
+
+(define switch%

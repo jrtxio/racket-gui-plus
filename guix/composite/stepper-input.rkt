@@ -1,1 +1,8 @@
-;; 暂时不导出，等实现完成后再导�?;; (provide stepper-input%)
+#lang racket/gui
+
+;; Stepper input component
+;; Input field with stepper controls for increment/decrement
+
+(provide stepper-input%)
+
+(define stepper-input%

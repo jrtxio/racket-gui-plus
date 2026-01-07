@@ -1,1 +1,8 @@
-;; 暂时不导出，等实现完成后再导�?;; (provide tab-view%)
+#lang racket/gui
+
+;; Tab view component
+;; Modern tab container with customizable tabs and content
+
+(provide tab-view%)
+
+(define tab-view%

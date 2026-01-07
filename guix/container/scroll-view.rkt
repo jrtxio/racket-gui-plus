@@ -1,1 +1,8 @@
-;; 暂时不导出，等实现完成后再导�?;; (provide scroll-view%)
+#lang racket/gui
+
+;; Scroll view component
+;; Modern scrollable container with customizable styles
+
+(provide scroll-view%)
+
+(define scroll-view%

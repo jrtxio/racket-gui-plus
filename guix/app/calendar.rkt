@@ -1,1 +1,8 @@
-;; 导出日历控件�?(provide calendar%)
+#lang racket/gui
+
+;; Calendar component
+;; Modern month-view calendar with date selection functionality
+
+(provide calendar%)
+
+(define calendar%

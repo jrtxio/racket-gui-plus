@@ -1,1 +1,8 @@
-;; 暂时不导出，等实现完成后再导�?;; (provide input-field%)
+#lang racket/gui
+
+;; Input field component
+;; Enhanced text input with additional features like icons and validation
+
+(provide input-field%)
+
+(define input-field%

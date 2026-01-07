@@ -1,17 +1,17 @@
 #lang racket/gui
 
-;; GUI Plus - 增强的Racket GUI控件库
-;; 提供苹果风格的现代化UI控件集合
-;; 支持主题切换和全局刷新
+;; Guix - Modern Racket GUI Widget Library
+;; Provides a collection of Apple-style modern UI widgets
+;; Supports theme switching and global refresh
 
-;; 导入样式配置和主题功能
+;; Import style configuration and theme functionality
 (require "style/config.rkt")
 
 ;; ===========================
-;; 导入所有控件
+;; Import All Widgets
 ;; ===========================
 
-;; 原子控件
+;; Atomic Widgets
 (require "atomic/button.rkt"
          "atomic/label.rkt"
          "atomic/text-field.rkt"
@@ -23,7 +23,7 @@
          "atomic/stepper.rkt"
          "atomic/icon.rkt")
 
-;; 复合控件
+;; Composite Widgets
 (require "composite/filter-button.rkt"
          "composite/input-field.rkt"
          "composite/progress-bar.rkt"
@@ -31,7 +31,7 @@
          "composite/stepper-input.rkt"
          "composite/segmented-control.rkt")
 
-;; 容器控件
+;; Container Widgets
 (require "container/custom-list-box.rkt"
          "container/side-panel.rkt"
          "container/sidebar-list.rkt"
@@ -40,7 +40,7 @@
          "container/scroll-view.rkt"
          "container/stack-view.rkt")
 
-;; 应用控件
+;; Application Widgets
 (require "app/calendar.rkt"
          "app/time-picker.rkt"
          "app/toast-info.rkt"

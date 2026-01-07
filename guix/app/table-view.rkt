@@ -1,1 +1,8 @@
-;; 暂时不导出，等实现完成后再导�?;; (provide table-view%)
+#lang racket/gui
+
+;; Table view component
+;; Modern data table with customizable columns and rows
+
+(provide table-view%)
+
+(define table-view%

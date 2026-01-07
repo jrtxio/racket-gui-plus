@@ -1,1 +1,8 @@
-;; 暂时不导出，等实现完成后再导�?;; (provide checkbox%)
+#lang racket/gui
+
+;; Checkbox component
+;; Modern checkbox with customizable styles and states
+
+(provide checkbox%)
+
+(define checkbox%

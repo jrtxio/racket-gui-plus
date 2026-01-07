@@ -1,1 +1,8 @@
-;; 暂时不导出，等实现完成后再导�?;; (provide label%)
+#lang racket/gui
+
+;; Label component
+;; Modern label with customizable text styles
+
+(provide label%)
+
+(define label%

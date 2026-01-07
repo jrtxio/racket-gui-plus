@@ -1,1 +1,8 @@
-;; 暂时不导出，等实现完成后再导�?;; (provide segmented-control%)
+#lang racket/gui
+
+;; Segmented control component
+;; Modern segmented button group with customizable styles
+
+(provide segmented-control%)
+
+(define segmented-control%

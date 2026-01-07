@@ -1,1 +1,8 @@
-;; 暂时不导出，等实现完成后再导�?;; (provide menu%)
+#lang racket/gui
+
+;; Menu component
+;; Modern menu system with customizable items and styles
+
+(provide menu%)
+
+(define menu%

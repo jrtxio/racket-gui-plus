@@ -1,1 +1,8 @@
-;; 导出过滤按钮控件�?(provide filter-button%)
+#lang racket/gui
+
+;; Filter button component
+;; Button group for filtering with exclusive selection
+
+(provide filter-button%)
+
+(define filter-button%
