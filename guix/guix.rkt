@@ -51,14 +51,14 @@
          "app/menu.rkt")
 
 ;; ===========================
-;; 导出所有公共接口
+;; Export All Public Interfaces
 ;; ===========================
 
-;; 导出主题相关功能
+;; Export theme-related functionality
 (provide (all-from-out "style/config.rkt")
          register-widget unregister-widget refresh-all-widgets)
 
-;; 导出所有控件模块
+;; Export all widget modules
 (provide (all-from-out "atomic/button.rkt")
          (all-from-out "atomic/label.rkt")
          (all-from-out "atomic/text-field.rkt")
@@ -94,14 +94,14 @@
          (all-from-out "app/alert.rkt")
          (all-from-out "app/menu.rkt"))
 
-;; 导出具体控件类（别名和向后兼容）
+;; Export specific widget classes (aliases and backward compatibility)
 (provide text-field%
-         modern-input% ; 别名，保持向后兼容
+         modern-input% ; alias for backward compatibility
          
          filter-button%
          modern-progress-bar%
          
-         modern-sidebar% ; 原 custom-list-box.rkt 实际导出的是 modern-sidebar%
+         modern-sidebar% ; actual export from custom-list-box.rkt is modern-sidebar%
          sidebar-list%
          list-item
          
