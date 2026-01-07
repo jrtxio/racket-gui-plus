@@ -4,10 +4,10 @@
   
   <!-- GitHub Badges -->
   <div style="margin: 1rem 0;">
-    <a href="https://github.com/yourusername/guix/blob/main/LICENSE"><img src="https://img.shields.io/github/license/yourusername/guix.svg" alt="License"></a>
-    <a href="https://github.com/yourusername/guix/stargazers"><img src="https://img.shields.io/github/stars/yourusername/guix.svg?style=social" alt="GitHub Stars"></a>
-    <a href="https://github.com/yourusername/guix/forks"><img src="https://img.shields.io/github/forks/yourusername/guix.svg?style=social" alt="GitHub Forks"></a>
-    <a href="https://github.com/yourusername/guix"><img src="https://img.shields.io/badge/GitHub-Project-blue.svg" alt="GitHub Project"></a>
+    <a href="https://github.com/jrtxio/racket-gui-plus/blob/main/LICENSE"><img src="https://img.shields.io/github/license/jrtxio/racket-gui-plus.svg" alt="License"></a>
+    <a href="https://github.com/jrtxio/racket-gui-plus/stargazers"><img src="https://img.shields.io/github/stars/jrtxio/racket-gui-plus.svg?style=social" alt="GitHub Stars"></a>
+    <a href="https://github.com/jrtxio/racket-gui-plus/forks"><img src="https://img.shields.io/github/forks/jrtxio/racket-gui-plus.svg?style=social" alt="GitHub Forks"></a>
+    <a href="https://github.com/jrtxio/racket-gui-plus"><img src="https://img.shields.io/badge/GitHub-Project-blue.svg" alt="GitHub Project"></a>
     <a href="README.md"><img src="https://img.shields.io/badge/Language-English-blue.svg" alt="English"></a>
     <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-%E4%B8%AD%E6%96%87-gray.svg" alt="中文"></a>
   </div>
