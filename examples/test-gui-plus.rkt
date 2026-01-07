@@ -1,7 +1,7 @@
 #lang racket/gui
 
 ;; 测试 GUI Plus 库的导入和基本功能
-(require "../src/gui-plus.rkt")
+(require racket-gui-plus)
 
 ;; 创建主窗口
 (define frame (new frame%

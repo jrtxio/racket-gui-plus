@@ -1,0 +1,1 @@
+(provide modern-progress-bar%)
