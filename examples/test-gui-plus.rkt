@@ -1,7 +1,7 @@
 #lang racket/gui
 
 ;; 测试 GUI Plus 库的导入和基本功能
-(require "gui-plus.rkt")
+(require "../gui-plus.rkt")
 
 ;; 创建主窗口
 (define frame (new frame%
@@ -23,9 +23,8 @@
 
 ;; 创建输入框
 (define input
-  (new mac-input%
+  (new modern-input%
        [parent test-panel]
-       [label "输入框: "]
        [placeholder "请输入测试内容"]
        [stretchable-width #t]))
 
@@ -35,7 +34,7 @@
      [label "测试按钮"]
      [icon-symbol "🔍"]
      [callback (lambda ()
-                (toast-apple "按钮被点击了！" #:type 'success))])
+                (show-toast "按钮被点击了！" #:type 'success))])
 
 ;; 显示窗口
 (send frame show #t)

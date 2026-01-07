@@ -1,19 +1,19 @@
 #lang racket/gui
 
 (require racket/class
-         "style-config.rkt")
+         "../style-config.rkt")
 
 ;; --- 风格配置面板 ---;
 (define TARGET-Y-START 50)
 (define SPACING SPACING-LARGE)
 
 ;; 调色盘:采用了苹果风格的亮色模式
-(define color-bg        COLOR-BG-OVERLAY)
-(define color-border    COLOR-BORDER)
-(define color-text-main COLOR-TEXT-MAIN)
-(define color-success   COLOR-SUCCESS)
-(define color-error     COLOR-ERROR)
-(define color-info      COLOR-ACCENT)
+(define (color-bg)        (COLOR-BG-OVERLAY))
+(define (color-border)    (COLOR-BORDER))
+(define (color-text-main) (COLOR-TEXT-MAIN))
+(define (color-success)   (COLOR-SUCCESS))
+(define (color-error)     (COLOR-ERROR))
+(define (color-info)      (COLOR-ACCENT))
 
 ;; --- 控件实现 ---
 (define modern-toast%
@@ -22,15 +22,15 @@
     
     (super-new [label ""]
                [style '(no-resize-border no-caption float)]
-               [width TOAST-WIDTH]
-               [height TOAST-HEIGHT])
+               [width (TOAST-WIDTH)]
+               [height (TOAST-HEIGHT)])
     
     (define is-hovered #f)
     (define accent-color
-      (case type
-        [(success) color-success]
-        [(error)   color-error]
-        [else      color-info]))
+      ((case type
+         [(success) color-success]
+         [(error)   color-error]
+         [else      color-info])))
 
     (define canvas
       (new (class canvas%
@@ -44,7 +44,7 @@
               (send dc set-smoothing 'smoothed)
               (let-values ([(w h) (send c get-client-size)])
                 ;; 关键修复:先用系统背景色填充整个区域
-                (send dc set-brush COLOR-BG-LIGHT 'solid)
+                (send dc set-brush (COLOR-BG-LIGHT) 'solid)
                 (send dc set-pen "white" 0 'transparent)
                 (send dc draw-rectangle 0 0 w h)
                 
@@ -53,10 +53,10 @@
                 (send bg-path rounded-rectangle 
                       1 1 
                       (- w 2) (- h 2)
-                      (- BORDER-RADIUS-LARGE 1))
+                      (- (BORDER-RADIUS-LARGE) 1))
                 
                 ;; 1. 绘制主体背景
-                (send dc set-brush color-bg 'solid)
+                (send dc set-brush (color-bg) 'solid)
                 (send dc set-pen "white" 0 'transparent)
                 (send dc draw-path bg-path)
                 
@@ -65,10 +65,10 @@
                 (send border-path rounded-rectangle 
                       0.5 0.5 
                       (- w 1) (- h 1)
-                      BORDER-RADIUS-LARGE)
+                      (BORDER-RADIUS-LARGE))
                 
                 (send dc set-brush "white" 'transparent)
-                (send dc set-pen color-border 1 'solid)
+                (send dc set-pen (color-border) 1 'solid)
                 (send dc draw-path border-path)
                 
                 ;; 3. 绘制左侧的修饰条
@@ -77,7 +77,7 @@
                 (send dc draw-rounded-rectangle 8 18 4 (- h 36) 2)
                 
                 ;; 4. 绘制文字
-                (send dc set-text-foreground color-text-main)
+                (send dc set-text-foreground (color-text-main))
                 (send dc set-font (make-object font% 11 'system 'normal 'bold))
                 (let-values ([(tw th _1 _2) (send dc get-text-extent message)])
                   (send dc draw-text message 28 (/ (- h th) 2)))))]))
@@ -95,8 +95,8 @@
 
     (define/public (update-pos index)
       (let-values ([(sw sh) (get-display-size)])
-        (let ([target-x (inexact->exact (round (/ (- sw TOAST-WIDTH) 2)))]
-              [target-y (+ TARGET-Y-START (* index (+ TOAST-HEIGHT SPACING)))])
+        (let ([target-x (inexact->exact (round (/ (- sw (TOAST-WIDTH)) 2)))]
+              [target-y (+ TARGET-Y-START (* index (+ (TOAST-HEIGHT) (SPACING))))])
           (send this move target-x target-y))))
 
     (define/public (launch index)

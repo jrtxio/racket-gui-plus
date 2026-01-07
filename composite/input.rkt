@@ -1,6 +1,6 @@
 #lang racket/gui
 
-(require "style-config.rkt")
+(require "../style-config.rkt")
 
 (define modern-input%
   (class canvas%

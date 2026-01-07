@@ -44,13 +44,13 @@
                                 (>= idx 0) (< idx (length items))))
 
       (case (send event get-event-type)
-        [(leave) 
-         (set! hover-index -1) 
+        [(leave)
+         (set! hover-index -1)
          (send this refresh)]
         [(motion enter)
          (let ([old-hover hover-index])
            (set! hover-index (if is-over-item idx -1))
-           (unless (= old-hover hover-index) 
+           (unless (= old-hover hover-index)
              (send this refresh)))]
         [(left-down)
          (when is-over-item
@@ -64,7 +64,7 @@
 
     (define/public (add-item item)
       (set! items (append items (list item)))
-      (send this refresh)))
+      (send this refresh))))
 
 (provide modern-sidebar%)
 (provide sidebar-item)
