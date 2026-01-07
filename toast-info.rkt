@@ -1,21 +1,19 @@
 #lang racket/gui
 
-(require racket/class)
+(require racket/class
+         "style-config.rkt")
 
-;; --- 风格配置面板 ---
-(define TOAST-WIDTH 340)
-(define TOAST-HEIGHT 68)
-(define BORDER-RADIUS 14)
+;; --- 风格配置面板 ---;
 (define TARGET-Y-START 50)
-(define SPACING 14)
+(define SPACING SPACING-LARGE)
 
 ;; 调色盘:采用了苹果风格的亮色模式
-(define color-bg        (make-object color% 255 255 255 0.95)) ; 极白(带微量透明感)
-(define color-border    (make-object color% 230 230 230))      ; 极细浅灰边框
-(define color-text-main (make-object color% 44 44 46))         ; 深焦炭色文字
-(define color-success   (make-object color% 52 199 89))        ; Apple Success Green
-(define color-error     (make-object color% 255 59 48))        ; Apple Red
-(define color-info      (make-object color% 0 122 255))        ; Apple Blue
+(define color-bg        COLOR-BG-OVERLAY)
+(define color-border    COLOR-BORDER)
+(define color-text-main COLOR-TEXT-MAIN)
+(define color-success   COLOR-SUCCESS)
+(define color-error     COLOR-ERROR)
+(define color-info      COLOR-ACCENT)
 
 ;; --- 控件实现 ---
 (define modern-toast%
@@ -45,10 +43,16 @@
             (lambda (c dc)
               (send dc set-smoothing 'smoothed)
               (let-values ([(w h) (send c get-client-size)])
+                ;; 0. 绘制背景(消除圆角外侧的直角)
+                ;; 通知弹窗是顶层窗口，使用系统默认背景色
+                (send dc set-brush COLOR-BG-LIGHT 'solid)
+                (send dc set-pen COLOR-BG-LIGHT 1 'solid)
+                (send dc draw-rectangle 0 0 w h)
+                
                 ;; 1. 绘制主体背景(带淡淡的描边增加精致感)
                 (send dc set-brush color-bg 'solid)
                 (send dc set-pen color-border 1 'solid)
-                (send dc draw-rounded-rectangle 0 0 (- w 1) (- h 1) BORDER-RADIUS)
+                (send dc draw-rounded-rectangle 0 0 (- w 1) (- h 1) BORDER-RADIUS-LARGE)
                 
                 ;; 2. 绘制左侧的修饰条(让通知更有设计感,而不是一个简单的框)
                 (send dc set-brush accent-color 'solid)

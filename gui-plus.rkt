@@ -13,6 +13,7 @@
 (require "progress-bar.rkt")
 (require "sidebar-list.rkt")
 (require "todo.rkt")
+(require "style-config.rkt")
 
 ;; 导出所有公共接口
 (provide (all-from-out "calendar.rkt"))
@@ -24,6 +25,7 @@
 (provide (all-from-out "progress-bar.rkt"))
 (provide (all-from-out "sidebar-list.rkt"))
 (provide (all-from-out "todo.rkt"))
+(provide (all-from-out "style-config.rkt"))
 
 (provide calendar%
          filter-button%

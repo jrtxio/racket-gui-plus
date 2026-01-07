@@ -1,13 +1,14 @@
 #lang racket/gui
-(require racket/draw)
+(require racket/draw
+         "style-config.rkt")
 
 (define filter-button%
   (class canvas%
     (init-field [label "Today"]
                 [count 0]
-                [bg-color (make-object color% 10 132 255)]
+                [bg-color COLOR-ACCENT]
                 [icon-symbol "📅"]
-                [parent-bg (make-object color% 240 240 240)]
+                [parent-bg COLOR-BG-LIGHT]
                 [callback (λ () (void))])
     
     (super-new [style '(no-focus)] 
@@ -39,7 +40,7 @@
                                [else bg-color]))
       (send dc set-brush draw-color 'solid)
       (send dc set-pen draw-color 1 'transparent)
-      (send dc draw-rounded-rectangle 0 0 w h 15)
+      (send dc draw-rounded-rectangle 0 0 w h BORDER-RADIUS-LARGE)
 
       ;; 3. 文字和图标
       (define pad 15) 

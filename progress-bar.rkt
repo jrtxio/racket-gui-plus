@@ -1,8 +1,10 @@
 #lang racket/gui
 
+(require "style-config.rkt")
+
 (define modern-progress-bar%
   (class canvas%
-    (init-field [progress 0.0] [target 0.0] [min-width 200] [min-height 12])
+    (init-field [progress 0.0] [target 0.0] [min-width 200] [min-height PROGRESS-BAR-HEIGHT])
     
     (define/public (set-progress v)
       (set! target (max 0.0 (min 1.0 v))))
@@ -18,16 +20,16 @@
       (define w (send this get-width))
       (define h (send this get-height))
       
-      (send dc set-smoothing 'aligned)
+      (send dc set-smoothing 'smoothed)
       (send dc clear)
       
-      (define draw-h 12)
+      (define draw-h PROGRESS-BAR-HEIGHT)
       (define y (/ (- h draw-h) 2))
       (define radius (/ draw-h 2))
       (define bar-width (* w progress))
       
-      (define bg-color (make-object color% 238 238 242))
-      (define fg-color (make-object color% 0 122 255))
+      (define bg-color COLOR-BG-LIGHT)
+      (define fg-color COLOR-ACCENT)
       
       (send dc set-pen "transparent" 0 'solid)
       
