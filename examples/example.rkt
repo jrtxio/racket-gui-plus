@@ -2,7 +2,7 @@
 
 ;; GUI Plus 库综合示例
 ;; 展示如何使用所有控件
-(require "../gui-plus.rkt")
+(require "../src/gui-plus.rkt")
 
 ;; 创建主窗口
 (define frame (new frame%
