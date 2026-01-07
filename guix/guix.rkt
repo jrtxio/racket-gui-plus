@@ -43,7 +43,7 @@
 ;; Application Widgets
 (require "app/calendar.rkt"
          "app/time-picker.rkt"
-         "app/toast-info.rkt"
+         "app/toast.rkt"
          "app/todo.rkt"
          "app/date-time-picker.rkt"
          "app/table-view.rkt"
@@ -87,7 +87,7 @@
          
          (all-from-out "app/calendar.rkt")
          (all-from-out "app/time-picker.rkt")
-         (all-from-out "app/toast-info.rkt")
+         (all-from-out "app/toast.rkt")
          (all-from-out "app/todo.rkt")
          (all-from-out "app/date-time-picker.rkt")
          (all-from-out "app/table-view.rkt")
@@ -107,7 +107,8 @@
          
          calendar%
          time-picker%
-         modern-toast%
+         guix-toast%
+         modern-toast% ; alias for backward compatibility
          show-toast
          checkbox-canvas%
          task-details-dialog%
