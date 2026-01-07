@@ -43,23 +43,40 @@
             (lambda (c dc)
               (send dc set-smoothing 'smoothed)
               (let-values ([(w h) (send c get-client-size)])
-                ;; 0. 绘制背景(消除圆角外侧的直角)
-                ;; 通知弹窗是顶层窗口，使用系统默认背景色
+                ;; 关键修复:先用系统背景色填充整个区域
                 (send dc set-brush COLOR-BG-LIGHT 'solid)
-                (send dc set-pen COLOR-BG-LIGHT 1 'solid)
+                (send dc set-pen "white" 0 'transparent)
                 (send dc draw-rectangle 0 0 w h)
                 
-                ;; 1. 绘制主体背景(带淡淡的描边增加精致感)
-                (send dc set-brush color-bg 'solid)
-                (send dc set-pen color-border 1 'solid)
-                (send dc draw-rounded-rectangle 0 0 (- w 1) (- h 1) BORDER-RADIUS-LARGE)
+                ;; 使用 dc-path% 绘制圆角背景
+                (define bg-path (new dc-path%))
+                (send bg-path rounded-rectangle 
+                      1 1 
+                      (- w 2) (- h 2)
+                      (- BORDER-RADIUS-LARGE 1))
                 
-                ;; 2. 绘制左侧的修饰条(让通知更有设计感,而不是一个简单的框)
+                ;; 1. 绘制主体背景
+                (send dc set-brush color-bg 'solid)
+                (send dc set-pen "white" 0 'transparent)
+                (send dc draw-path bg-path)
+                
+                ;; 2. 绘制边框(使用 dc-path% 确保圆角精确)
+                (define border-path (new dc-path%))
+                (send border-path rounded-rectangle 
+                      0.5 0.5 
+                      (- w 1) (- h 1)
+                      BORDER-RADIUS-LARGE)
+                
+                (send dc set-brush "white" 'transparent)
+                (send dc set-pen color-border 1 'solid)
+                (send dc draw-path border-path)
+                
+                ;; 3. 绘制左侧的修饰条
                 (send dc set-brush accent-color 'solid)
-                (send dc set-pen accent-color 1 'transparent)
+                (send dc set-pen "white" 0 'transparent)
                 (send dc draw-rounded-rectangle 8 18 4 (- h 36) 2)
                 
-                ;; 3. 绘制文字 (使用更现代的排版)
+                ;; 4. 绘制文字
                 (send dc set-text-foreground color-text-main)
                 (send dc set-font (make-object font% 11 'system 'normal 'bold))
                 (let-values ([(tw th _1 _2) (send dc get-text-extent message)])
@@ -107,3 +124,65 @@
 ;; 导出toast控件和相关函数
 (provide modern-toast%
          show-toast)
+
+;; ===========================
+;; 测试用例
+;; ===========================
+(module+ main
+  ;; 创建测试窗口
+  (define frame (new frame% 
+                     [label "通知控件测试"]
+                     [width 400]
+                     [height 300]))
+  
+  (define main-panel (new vertical-panel%
+                          [parent frame]
+                          [style '()]
+                          [alignment '(center center)]
+                          [spacing 15]))
+  
+  (define title (new message%
+                     [parent main-panel]
+                     [label "测试通知弹窗"]
+                     [font FONT-LARGE]))
+  
+  (new message% [parent main-panel] [label ""] [min-height 20])
+  
+  ;; 成功通知按钮
+  (new button%
+       [parent main-panel]
+       [label "显示成功通知"]
+       [callback (lambda (btn evt)
+                   (show-toast "操作成功完成!" #:type 'success))])
+  
+  ;; 错误通知按钮
+  (new button%
+       [parent main-panel]
+       [label "显示错误通知"]
+       [callback (lambda (btn evt)
+                   (show-toast "发生了一个错误!" #:type 'error))])
+  
+  ;; 信息通知按钮
+  (new button%
+       [parent main-panel]
+       [label "显示信息通知"]
+       [callback (lambda (btn evt)
+                   (show-toast "这是一条提示信息" #:type 'info))])
+  
+  ;; 多个通知按钮
+  (new button%
+       [parent main-panel]
+       [label "显示多个通知"]
+       [callback (lambda (btn evt)
+                   (show-toast "第一条通知" #:type 'success)
+                   (show-toast "第二条通知" #:type 'info)
+                   (show-toast "第三条通知" #:type 'error))])
+  
+  (new message% [parent main-panel] [label ""] [min-height 10])
+  
+  (new message%
+       [parent main-panel]
+       [label "提示:通知会在3.5秒后自动关闭\n鼠标悬停可暂停倒计时"]
+       [font FONT-SMALL])
+  
+  (send frame show #t))
