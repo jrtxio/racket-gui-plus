@@ -5,7 +5,7 @@
 ;; 支持主题切换和全局刷新
 
 ;; 导入样式配置和主题功能
-(require "style-config.rkt")
+(require "style/config.rkt")
 
 ;; ===========================
 ;; 导入所有控件
@@ -55,7 +55,7 @@
 ;; ===========================
 
 ;; 导出主题相关功能
-(provide (all-from-out "style-config.rkt")
+(provide (all-from-out "style/config.rkt")
          register-widget unregister-widget refresh-all-widgets)
 
 ;; 导出所有控件模块

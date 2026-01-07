@@ -1,7 +1,7 @@
 #lang racket/gui
 
 ;; 直接使用相对路径导入，绕过包系统的问题
-(require "../racket-gui-plus/style-config.rkt")
+(require "../guix/style/config.rkt")
 
 ;; 创建主窗口
 (define frame (new frame% [label "直接导入测试"]
@@ -30,4 +30,4 @@
 ;; 显示窗口
 (send frame show #t)
 
-(displayln "成功直接导入并使用了racket-gui-plus/style-config模块！")
+(displayln "成功直接导入并使用了guix/style/config模块！")

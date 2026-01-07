@@ -25,61 +25,75 @@
 ## 2. 仓库架构
 
 ```
-guix/                         ; 库根目录
+guix/                          ; 根目录
+├─ guix/                        ; 库源码实现
+│  ├─ guix.rkt                  ; 库主入口，聚合导出所有控件
+│                                ; 支持主题切换、全局刷新
 │
-├─ guix.rkt                    ; 库主入口，聚合导出所有控件
-│                               ; 支持主题切换、全局刷新
+│  ├─ style/                    ; 全局主题和样式配置
+│                                ; color-scheme, dark-mode, metrics (圆角、padding)
 │
-├─ style/                       ; 全局主题和样式配置
-│                               ; color-scheme, dark-mode, metrics (圆角、padding)
-│
-├─ control/                     ; 原子控件与组合控件
 │  ├─ atomic/                   ; 原子控件（最小单元）
-│  │   ├─ button%               ; 支持 hover/pressed/disabled
-│  │   ├─ label%                ; 文本显示控件
-│  │   ├─ text-field%           ; 单行输入框
-│  │   ├─ text-area%            ; 多行输入框
-│  │   ├─ checkbox%             ; 复选框
-│  │   ├─ radio-button%         ; 单选按钮
-│  │   ├─ switch%               ; 开关控件
-│  │   ├─ slider%               ; 滑块
-│  │   ├─ stepper%              ; 步进控件
-│  │   └─ icon%                 ; 图标
+│  │  ├─ button%                ; 支持 hover/pressed/disabled
+│  │  ├─ label%                 ; 文本显示控件
+│  │  ├─ text-field%            ; 单行输入框
+│  │  ├─ text-area%             ; 多行输入框
+│  │  ├─ checkbox%              ; 复选框
+│  │  ├─ radio-button%          ; 单选按钮
+│  │  ├─ switch%                ; 开关控件
+│  │  ├─ slider%                ; 滑块
+│  │  ├─ stepper%               ; 步进控件
+│  │  └─ icon%                  ; 图标
 │  │
-│  ├─ composite/                ; 由原子控件组合的控件
-│  │   ├─ input-field%          ; Label + TextField/TextArea
-│  │   ├─ progress-bar%         ; Slider + 填充 + 动画
-│  │   ├─ filter-button%        ; Button + Icon
-│  │   ├─ search-field%         ; TextField + ClearButton + Icon
-│  │   ├─ stepper-input%        ; TextField + Stepper
-│  │   └─ segmented-control%    ; 按钮组切换选项
-│
-├─ container/                  ; 布局容器
-│  ├─ side-panel%               ; 可折叠/拖拽侧边栏
-│  ├─ sidebar-list%             ; 列表容器
-│  ├─ split-view%               ; 拖拽分割布局
-│  ├─ tab-view%                 ; 标签页容器
-│  ├─ scroll-view%              ; 可滚动容器
-│  └─ stack-view%               ; 堆叠布局
-│
-├─ app/                        ; 高级组合控件（应用层面）
-│  ├─ calendar%                 ; 日历控件
-│  ├─ time-picker%              ; 时间选择
-│  ├─ date-time-picker%         ; 日期+时间组合
-│  ├─ table-view%               ; 表格，可排序/选择
-│  ├─ toast-info%               ; 弹窗提示
-│  ├─ alert%                    ; 确认/警告弹窗
-│  └─ menu%                     ; 下拉菜单模拟
-│
-├─ scribblings/                ; 文档（Scribble）
-│  └─ guix.scrbl
+│  ├─ composite/                ; 组合控件（原子控件组合）
+│  │  ├─ input-field%           ; Label + TextField/TextArea
+│  │  ├─ progress-bar%          ; Slider + 填充 + 动画
+│  │  ├─ filter-button%         ; Button + Icon
+│  │  ├─ search-field%          ; TextField + ClearButton + Icon
+│  │  ├─ stepper-input%         ; TextField + Stepper
+│  │  └─ segmented-control%     ; 按钮组切换选项
+│  │
+│  ├─ container/                ; 布局容器
+│  │  ├─ side-panel%            ; 可折叠/拖拽侧边栏
+│  │  ├─ sidebar-list%          ; 列表容器
+│  │  ├─ split-view%            ; 拖拽分割布局
+│  │  ├─ tab-view%              ; 标签页容器
+│  │  ├─ scroll-view%           ; 可滚动容器
+│  │  └─ stack-view%            ; 堆叠布局
+│  │
+│  └─ app/                      ; 高级应用控件（复合 + 容器组合）
+│     ├─ calendar%              ; 日历控件
+│     ├─ time-picker%           ; 时间选择控件
+│     ├─ date-time-picker%      ; 日期+时间组合控件
+│     ├─ table-view%            ; 表格控件，可排序/选择
+│     ├─ toast-info%            ; 弹窗提示
+│     ├─ alert%                 ; 确认/警告弹窗
+│     └─ menu%                  ; 下拉菜单模拟
 │
 ├─ tests/                       ; 单元测试 & 自动化测试
-│  ├─ atomic/
-│  ├─ composite/
-│  └─ container/
+│  ├─ atomic/                   ; 原子控件测试
+│  │  ├─ button-test.rkt
+│  │  ├─ label-test.rkt
+│  │  ├─ text-field-test.rkt
+│  │  └─ … （其它 atomic 测试）
+│  │
+│  ├─ composite/                ; 组合控件测试
+│  │  ├─ input-field-test.rkt
+│  │  ├─ progress-bar-test.rkt
+│  │  └─ … （其它 composite 测试）
+│  │
+│  └─ container/                ; 容器控件测试
+│     ├─ side-panel-test.rkt
+│     ├─ tab-view-test.rkt
+│     └─ … （其它 container 测试）
 │
-└─ examples/                    ; 示例脚本
+├─ examples/                    ; 示例脚本
+│  ├─ test-simple.rkt
+│  ├─ test-progress.rkt
+│  └─ example.rkt
+│
+└─ scribblings/                 ; 文档（Scribble）
+   └─ guix.scrbl
 ```
 
 ## 3. 控件层级说明

@@ -1,11 +1,11 @@
 #lang racket/gui
 
-;; 测试 GUI Plus 库的导入和基本功能
-(require racket-gui-plus)
+;; 测试 Guix 库的导入和基本功能
+(require guix)
 
 ;; 创建主窗口
 (define frame (new frame%
-                   [label "GUI Plus 测试"]
+                   [label "Guix 测试"]
                    [width 600]
                    [height 400]))
 
@@ -15,7 +15,7 @@
 ;; 测试1: 导入验证
 (new message%
      [parent panel]
-     [label "GUI Plus 库导入成功！"]
+     [label "Guix 库导入成功！"]
      [font (make-object font% 16 'default 'normal 'bold)])
 
 ;; 测试2: 简单控件使用
@@ -40,11 +40,11 @@
 (send frame show #t)
 
 ;; 输出测试信息
-(printf "GUI Plus 库测试完成！~n")
+(printf "Guix 库测试完成！~n")
 (printf "已导入的控件: ~n")
 (printf "- calendar%~n")
-(printf "- apple-sidebar%~n")
+(printf "- modern-sidebar%~n")
 (printf "- filter-button%~n")
-(printf "- mac-input%~n")
-(printf "- apple-toast%~n")
+(printf "- modern-input%~n")
+(printf "- modern-toast%~n")
 (printf "- todo-list%~n")

@@ -1,7 +1,7 @@
 #lang racket/gui
 
 ;; 简单测试程序，只测试一个控件
-(require racket-gui-plus)
+(require "../guix/guix.rkt")
 
 ;; 创建主窗口
 (define frame (new frame%

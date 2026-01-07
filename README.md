@@ -1,6 +1,6 @@
-# GUI Plus - Racket 增强GUI控件库
+# Guix - 基于 racket/gui 的现代桌面控件库
 
-GUI Plus 是一个基于 Racket GUI 库的增强控件集合，提供了现代化的苹果风格 UI 控件，使您能够创建更美观、更易用的 Racket 桌面应用程序。
+Guix 是一套基于 `racket/gui` 的现代桌面控件库，提供跨平台一致行为的 GUI 控件，支持主题化、组合控件、自定义样式，适用于 macOS、Windows 和 Linux。
 
 ## 控件列表
 
@@ -24,11 +24,10 @@ GUI Plus 是一个基于 Racket GUI 库的增强控件集合，提供了现代�
 
 ## 安装方法
 
-将本库的所有文件复制到您的 Racket 项目目录中，然后通过以下方式导入：
+使用以下命令安装 Guix 控件库：
 
-```racket
-#lang racket/gui
-(require "gui-plus.rkt")
+```bash
+raco pkg install guix
 ```
 
 ## 使用方法
@@ -37,7 +36,7 @@ GUI Plus 是一个基于 Racket GUI 库的增强控件集合，提供了现代�
 
 ```racket
 #lang racket/gui
-(require "gui-plus.rkt")
+(require guix/guix)
 ```
 
 ### 创建窗口
