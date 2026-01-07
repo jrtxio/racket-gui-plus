@@ -1,11 +1,17 @@
-# Guix - 基于 racket/gui 的现代桌面控件库
-
-<!-- LANGUAGE SELECTOR -->
-| English | 简体中文 |
-|---------|----------|
-| [README.md](README.md) | [README.zh-CN.md](README.zh-CN.md) |
-
-<!-- END LANGUAGE SELECTOR -->
+<div align="center">
+  <h1>Guix</h1>
+  <p>📱 基于 racket/gui 的现代桌面控件库</p>
+  
+  <!-- GitHub Badges -->
+  <div style="margin: 1rem 0;">
+    <a href="https://github.com/yourusername/guix/blob/main/LICENSE"><img src="https://img.shields.io/github/license/yourusername/guix.svg" alt="License"></a>
+    <a href="https://github.com/yourusername/guix/stargazers"><img src="https://img.shields.io/github/stars/yourusername/guix.svg?style=social" alt="GitHub Stars"></a>
+    <a href="https://github.com/yourusername/guix/forks"><img src="https://img.shields.io/github/forks/yourusername/guix.svg?style=social" alt="GitHub Forks"></a>
+    <a href="https://github.com/yourusername/guix"><img src="https://img.shields.io/badge/GitHub-Project-blue.svg" alt="GitHub Project"></a>
+    <a href="README.md"><img src="https://img.shields.io/badge/Language-English-blue.svg" alt="English"></a>
+    <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-%E4%B8%AD%E6%96%87-gray.svg" alt="中文"></a>
+  </div>
+</div>
 
 Guix 是一套基于 `racket/gui` 的现代桌面控件库，提供跨平台一致行为的 GUI 控件，支持主题化、组合控件、自定义样式，适用于 macOS、Windows 和 Linux。
 
