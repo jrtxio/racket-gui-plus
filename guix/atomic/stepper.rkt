@@ -7,7 +7,8 @@
          racket/draw
          "../style/config.rkt")
 
-(provide stepper%)
+(provide stepper%
+         guix-stepper%)
 
 (define stepper%
   (class canvas%
@@ -221,10 +222,22 @@
     ;;; Set enabled state
     (define/public (set-enabled! [on? #t])
       (set! enabled-state on?)
-      (refresh))
+      (send this refresh))
     
     ;;; Check if enabled
     (define/public (get-enabled-state)
       enabled-state)
     
+    ;;; API consistency: get-enabled (same as get-enabled-state)
+    (define/public (get-enabled)
+      enabled-state)
+    
+    ;;; API consistency: set-enabled (same as set-enabled!)
+    (define/public (set-enabled e)
+      (set! enabled-state e)
+      (send this refresh))
+    
     ))
+
+;; New guix-stepper% with updated naming convention
+(define guix-stepper% stepper%)

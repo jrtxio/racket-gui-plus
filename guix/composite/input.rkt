@@ -48,4 +48,8 @@
     
     ))
 
-(provide input%)
+(provide input%
+         guix-input%)
+
+;; New guix-input% with updated naming convention
+(define guix-input% input%)

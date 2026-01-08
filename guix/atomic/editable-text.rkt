@@ -6,13 +6,17 @@
          racket/draw
          "../style/config.rkt")
 
-(provide editable-text%)
+(provide editable-text%
+         guix-editable-text%)
 
 (define editable-text%
   (class canvas%
     (init-field [parent #f]
                 [placeholder ""]
-                [callback (λ (t) (void))]
+                [callback (λ (t) (void))
+
+;; New guix-editable-text% with updated naming convention
+(define guix-editable-text% editable-text%)]
                 [init-value ""]
                 [style '()])
     

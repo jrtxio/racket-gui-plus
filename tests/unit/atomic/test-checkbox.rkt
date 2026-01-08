@@ -6,8 +6,8 @@
 (require rackunit
          racket/class
          racket/draw
-         "../../guix/atomic/checkbox.rkt"
-         "../../guix/style/config.rkt")
+         "../../../guix/atomic/checkbox.rkt"
+        "../../../guix/style/config.rkt")
 
 ;; 创建一个简单的测试框架
 (define test-frame

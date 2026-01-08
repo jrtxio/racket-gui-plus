@@ -7,7 +7,11 @@
          "../atomic/button.rkt"
          "../style/config.rkt")
 
-(provide search-field%)
+(provide search-field%
+         guix-search-field%)
+
+;; New guix-search-field% with updated naming convention
+(define guix-search-field% search-field%)
 
 (define search-field%
   (class horizontal-panel%

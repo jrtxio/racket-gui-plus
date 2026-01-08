@@ -95,4 +95,8 @@
     ))
 
 ;; 导出过滤按钮控件类
-(provide filter-button%)
+(provide filter-button%
+         guix-filter-button%)
+
+;; New guix-filter-button% with updated naming convention
+(define guix-filter-button% filter-button%)

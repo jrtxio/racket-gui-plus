@@ -12,7 +12,11 @@
          "../atomic/label.rkt"
          "../style/config.rkt")
 
-(provide task-item%)
+(provide task-item%
+         guix-task-item%)
+
+;; New guix-task-item% with updated naming convention
+(define guix-task-item% task-item%)
 
 ;; ============================================================;
 ;; Task Item Widget - A simple and reliable task item component;

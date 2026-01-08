@@ -7,7 +7,8 @@
          racket/draw
          "../style/config.rkt")
 
-(provide radio-button%)
+(provide radio-button%
+         guix-radio-button%)
 
 (define radio-button%
   (class canvas%
@@ -147,4 +148,16 @@
     (define/public (get-enabled-state)
       enabled-state)
     
+    ;;; API consistency: get-enabled (same as get-enabled-state)
+    (define/public (get-enabled)
+      enabled-state)
+    
+    ;;; API consistency: set-enabled (same as set-enabled!)
+    (define/public (set-enabled e)
+      (set! enabled-state e)
+      (send this refresh))
+    
     ))
+
+;; New guix-radio-button% with updated naming convention
+(define guix-radio-button% radio-button%)

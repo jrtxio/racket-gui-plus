@@ -6,7 +6,11 @@
 (require "../atomic/button.rkt"
          "../style/config.rkt")
 
-(provide segmented-control%)
+(provide segmented-control%
+         guix-segmented-control%)
+
+;; New guix-segmented-control% with updated naming convention
+(define guix-segmented-control% segmented-control%)
 
 (define segmented-control%
   (class horizontal-panel%

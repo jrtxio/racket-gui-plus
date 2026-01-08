@@ -6,7 +6,11 @@
 ;; Date time picker component
 ;; Modern combined date and time picker
 
-(provide date-time-picker%)
+(provide date-time-picker%
+         guix-date-time-picker%)
+
+;; New guix-date-time-picker% with updated naming convention
+(define guix-date-time-picker% date-time-picker%)
 
 (define date-time-picker%
   (class vertical-panel%

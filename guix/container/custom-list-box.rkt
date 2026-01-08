@@ -4,7 +4,12 @@
 ;; Modern sidebar component with customizable items
 ;; Also provides modern-sidebar% as the main export
 
-(provide modern-sidebar% sidebar-item-data)
+(provide modern-sidebar%
+         guix-sidebar%
+         sidebar-item-data)
+
+;; New guix-sidebar% with updated naming convention
+(define guix-sidebar% modern-sidebar%)
 
 (define sidebar-item-data
   (class object%

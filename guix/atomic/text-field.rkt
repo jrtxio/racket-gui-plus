@@ -188,5 +188,9 @@
     ))
 
 ;; Export widget class
-(provide text-field%)
-(provide (rename-out [text-field% modern-input%]))
+(provide text-field%
+         guix-text-field%
+         (rename-out [text-field% modern-input%]))
+
+;; New guix-text-field% with updated naming convention
+(define guix-text-field% text-field%)

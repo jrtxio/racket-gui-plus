@@ -4,7 +4,11 @@
 ;; Calendar component
 ;; Modern month-view calendar with date selection functionality
 
-(provide calendar%)
+(provide calendar%
+         guix-calendar%)
+
+;; New guix-calendar% with updated naming convention
+(define guix-calendar% calendar%)
 
 (define calendar%
   (class canvas%

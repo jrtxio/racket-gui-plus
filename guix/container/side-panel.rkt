@@ -7,7 +7,11 @@
          racket/draw
          "../style/config.rkt")
 
-(provide side-panel%)
+(provide side-panel%
+         guix-side-panel%)
+
+;; New guix-side-panel% with updated naming convention
+(define guix-side-panel% side-panel%)
 
 ;; Side panel widget implementation
 (define side-panel%

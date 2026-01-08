@@ -7,7 +7,8 @@
          racket/draw
          "../style/config.rkt")
 
-(provide switch%)
+(provide switch%
+         guix-switch%)
 
 (define switch%
   (class canvas%
@@ -156,9 +157,21 @@
     (define/public (get-enabled-state)
       enabled-state)
     
+    ;;; API consistency: get-enabled (same as get-enabled-state)
+    (define/public (get-enabled)
+      enabled-state)
+    
+    ;;; API consistency: set-enabled (same as set-enabled!)
+    (define/public (set-enabled e)
+      (set! enabled-state e)
+      (send this refresh))
+    
     ;;; Set callback function
     (define/public (set-callback! callback)
       (set! callback-proc callback))
     
     this)
   )
+
+;; New guix-switch% with updated naming convention
+(define guix-switch% switch%)

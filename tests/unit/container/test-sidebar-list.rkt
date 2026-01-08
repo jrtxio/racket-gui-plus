@@ -6,8 +6,8 @@
 (require rackunit
          racket/class
          racket/draw
-         "../../guix/container/sidebar-list.rkt"
-         "../../guix/style/config.rkt")
+         "../../../guix/container/sidebar-list.rkt"
+        "../../../guix/style/config.rkt")
 
 ;; 创建一个简单的测试框架
 (define test-frame

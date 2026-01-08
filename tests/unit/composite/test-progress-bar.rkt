@@ -3,8 +3,8 @@
 (require rackunit
          2htdp/image
          2htdp/universe
-         "../../guix/composite/progress-bar.rkt"
-         "../../guix/style/config.rkt")
+         "../../../guix/composite/progress-bar.rkt"
+        "../../../guix/style/config.rkt")
 
 ;; Create a frame for testing
 (define test-frame (new frame% [label "Test Progress Bar"] [width 400] [height 200]))

@@ -7,7 +7,8 @@
          racket/draw
          "../style/config.rkt")
 
-(provide icon%)
+(provide icon%
+         guix-icon%)
 
 (define icon%
   (class canvas%
@@ -195,4 +196,16 @@
     (define/public (get-enabled-state)
       enabled-state)
     
+    ;;; API consistency: get-enabled (same as get-enabled-state)
+    (define/public (get-enabled)
+      enabled-state)
+    
+    ;;; API consistency: set-enabled (same as set-enabled!)
+    (define/public (set-enabled e)
+      (set! enabled-state e)
+      (refresh))
+    
     ))
+
+;; New guix-icon% with updated naming convention
+(define guix-icon% icon%)

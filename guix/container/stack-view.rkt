@@ -3,7 +3,11 @@
 ;; Stack view component
 ;; Modern stack container for displaying multiple views
 
-(provide stack-view%)
+(provide stack-view%
+         guix-stack-view%)
+
+;; New guix-stack-view% with updated naming convention
+(define guix-stack-view% stack-view%)
 
 (define stack-view%
   (class panel%

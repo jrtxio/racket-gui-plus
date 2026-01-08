@@ -4,7 +4,11 @@
 ;; Time picker component
 ;; Modern time input with hour and minute selection
 
-(provide time-picker%)
+(provide time-picker%
+         guix-time-picker%)
+
+;; New guix-time-picker% with updated naming convention
+(define guix-time-picker% time-picker%)
 
 (define time-picker%
   (class canvas%

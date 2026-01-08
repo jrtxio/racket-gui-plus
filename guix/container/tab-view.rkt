@@ -5,7 +5,11 @@
 
 (require "../atomic/button.rkt")
 
-(provide tab-view%)
+(provide tab-view%
+         guix-tab-view%)
+
+;; New guix-tab-view% with updated naming convention
+(define guix-tab-view% tab-view%)
 
 (define tab-view%
   (class vertical-panel%

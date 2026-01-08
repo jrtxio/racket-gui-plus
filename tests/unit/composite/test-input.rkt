@@ -1,9 +1,9 @@
 #lang racket/gui
 
 (require rackunit)
-(require "../../guix/composite/input.rkt")
-(require "../../guix/composite/input-field.rkt")
-(require "../../guix/style/config.rkt")
+(require "../../../guix/composite/input.rkt")
+(require "../../../guix/composite/input-field.rkt")
+(require "../../../guix/style/config.rkt")
 
 ;; Test suite for input% and input-field%
 (define input-tests

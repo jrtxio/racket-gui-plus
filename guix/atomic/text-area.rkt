@@ -294,4 +294,8 @@
     ))
 
 ;; Export widget class
-(provide text-area%)
+(provide text-area%
+         guix-text-area%)
+
+;; New guix-text-area% with updated naming convention
+(define guix-text-area% text-area%)

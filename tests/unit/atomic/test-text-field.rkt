@@ -1,8 +1,8 @@
 #lang racket/gui
 
 (require rackunit)
-(require "../../guix/atomic/text-field.rkt")
-(require "../../guix/style/config.rkt")
+(require "../../../guix/atomic/text-field.rkt")
+(require "../../../guix/style/config.rkt")
 
 ;; Test suite for text-field%
 (define text-field-tests

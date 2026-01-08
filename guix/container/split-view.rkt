@@ -3,7 +3,11 @@
 ;; Split view component
 ;; Modern split panel container with resizable panes
 
-(provide split-view%)
+(provide split-view%
+         guix-split-view%)
+
+;; New guix-split-view% with updated naming convention
+(define guix-split-view% split-view%)
 
 (define split-view%
   (class horizontal-panel%

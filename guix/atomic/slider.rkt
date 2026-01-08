@@ -8,7 +8,11 @@
          racket/draw
          "../style/config.rkt")
 
-(provide modern-slider%)
+(provide modern-slider%
+         guix-slider%)
+
+;; New guix-slider% with updated naming convention
+(define guix-slider% modern-slider%)
 
 (define modern-slider% 
   (class slider%

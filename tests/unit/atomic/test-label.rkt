@@ -7,8 +7,8 @@
          rackunit/text-ui
          racket/class
          racket/draw
-         "../../guix/atomic/label.rkt"
-         "../../guix/style/config.rkt")
+         "../../../guix/atomic/label.rkt"
+        "../../../guix/style/config.rkt")
 
 ;; 创建一个简单的测试框架
 (define test-frame

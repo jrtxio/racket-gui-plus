@@ -56,7 +56,7 @@
      [parent panel]
      [label "Disabled Primary"]
      [type 'primary]
-     [enabled #f])
+     [enabled? #f])
 
 ;; Theme toggle button
 (new modern-button% 

@@ -48,4 +48,8 @@
     
     ))
 
-(provide modern-progress-bar%)
+(provide modern-progress-bar%
+         guix-progress-bar%)
+
+;; New guix-progress-bar% with updated naming convention
+(define guix-progress-bar% modern-progress-bar%)

@@ -7,7 +7,12 @@
          racket/draw
          "../style/config.rkt")
 
-(provide sidebar-list% list-item)
+(provide sidebar-list%
+         guix-sidebar-list%
+         list-item)
+
+;; New guix-sidebar-list% with updated naming convention
+(define guix-sidebar-list% sidebar-list%)
 
 ;; List item class for sidebar items
 (define list-item

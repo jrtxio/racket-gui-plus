@@ -7,7 +7,11 @@
          "../atomic/button.rkt"
          "../style/config.rkt")
 
-(provide stepper-input%)
+(provide stepper-input%
+         guix-stepper-input%)
+
+;; New guix-stepper-input% with updated naming convention
+(define guix-stepper-input% stepper-input%)
 
 (define stepper-input%
   (class horizontal-panel%

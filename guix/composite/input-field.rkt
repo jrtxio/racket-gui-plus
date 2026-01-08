@@ -77,4 +77,8 @@
     
     ))
 
-(provide input-field%)
+(provide input-field%
+         guix-input-field%)
+
+;; New guix-input-field% with updated naming convention
+(define guix-input-field% input-field%)

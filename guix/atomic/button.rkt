@@ -13,7 +13,8 @@
          "../style/config.rkt")
 
 (provide modern-button%
-         guix-button%)
+         guix-button%
+         button%)
 
 (define modern-button% 
   (class guix-base-control%
