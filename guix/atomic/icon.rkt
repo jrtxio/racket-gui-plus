@@ -167,14 +167,14 @@
       current-icon-name)
     
     ;;; Set icon size
-    (define/public (set-size! new-size)
+    (define/public (set-icon-size! new-size)
       (set! icon-size new-size)
       (send this min-width new-size)
       (send this min-height new-size)
       (refresh))
     
     ;;; Get icon size
-    (define/public (get-size)
+    (define/public (get-icon-size)
       icon-size)
     
     ;;; Set icon color

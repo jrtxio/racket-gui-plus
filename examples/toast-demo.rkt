@@ -8,8 +8,7 @@
 (define frame (new frame%
                    [label "Guix Toast Demo"]
                    [width 400]
-                   [height 350]
-                   [style '(resize-border)]))
+                   [height 350]))
 
 ;; Create main panel
 (define main-panel (new vertical-panel%
@@ -19,10 +18,10 @@
                         [spacing 15]))
 
 ;; Title label
-(define title (new guix-label%
+(define title (new label%
                    [parent main-panel]
                    [label "Toast Notification Demo"]
-                   [font (font-large)]))
+                   [font-size 'large]))
 
 (new message% [parent main-panel] [label ""] [min-height 10])
 
@@ -33,28 +32,28 @@
                            [spacing 10]))
 
 ;; Success toast button
-(new guix-button%
+(new modern-button%
      [parent buttons-panel]
      [label "Show Success Toast"]
      [callback (lambda (btn evt)
                  (show-toast "Operation completed successfully!" #:type 'success))])
 
 ;; Error toast button
-(new guix-button%
+(new modern-button%
      [parent buttons-panel]
      [label "Show Error Toast"]
      [callback (lambda (btn evt)
                  (show-toast "An error occurred during operation!" #:type 'error))])
 
 ;; Info toast button
-(new guix-button%
+(new modern-button%
      [parent buttons-panel]
      [label "Show Info Toast"]
      [callback (lambda (btn evt)
                  (show-toast "This is an informational message." #:type 'info))])
 
 ;; Multiple toasts button
-(new guix-button%
+(new modern-button%
      [parent buttons-panel]
      [label "Show Multiple Toasts"]
      [callback (lambda (btn evt)
@@ -72,11 +71,11 @@
 
 (define current-theme (make-parameter 'light))
 
-(new guix-label%
+(new label%
      [parent theme-toggle-panel]
      [label "Theme:"])
 
-(new guix-button%
+(new modern-button%
      [parent theme-toggle-panel]
      [label "Toggle Light/Dark"]
      [callback (lambda (btn evt)
@@ -91,10 +90,10 @@
 (new message% [parent main-panel] [label ""] [min-height 10])
 
 ;; Instructions label
-(define instructions (new guix-label%
+(define instructions (new label%
                           [parent main-panel]
                           [label "Toasts will auto-close after 3.5 seconds\nHover to pause countdown"]
-                          [font (font-small)]))
+                          [font-size 'small]))
 
 ;; Show main window
 (send frame show #t)

@@ -45,10 +45,7 @@
          "app/time-picker.rkt"
          "app/toast.rkt"
          "app/todo.rkt"
-         "app/date-time-picker.rkt"
-         "app/table-view.rkt"
-         "app/alert.rkt"
-         "app/menu.rkt")
+         "app/date-time-picker.rkt")
 
 ;; ===========================
 ;; Export All Public Interfaces
@@ -89,32 +86,19 @@
          (all-from-out "app/time-picker.rkt")
          (all-from-out "app/toast.rkt")
          (all-from-out "app/todo.rkt")
-         (all-from-out "app/date-time-picker.rkt")
-         (all-from-out "app/table-view.rkt")
-         (all-from-out "app/alert.rkt")
-         (all-from-out "app/menu.rkt"))
+         (all-from-out "app/date-time-picker.rkt"))
 
-;; Export specific widget classes (aliases and backward compatibility)
+;; Export specific widget classes
 (provide text-field%
-         modern-input% ; alias for backward compatibility
-         
+         label%
+         modern-button%
          filter-button%
          modern-progress-bar%
          
-         modern-sidebar% ; actual export from custom-list-box.rkt is modern-sidebar%
-         sidebar-list%
-         list-item
+         modern-sidebar%
+         sidebar-item-data
          
          calendar%
          time-picker%
          guix-toast%
-         modern-toast% ; alias for backward compatibility
-         show-toast
-         checkbox-canvas%
-         task-details-dialog%
-         todo-item%
-         todo-list%
-         
-         ;; Button alias for consistency with PRD and examples
-         button%
-         modern-button%)
+         show-toast)
