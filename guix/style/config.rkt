@@ -5,176 +5,18 @@
 ;; Supports theme switching (light/dark)
 
 (require racket/class
-         racket/list)
-
-;; ===========================
-;; Theme Definition
-;; ===========================
-
-;; Define theme structure
-(struct theme (
-  ;; Border radius configuration
-  border-radius-small
-  border-radius-medium
-  border-radius-large
-  
-  ;; Background colors
-  color-bg-white
-  color-bg-light
-  color-bg-overlay
-  
-  ;; Border colors
-  color-border
-  color-border-hover
-  color-border-focus
-  
-  ;; Text colors
-  color-text-main
-  color-text-light
-  color-text-placeholder
-  
-  ;; Functional colors
-  color-accent
-  color-success
-  color-error
-  color-warning
-  
-  ;; Font configuration
-  font-size-small
-  font-size-regular
-  font-size-medium
-  font-size-large
-  font-small
-  font-regular
-  font-medium
-  font-large
-  
-  ;; Widget size configuration
-  input-height
-  button-height
-  progress-bar-height
-  toast-height
-  toast-width
-  
-  ;; Spacing configuration
-  spacing-small
-  spacing-medium
-  spacing-large
-  ))
-
-;; ===========================
-;; Light Theme
-;; ===========================
-(define light-theme
-  (theme
-   ;; Border radius configuration
-   6   ; border-radius-small
-   10  ; border-radius-medium
-   14  ; border-radius-large
-   
-   ;; Background colors
-   (make-object color% 255 255 255)      ; color-bg-white
-   (make-object color% 242 242 247)      ; color-bg-light
-   (make-object color% 255 255 255 0.95) ; color-bg-overlay
-   
-   ;; Border colors
-   (make-object color% 200 200 200)      ; color-border
-   (make-object color% 170 170 170)      ; color-border-hover
-   (make-object color% 0 122 255)        ; color-border-focus
-   
-   ;; Text colors
-   (make-object color% 44 44 46)         ; color-text-main
-   (make-object color% 100 100 100)      ; color-text-light
-   (make-object color% 160 160 160)      ; color-text-placeholder
-   
-   ;; Functional colors
-   (make-object color% 0 122 255)        ; color-accent
-   (make-object color% 52 199 89)        ; color-success
-   (make-object color% 255 59 48)        ; color-error
-   (make-object color% 255 149 0)        ; color-warning
-   
-   ;; Font configuration
-   10  ; font-size-small
-   13  ; font-size-regular
-   14  ; font-size-medium
-   16  ; font-size-large
-   (send the-font-list find-or-create-font 10 'default 'normal 'normal)
-   (send the-font-list find-or-create-font 13 'default 'normal 'normal)
-   (send the-font-list find-or-create-font 14 'default 'normal 'bold)
-   (send the-font-list find-or-create-font 16 'default 'normal 'bold)
-   
-   ;; Widget size configuration
-   40  ; input-height
-   40  ; button-height
-   12  ; progress-bar-height
-   68  ; toast-height
-   340 ; toast-width
-   
-   ;; Spacing configuration
-   4   ; spacing-small
-   10  ; spacing-medium
-   14  ; spacing-large
-   ))
-
-;; ===========================
-;; Dark Theme
-;; ===========================
-(define dark-theme
-  (theme
-   ;; Border radius configuration
-   6   ; border-radius-small
-   10  ; border-radius-medium
-   14  ; border-radius-large
-   
-   ;; Background colors
-   (make-object color% 28 28 30)         ; color-bg-white
-   (make-object color% 44 44 46)         ; color-bg-light
-   (make-object color% 28 28 30 0.95)    ; color-bg-overlay
-   
-   ;; Border colors
-   (make-object color% 60 60 60)         ; color-border
-   (make-object color% 80 80 80)         ; color-border-hover
-   (make-object color% 0 122 255)        ; color-border-focus
-   
-   ;; Text colors
-   (make-object color% 255 255 255)      ; color-text-main
-   (make-object color% 170 170 170)      ; color-text-light
-   (make-object color% 100 100 100)      ; color-text-placeholder
-   
-   ;; Functional colors
-   (make-object color% 0 122 255)        ; color-accent
-   (make-object color% 52 199 89)        ; color-success
-   (make-object color% 255 59 48)        ; color-error
-   (make-object color% 255 149 0)        ; color-warning
-   
-   ;; Font configuration
-   10  ; font-size-small
-   13  ; font-size-regular
-   14  ; font-size-medium
-   16  ; font-size-large
-   (send the-font-list find-or-create-font 10 'default 'normal 'normal)
-   (send the-font-list find-or-create-font 13 'default 'normal 'normal)
-   (send the-font-list find-or-create-font 14 'default 'normal 'bold)
-   (send the-font-list find-or-create-font 16 'default 'normal 'bold)
-   
-   ;; Widget size configuration
-   40  ; input-height
-   40  ; button-height
-   12  ; progress-bar-height
-   68  ; toast-height
-   340 ; toast-width
-   
-   ;; Spacing configuration
-   4   ; spacing-small
-   10  ; spacing-medium
-   14  ; spacing-large
-   ))
+         racket/list
+         racket/hash
+         "colors.rkt"
+         "typography.rkt"
+         "presets/light.rkt"
+         "presets/dark.rkt")
 
 ;; ===========================
 ;; Theme Switching Mechanism
 ;; ===========================
 
-;; Current theme
+;; Current theme (using hash-based theme structure)
 (define current-theme (make-parameter light-theme))
 
 ;; List of theme change callback functions
@@ -217,70 +59,134 @@
      (current-theme dark-theme)
      (for-each (λ (callback) (callback dark-theme)) theme-change-callbacks)
      (refresh-all-widgets)]
-    [(theme? new-theme)
+    [(hash? new-theme)
      (current-theme new-theme)
      (for-each (λ (callback) (callback new-theme)) theme-change-callbacks)
-     (refresh-all-widgets)]))
+     (refresh-all-widgets)]
+    [else
+     (error "Invalid theme: ~a" new-theme)]))
+
+;; ===========================
+;; Theme Accessor Functions
+;; ===========================
+
+;; Helper to get theme value with fallback
+(define (theme-ref key [default #f])
+  (hash-ref (current-theme) key default))
+
+;; Helper to get nested theme value
+(define (theme-ref* keys [default #f])
+  (let loop ([h (current-theme)] [keys keys])
+    (if (null? keys) h
+        (if (hash? h) (loop (hash-ref h (car keys) #f) (cdr keys))
+            default))))
+
+;; Get color from current theme
+(define (theme-color key [alpha 1.0])
+  (let* ([colors (theme-ref* '(colors))]
+         [color-value (and colors (hash-ref colors key #f))])
+    (if color-value
+        (hex->color color-value alpha)
+        (error "Color not found in theme: ~a" key))))
+
+;; Get font from current theme
+(define (theme-font size-key weight-key [style-key 'normal])
+  (let ([typography (theme-ref* '(typography))])
+    (if typography
+        (let ([size (get-font-size typography size-key)]
+              [weight (get-font-weight weight-key)]
+              [style (get-font-style style-key)])
+          (get-system-font "sans-serif" size weight style))
+        (error "Typography not found in theme"))))
 
 ;; ===========================
 ;; Convenient Access to Current Theme Properties
 ;; ===========================
 
 ;; Border radius configuration
-(define (border-radius-small) (theme-border-radius-small (current-theme)))
-(define (border-radius-medium) (theme-border-radius-medium (current-theme)))
-(define (border-radius-large) (theme-border-radius-large (current-theme)))
+(define (border-radius-small) (theme-ref* '(border-radius small) 6))
+(define (border-radius-medium) (theme-ref* '(border-radius medium) 10))
+(define (border-radius-large) (theme-ref* '(border-radius large) 14))
 
 ;; Background colors
-(define (color-bg-white) (theme-color-bg-white (current-theme)))
-(define (color-bg-light) (theme-color-bg-light (current-theme)))
-(define (color-bg-overlay) (theme-color-bg-overlay (current-theme)))
+(define (color-bg-white) (theme-color 'background))
+(define (color-bg-light) (theme-color 'background-light))
+(define (color-bg-overlay) (theme-color 'background-overlay))
+(define (color-bg-hover) (theme-color 'background-hover))
+(define (color-bg-pressed) (theme-color 'background-pressed))
 
 ;; Border colors
-(define (color-border) (theme-color-border (current-theme)))
-(define (color-border-hover) (theme-color-border-hover (current-theme)))
-(define (color-border-focus) (theme-color-border-focus (current-theme)))
+(define (color-border) (theme-color 'border))
+(define (color-border-hover) (theme-color 'border-hover))
+(define (color-border-focus) (theme-color 'border-focus))
+(define (color-border-disabled) (theme-color 'border-disabled))
 
 ;; Text colors
-(define (color-text-main) (theme-color-text-main (current-theme)))
-(define (color-text-light) (theme-color-text-light (current-theme)))
-(define (color-text-placeholder) (theme-color-text-placeholder (current-theme)))
+(define (color-text-main) (theme-color 'text-main))
+(define (color-text-light) (theme-color 'text-light))
+(define (color-text-placeholder) (theme-color 'text-placeholder))
+(define (color-text-disabled) (theme-color 'text-disabled))
 
 ;; Functional colors
-(define (color-accent) (theme-color-accent (current-theme)))
-(define (color-success) (theme-color-success (current-theme)))
-(define (color-error) (theme-color-error (current-theme)))
-(define (color-warning) (theme-color-warning (current-theme)))
+(define (color-accent) (theme-color 'accent))
+(define (color-accent-hover) (theme-color 'accent-hover))
+(define (color-accent-pressed) (theme-color 'accent-pressed))
+(define (color-success) (theme-color 'success))
+(define (color-success-hover) (theme-color 'success-hover))
+(define (color-error) (theme-color 'error))
+(define (color-error-hover) (theme-color 'error-hover))
+(define (color-warning) (theme-color 'warning))
+(define (color-warning-hover) (theme-color 'warning-hover))
+(define (color-info) (theme-color 'info))
+(define (color-info-hover) (theme-color 'info-hover))
+
+;; Surface colors
+(define (color-surface) (theme-color 'surface))
+(define (color-surface-light) (theme-color 'surface-light))
+(define (color-surface-dark) (theme-color 'surface-dark))
+
+;; Shadow colors
+(define (color-shadow-light) (theme-color 'shadow-light))
+(define (color-shadow-medium) (theme-color 'shadow-medium))
+(define (color-shadow-heavy) (theme-color 'shadow-heavy))
 
 ;; Fonts
-(define (font-size-small) (theme-font-size-small (current-theme)))
-(define (font-size-regular) (theme-font-size-regular (current-theme)))
-(define (font-size-medium) (theme-font-size-medium (current-theme)))
-(define (font-size-large) (theme-font-size-large (current-theme)))
-(define (font-small) (theme-font-small (current-theme)))
-(define (font-regular) (theme-font-regular (current-theme)))
-(define (font-medium) (theme-font-medium (current-theme)))
-(define (font-large) (theme-font-large (current-theme)))
+(define (font-size-small) (theme-ref* '(typography font-sizes xs) 10))
+(define (font-size-regular) (theme-ref* '(typography font-sizes base) 13))
+(define (font-size-medium) (theme-ref* '(typography font-sizes md) 14))
+(define (font-size-large) (theme-ref* '(typography font-sizes lg) 16))
+(define (font-small) (theme-font 'xs 'regular))
+(define (font-regular) (theme-font 'base 'regular))
+(define (font-medium) (theme-font 'base 'medium))
+(define (font-large) (theme-font 'lg 'bold))
 
 ;; Widget sizes
-(define (input-height) (theme-input-height (current-theme)))
-(define (button-height) (theme-button-height (current-theme)))
-(define (progress-bar-height) (theme-progress-bar-height (current-theme)))
-(define (toast-height) (theme-toast-height (current-theme)))
-(define (toast-width) (theme-toast-width (current-theme)))
+(define (input-height) (theme-ref* '(widget-sizes input-height) 40))
+(define (button-height) (theme-ref* '(widget-sizes button-height) 40))
+(define (progress-bar-height) (theme-ref* '(widget-sizes progress-bar-height) 12))
+(define (toast-height) (theme-ref* '(widget-sizes toast-height) 68))
+(define (toast-width) (theme-ref* '(widget-sizes toast-width) 340))
+(define (icon-small) (theme-ref* '(widget-sizes icon-small) 16))
+(define (icon-medium) (theme-ref* '(widget-sizes icon-medium) 20))
+(define (icon-large) (theme-ref* '(widget-sizes icon-large) 24))
 
 ;; Spacing
-(define (spacing-small) (theme-spacing-small (current-theme)))
-(define (spacing-medium) (theme-spacing-medium (current-theme)))
-(define (spacing-large) (theme-spacing-large (current-theme)))
+(define (spacing-small) (theme-ref* '(spacing sm) 8))
+(define (spacing-medium) (theme-ref* '(spacing md) 10))
+(define (spacing-large) (theme-ref* '(spacing lg) 14))
+(define (spacing-xs) (theme-ref* '(spacing xs) 4))
+(define (spacing-xl) (theme-ref* '(spacing xl) 20))
+(define (spacing-xxl) (theme-ref* '(spacing xxl) 28))
+
+;; Opacity
+(define (opacity-disabled) (theme-ref* '(opacity disabled) 0.5))
+(define (opacity-hover) (theme-ref* '(opacity hover) 0.8))
+(define (opacity-active) (theme-ref* '(opacity active) 0.6))
 
 ;; ===========================
 ;; Export All Style Constants and Theme Functions
 ;; ===========================
 (provide 
- ;; Theme structure
- theme
- 
  ;; Theme instances
  light-theme
  dark-theme
@@ -294,6 +200,12 @@
  unregister-widget
  refresh-all-widgets
  
+ ;; Theme accessors
+ theme-ref
+ theme-ref*
+ theme-color
+ theme-font
+ 
  ;; Border radius (function form, dynamically get current theme value)
  border-radius-small
  border-radius-medium
@@ -303,16 +215,33 @@
  color-bg-white
  color-bg-light
  color-bg-overlay
+ color-bg-hover
+ color-bg-pressed
  color-border
  color-border-hover
  color-border-focus
+ color-border-disabled
  color-text-main
  color-text-light
  color-text-placeholder
+ color-text-disabled
  color-accent
+ color-accent-hover
+ color-accent-pressed
  color-success
+ color-success-hover
  color-error
+ color-error-hover
  color-warning
+ color-warning-hover
+ color-info
+ color-info-hover
+ color-surface
+ color-surface-light
+ color-surface-dark
+ color-shadow-light
+ color-shadow-medium
+ color-shadow-heavy
  
  ;; Fonts (function form, dynamically get current theme value)
  font-size-small
@@ -330,8 +259,35 @@
  progress-bar-height
  toast-height
  toast-width
+ icon-small
+ icon-medium
+ icon-large
  
  ;; Spacing (function form, dynamically get current theme value)
+ spacing-xs
  spacing-small
  spacing-medium
- spacing-large)
+ spacing-large
+ spacing-xl
+ spacing-xxl
+ 
+ ;; Opacity
+ opacity-disabled
+ opacity-hover
+ opacity-active
+ 
+ ;; Color utilities from colors.rkt
+ hex->color
+ get-color
+ get-color-with-alpha
+ 
+ ;; Typography utilities from typography.rkt
+ make-typography-config
+ get-system-font
+ get-font-size
+ get-line-height
+ get-letter-spacing
+ get-font-weight
+ get-font-style
+ make-font-from-preset
+ calculate-line-height)

@@ -6,13 +6,18 @@
 
 (require racket/class
          racket/draw
+         "../core/base-control.rkt"
+         "../core/event.rkt"
+         "../core/state.rkt"
+         "../core/layout.rkt"
          "../style/config.rkt")
 
-(provide modern-button%)
+(provide modern-button%
+         guix-button%)
 
 (define modern-button% 
-  (class canvas% 
-    (inherit get-client-size get-parent)
+  (class guix-base-control%
+    (inherit get-client-size get-parent invalidate)
     
     ;;; Initialization parameters
     (init parent
@@ -24,29 +29,21 @@
           [callback #f])       ; Click callback
     
     ;;; Instance variables
-    (define current-parent parent)
     (define current-label label)
     (define current-type type)
     (define current-radius radius)
-    (define enabled-state enabled?)
-    (define callback-proc callback)
-    (define hover? #f)
-    (define pressed? #f)
-    (define theme-aware theme-aware?)
     
     ;;; Constructor
     (super-new 
      [parent parent]
-     [paint-callback 
-      (λ (canvas dc) 
-        (on-paint dc))]
-     [style '(transparent no-focus)]
-     [min-width 100]
-     [min-height (button-height)])
+     [enabled? enabled?]
+     [on-click (λ (event) (when callback (callback this event)))])
     
-    ;;; Theme management
-    (when theme-aware
-      (register-widget this))
+    ;;; Set minimum size
+    (send this min-width 100)
+    (send this min-height (button-height))
+    
+    ;;; Theme management is handled by base-control
     
     ;;; Get current border radius value
     (define (get-radius-value)
@@ -58,41 +55,35 @@
     
     ;;; Get background color based on button type and state
     (define (get-background-color)
-      (if enabled-state
+      (if (send this get-enabled)
           (case current-type
             [(primary)
-             (if pressed?
-                 (make-object color% 0 90 200)  ; Pressed state color
-                 (color-accent))]  ; Normal state color
+             (if (send this get-pressed)
+                 (color-accent-pressed)
+                 (color-accent))]
             [(secondary)
-             (if pressed?
-                 (if (equal? (current-theme) light-theme)
-                     (make-object color% 220 220 225)
-                     (make-object color% 50 50 55))
+             (if (send this get-pressed)
+                 (color-bg-pressed)
                  (color-bg-light))]
             [(text) (make-object color% 0 0 0 0)]  ; Transparent background
             [else (color-accent)])
           ; Disabled state
-          (if (equal? (current-theme) light-theme)
-              (make-object color% 230 230 235)
-              (make-object color% 35 35 38))))
+          (color-bg-pressed)))
     
     ;;; Get text color based on button type and state
     (define (get-text-color)
-      (if enabled-state
+      (if (send this get-enabled)
           (case current-type
             [(primary) (make-object color% 255 255 255)]
             [(secondary) (color-accent)]
             [(text) (color-accent)]
             [else (color-text-main)])
           ; Disabled state
-          (if (equal? (current-theme) light-theme)
-              (make-object color% 170 170 170)
-              (make-object color% 80 80 85))))
+          (color-text-disabled)))
     
     ;;; Get border color based on button type
     (define (get-border-color)
-      (if enabled-state
+      (if (send this get-enabled)
           (case current-type
             [(primary) (make-object color% 0 0 0 0)]  ; Primary button has no border
             [(secondary) (color-border)]
@@ -101,7 +92,7 @@
           (make-object color% 0 0 0 0)))
     
     ;;; Drawing method
-    (define (on-paint dc)
+    (define/override (draw dc)
       (let-values ([(width height) (get-client-size)])
       (let* ([radius (get-radius-value)]
              [bg-color (get-background-color)]
@@ -113,43 +104,15 @@
         (send dc set-pen border-color 1 'solid)
         (send dc draw-rounded-rectangle 0 0 width height radius)
         
-        ; 绘制文本
+        ; Draw text
         (send dc set-text-foreground text-color)
         (send dc set-font (font-regular))
         (send dc draw-text current-label 10 (- (/ height 2) 7)))))
     
-    ;;; Handle mouse events
-    (define (handle-mouse-event event)
-      (case (send event get-event-type)
-        [(enter)
-         (set! hover? #t)
-         (refresh)]
-        [(leave)
-         (set! hover? #f)
-         (set! pressed? #f)
-         (refresh)]
-        [(left-down)
-         (set! pressed? #t)
-         (refresh)]
-        [(left-up)
-         (when (and pressed? hover? enabled-state callback-proc)
-           (callback-proc this event))
-         (set! pressed? #f)
-         (refresh)]))
-    
-    ;;; Override event handling
-    (define/override (on-event event)
-      (handle-mouse-event event)
-      (super on-event event))
-    
-    ;;; Refresh method - respond to theme changes
-    (define/override (refresh)
-      (super refresh))
-    
     ;;; Set button type
     (define/public (set-type! new-type)
       (set! current-type new-type)
-      (refresh))
+      (invalidate))
     
     ;;; Get button type
     (define/public (get-type)
@@ -158,7 +121,7 @@
     ;;; Set label
     (define/public (set-button-label! new-label)
       (set! current-label new-label)
-      (send this refresh))
+      (invalidate))
     
     ;;; Get label
     (define/public (get-button-label)
@@ -167,24 +130,26 @@
     ;;; Set border radius
     (define/public (set-radius! new-radius)
       (set! current-radius new-radius)
-      (refresh))
+      (invalidate))
     
     ;;; Get border radius
     (define/public (get-radius)
       current-radius)
     
-    ;;; Set enabled state
-    (define/public (set-enabled! [on? #t])
-      (set! enabled-state on?)
-      (send this refresh))
+    ;;; Set enabled state (override to ensure proper invalidation)
+    (define/override (set-enabled e)
+      (super set-enabled e)
+      (invalidate))
     
-    ;;; Check if enabled
+    ;;; Backward compatibility methods
     (define/public (get-enabled-state)
-      enabled-state)
+      (send this get-enabled))
     
-    ;;; Set callback function
-    (define/public (set-callback! callback)
-      (set! callback-proc callback))
+    (define/public (set-enabled! [on? #t])
+      (send this set-enabled on?))
     
     this)
   )
+
+;; New guix-button% with updated naming convention
+(define guix-button% modern-button%)

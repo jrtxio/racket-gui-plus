@@ -5,43 +5,41 @@
 
 (require racket/class
          racket/draw
+         "../core/base-control.rkt"
          "../style/config.rkt")
 
-(provide label%)
+(provide label%
+         guix-label%)
 
 (define label%
-  (class canvas%
-    (inherit get-client-size get-parent)
+  (class guix-base-control%
+    (inherit get-client-size get-parent invalidate)
     
     ;;; Initialization parameters
     (init parent
           [label ""]
           [font-size 'regular]
           [font-weight 'normal]
-          [theme-aware? #t]
+          [theme-aware? #t] ; Deprecated, kept for compatibility
           [enabled? #t]
           [color #f])
     
     ;;; Instance variables
-    (define current-parent parent)
     (define current-label label)
     (define current-font-size font-size)
     (define current-font-weight font-weight)
     (define custom-color color)
-    (define enabled-state enabled?)
-    (define theme-aware theme-aware?)
     
     ;;; Constructor
     (super-new 
      [parent parent]
-     [paint-callback (λ (canvas dc) (on-paint dc))]
-     [style '(transparent no-focus)]
-     [min-width 100]
-     [min-height 24])
+     [enabled? enabled?])
     
-    ;;; Theme management
-    (when theme-aware
-      (register-widget this))
+    ;;; Set minimum size
+    (send this min-width 100)
+    (send this min-height 24)
+    
+    ;;; Theme management is handled by base-control
     
     ;;; Get font based on size and weight
     (define (get-font)
@@ -60,14 +58,12 @@
     (define (get-text-color)
       (if custom-color
           custom-color
-          (if enabled-state
+          (if (send this get-enabled)
               (color-text-main)
-              (if (equal? (current-theme) light-theme)
-                  (make-object color% 170 170 170)
-                  (make-object color% 80 80 85)))))
+              (color-text-disabled))))
     
     ;;; Drawing method
-    (define (on-paint dc)
+    (define/override (draw dc)
       (let-values ([(width height) (get-client-size)])
         (let* ([text-color (get-text-color)]
                [font (get-font)]
@@ -78,14 +74,10 @@
           (send dc set-font font)
           (send dc draw-text current-label 0 y))))
     
-    ;;; Refresh method - respond to theme changes
-    (define/override (refresh)
-      (super refresh))
-    
     ;;; Set label text
     (define/public (set-label-text! new-label)
       (set! current-label new-label)
-      (send this refresh))
+      (invalidate))
     
     ;;; Get label text
     (define/public (get-label-text)
@@ -94,7 +86,7 @@
     ;;; Set font size
     (define/public (set-font-size! new-size)
       (set! current-font-size new-size)
-      (send this refresh))
+      (invalidate))
     
     ;;; Get font size
     (define/public (get-font-size)
@@ -103,7 +95,7 @@
     ;;; Set font weight
     (define/public (set-font-weight! new-weight)
       (set! current-font-weight new-weight)
-      (send this refresh))
+      (invalidate))
     
     ;;; Get font weight
     (define/public (get-font-weight)
@@ -112,20 +104,21 @@
     ;;; Set custom color
     (define/public (set-color! new-color)
       (set! custom-color new-color)
-      (send this refresh))
+      (invalidate))
     
     ;;; Get custom color
     (define/public (get-color)
       custom-color)
     
-    ;;; Set enabled state
+    ;;; Backward compatibility methods
     (define/public (set-enabled! [on? #t])
-      (set! enabled-state on?)
-      (send this refresh))
+      (send this set-enabled on?))
     
-    ;;; Check if enabled
     (define/public (get-enabled-state)
-      enabled-state)
+      (send this get-enabled))
     
     this)
   )
+
+;; New guix-label% with updated naming convention
+(define guix-label% label%)

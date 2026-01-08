@@ -63,9 +63,9 @@
       (send dc draw-rectangle 0 0 w h)
       
       (for ([item (in-list items)] [i (in-naturals)])
-        (let* ([margin (spacing-medium)]
+        (let* ([margin (spacing-xs)] ; Reduce margin from medium to xs to make layout more compact
                [item-h 34.0]
-               [gap (spacing-small)]
+               [gap 0] ; No gap between items
                [y (+ margin (* i (+ item-h gap)))]
                [rect-x margin]
                [rect-w (max 0.0 (- w (* margin 2.0)))])
@@ -98,11 +98,32 @@
           ;; 3. Text
           (send dc set-text-foreground (if is-selected "white" (color-text-main)))
           (send dc set-font (font-regular))
-          (send dc draw-text (send item get-label) (+ rect-x 36.0) (+ y 7.0))
+          ;; Calculate available width for text
+          (define counter-margin 20) ; Space for counter badge
+          (define text-start-x (+ rect-x 36.0))
+          (define text-end-x (- w margin counter-margin))
+          (define available-text-width (- text-end-x text-start-x))
+          ;; Get full label text
+          (define full-label (send item get-label))
+          ;; Truncate text if it's too long
+          (define label-to-draw
+            (let-values ([(tw _1 _2 _3) (send dc get-text-extent full-label)])
+              (if (> tw available-text-width)
+                  ;; Truncate with ellipsis
+                  (let loop ([length (string-length full-label)])
+                    (if (<= length 0)
+                        "..."
+                        (let* ([truncated (string-append (substring full-label 0 length) "...")]
+                               [truncated-width (let-values ([(w _) (send dc get-text-extent truncated)]) w)])
+                          (if (<= truncated-width available-text-width)
+                              truncated
+                              (loop (- length 1))))))
+                  full-label)))
+          (send dc draw-text label-to-draw text-start-x (+ y 7.0))
           
           ;; 4. Counter
           (let* ([count-str (number->string (send item get-count))]
-                [text-color (if is-selected "white" (color-text-placeholder))])
+                 [text-color (if is-selected "white" (color-text-placeholder))])
             (send dc set-font (font-small))
             (send dc set-text-foreground text-color)
             (define-values (tw _1 _2 _3) (send dc get-text-extent count-str))

@@ -38,7 +38,8 @@
       (λ (canvas dc) 
         (on-paint dc))]
      [style '(transparent no-focus)]
-     [min-width 200]
+     [min-width 30]  ; Reduce min-width to make checkbox more compact
+     [stretchable-width #f]  ; Prevent checkbox from stretching
      [min-height 24])
     
     ;;; Theme management

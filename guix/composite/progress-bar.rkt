@@ -1,15 +1,14 @@
 #lang racket/gui
 
+(require "../core/base-control.rkt")
 (require "../style/config.rkt")
 
 (define modern-progress-bar%  
-  (class canvas%
-    (init-field [progress 0.0] [target 0.0] [min-width 200] [min-height (progress-bar-height)])
+  (class guix-base-control%
+    (init-field [progress 0.0] [target 0.0])
+    (inherit-field min-width min-height)
     
-    (super-new [style '(transparent)] [min-width min-width] [min-height min-height])
-    
-    ;; Register widget for theme updates
-    (register-widget this)
+    (super-new [min-width 200] [min-height (progress-bar-height)])
     
     (define/public (set-progress v)
       (set! target (max 0.0 (min 1.0 v))))
@@ -18,13 +17,12 @@
       (set! progress (+ progress (* 0.18 (- target progress))))
       (when (< (abs (- progress target)) 0.0005)
         (set! progress target))
-      (send this refresh))
+      (send this invalidate))
     
     (define/public (get-progress)
       progress)
     
-    (define/override (on-paint)
-      (define dc (send this get-dc))
+    (define/override (draw dc)
       (define w (send this get-width))
       (define h (send this get-height))
       

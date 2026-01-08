@@ -86,7 +86,7 @@
         ;; 回车键 - 提交
         [(equal? key #\return)
          (unless (string=? (string-trim current-text) "")
-           (callback current-text))
+           (callback this))
          (set! current-text "")
          (set! showing-placeholder? #t)
          (send this refresh)]
