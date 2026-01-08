@@ -6,7 +6,7 @@
 (require rackunit
          racket/class
          racket/draw
-         "../../guix/app/time-picker.rkt")
+         "../../guix/extended/time-picker.rkt")
 
 ;; 创建一个简单的测试框架
 (define test-frame

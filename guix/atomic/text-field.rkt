@@ -17,6 +17,11 @@
     (define showing-placeholder? (string=? init-value ""))
     (define current-text init-value)
     
+    ;; 光标相关状态
+    (define cursor-pos (string-length current-text))
+    (define cursor-visible? #t)
+    (define cursor-blink-timer #f)
+    
     ;; 注册控件到全局列表，用于主题切换时刷新
     (register-widget this)
     
@@ -70,7 +75,14 @@
           (begin
             (send dc set-text-foreground (color-text-main))
             (let-values ([(_ th _1 _2) (send dc get-text-extent current-text)])
-              (send dc draw-text current-text 12 (/ (- h th) 2))))))
+              (send dc draw-text current-text 12 (/ (- h th) 2))
+              ;; 绘制光标
+              (when (and has-focus? cursor-visible?)
+                (let-values ([(cw _1 _2 _3) (send dc get-text-extent (substring current-text 0 cursor-pos))])
+                  (define cursor-x (+ 12 cw 1))
+                  (define cursor-y (/ (- h th) 2))
+                  (send dc set-pen (color-text-main) 2 'solid)
+                  (send dc draw-line cursor-x cursor-y cursor-x (+ cursor-y th))))))))
     
     ;; 处理鼠标点击 - 获得焦点
     (define/override (on-event event)
@@ -88,23 +100,73 @@
          (unless (string=? (string-trim current-text) "")
            (callback this))
          (set! current-text "")
+         (set! cursor-pos 0)
          (set! showing-placeholder? #t)
          (send this refresh)]
-        ;; 退格键 - 删除字符
+        ;; 退格键 - 删除光标前的字符
         [(equal? key 'back)
          (unless (string=? current-text "")
-           (set! current-text (substring current-text 0 (- (string-length current-text) 1)))
-           (set! showing-placeholder? (string=? current-text ""))
+           (when (> cursor-pos 0)
+             (set! current-text (string-append (substring current-text 0 (- cursor-pos 1))
+                                              (substring current-text cursor-pos)))
+             (set! cursor-pos (- cursor-pos 1))
+             (set! showing-placeholder? (string=? current-text ""))
+             (send this refresh)))]
+        ;; 删除键 - 删除光标后的字符
+        [(equal? key 'delete)
+         (unless (string=? current-text "")
+           (when (< cursor-pos (string-length current-text))
+             (set! current-text (string-append (substring current-text 0 cursor-pos)
+                                              (substring current-text (+ cursor-pos 1))))
+             ;; 保持光标位置在正确范围内
+             (set! cursor-pos (min cursor-pos (string-length current-text)))
+             (set! showing-placeholder? (string=? current-text ""))
+             (send this refresh)))]
+        ;; 左箭头键 - 光标左移
+        [(equal? key 'left)
+         (when (> cursor-pos 0)
+           (set! cursor-pos (- cursor-pos 1))
            (send this refresh))]
-        ;; 普通字符 - 添加到文本
+        ;; 右箭头键 - 光标右移
+        [(equal? key 'right)
+         (when (< cursor-pos (string-length current-text))
+           (set! cursor-pos (+ cursor-pos 1))
+           (send this refresh))]
+        ;; Home键 - 光标移到开头
+        [(equal? key 'home)
+         (set! cursor-pos 0)
+         (send this refresh)]
+        ;; End键 - 光标移到结尾
+        [(equal? key 'end)
+         (set! cursor-pos (string-length current-text))
+         (send this refresh)]
+        ;; 普通字符 - 添加到光标位置
         [(char? key)
-         (set! current-text (string-append current-text (string key)))
+         (set! current-text (string-append (substring current-text 0 cursor-pos)
+                                          (string key)
+                                          (substring current-text cursor-pos)))
+         (set! cursor-pos (+ cursor-pos 1))
          (set! showing-placeholder? #f)
          (send this refresh)]))
     
     ;; 处理焦点变化
     (define/override (on-focus on?)
       (set! has-focus? on?)
+      (if on?
+          (begin
+            ;; 获得焦点时，显示光标并启动闪烁定时器
+            (set! cursor-visible? #t)
+            (set! cursor-blink-timer (new timer% 
+                                         [interval 500] 
+                                         [notify-callback (lambda ()
+                                                            (set! cursor-visible? (not cursor-visible?))
+                                                            (send this refresh))])))
+          (begin
+            ;; 失去焦点时，隐藏光标并停止定时器
+            (set! cursor-visible? #f)
+            (when cursor-blink-timer
+              (send cursor-blink-timer stop)
+              (set! cursor-blink-timer #f))))
       (send this refresh))
     
     ;; 公开方法
@@ -113,11 +175,13 @@
     
     (define/public (set-text str)
       (set! current-text str)
+      (set! cursor-pos (string-length str))
       (set! showing-placeholder? (string=? str ""))
       (send this refresh))
     
     (define/public (clear)
       (set! current-text "")
+      (set! cursor-pos 0)
       (set! showing-placeholder? #t)
       (send this refresh))
     

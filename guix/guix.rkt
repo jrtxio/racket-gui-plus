@@ -40,12 +40,12 @@
          "container/scroll-view.rkt"
          "container/stack-view.rkt")
 
-;; Application Widgets
-(require "app/calendar.rkt"
-         "app/time-picker.rkt"
-         "app/toast.rkt"
-         "app/todo.rkt"
-         "app/date-time-picker.rkt")
+;; Extended Widgets
+(require "extended/calendar.rkt"
+         "extended/time-picker.rkt"
+         "extended/toast.rkt"
+         "extended/date-time-picker.rkt"
+         "extended/task-item.rkt")
 
 ;; ===========================
 ;; Export All Public Interfaces
@@ -82,11 +82,11 @@
          (all-from-out "container/scroll-view.rkt")
          (all-from-out "container/stack-view.rkt")
          
-         (all-from-out "app/calendar.rkt")
-         (all-from-out "app/time-picker.rkt")
-         (all-from-out "app/toast.rkt")
-         (all-from-out "app/todo.rkt")
-         (all-from-out "app/date-time-picker.rkt"))
+         (all-from-out "extended/calendar.rkt")
+        (all-from-out "extended/time-picker.rkt")
+        (all-from-out "extended/toast.rkt")
+        (all-from-out "extended/date-time-picker.rkt")
+        (all-from-out "extended/task-item.rkt"))
 
 ;; Export specific widget classes
 (provide text-field%

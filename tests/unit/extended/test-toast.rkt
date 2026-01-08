@@ -4,7 +4,7 @@
          racket/gui
          racket/class
          racket/list
-         (prefix-in gx: "../../guix/app/toast.rkt")
+         (prefix-in gx: "../../guix/extended/toast.rkt")
          "../../guix/style/config.rkt")
 
 ;; Test suite for guix-toast%
