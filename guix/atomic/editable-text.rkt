@@ -13,10 +13,7 @@
   (class canvas%
     (init-field [parent #f]
                 [placeholder ""]
-                [callback (λ (t) (void))
-
-;; New guix-editable-text% with updated naming convention
-(define guix-editable-text% editable-text%)]
+                [callback (λ (t) (void))]
                 [init-value ""]
                 [style '()])
     
