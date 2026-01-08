@@ -6,48 +6,48 @@
   (class canvas%
     (init-field [placeholder ""] [callback (λ (t) (void))] [init-value ""] [style '()])
     
-    ;; 过滤掉 canvas% 不支持的样式
+    ;; Filter out styles not supported by canvas%
     (define filtered-style (filter (λ (s) (not (member s '(single multiple)))) style))
     
     (super-new [style filtered-style]
                [min-height (input-height)]
                [min-width 200])
     
-    ;; 设置初始文本
+    ;; Set initial text
     (define showing-placeholder? (string=? init-value ""))
     (define current-text init-value)
     
-    ;; 光标相关状态
+    ;; Cursor related state
     (define cursor-pos (string-length current-text))
     (define cursor-visible? #t)
     (define cursor-blink-timer #f)
     
-    ;; 注册控件到全局列表，用于主题切换时刷新
+    ;; Register widget to global list for theme switch refresh
     (register-widget this)
     
-    ;; 设置为可伸展
+    ;; Set as stretchable
     (send this stretchable-width #t)
     
-    ;; 监听文本变化来隐藏占位符
+    ;; Listen for text changes to hide placeholder
     (define has-focus? #f)
     
-    ;; 绘制方法
+    ;; Drawing method
     (define/override (on-paint)
       (define dc (send this get-dc))
       (define-values (w h) (send this get-client-size))
       
       (send dc set-smoothing 'smoothed)
       
-      ;; 计算边框宽度
+      ;; Calculate border width
       (define border-width (if has-focus? 2 1))
       (define half-border (/ border-width 2.0))
       
-      ;; 先绘制父背景覆盖整个区域
+      ;; First draw parent background to cover entire area
       (send dc set-brush (color-bg-light) 'solid)
       (send dc set-pen (color-bg-light) 1 'transparent)
       (send dc draw-rectangle 0 0 w h)
       
-      ;; 绘制白色圆角背景
+      ;; Draw white rounded background
       (send dc set-brush (color-bg-white) 'solid)
       (send dc set-pen "white" 0 'transparent)
       (send dc draw-rounded-rectangle 
@@ -55,7 +55,7 @@
             (- w (* 2 border-width)) (- h (* 2 border-width))
             (- (border-radius-medium) 1))
       
-      ;; 绘制圆角边框
+      ;; Draw rounded border
       (send dc set-brush "white" 'transparent)
       (if has-focus?
           (send dc set-pen (color-border-focus) border-width 'solid)
@@ -65,7 +65,7 @@
             (- w border-width) (- h border-width)
             (border-radius-medium))
       
-      ;; 绘制文本或占位符
+      ;; Draw text or placeholder
       (send dc set-font (font-regular))
       (if (and showing-placeholder? (not has-focus?))
           (begin
@@ -76,7 +76,7 @@
             (send dc set-text-foreground (color-text-main))
             (let-values ([(_ th _1 _2) (send dc get-text-extent current-text)])
               (send dc draw-text current-text 12 (/ (- h th) 2))
-              ;; 绘制光标
+              ;; Draw cursor
               (when (and has-focus? cursor-visible?)
                 (let-values ([(cw _1 _2 _3) (send dc get-text-extent (substring current-text 0 cursor-pos))])
                   (define cursor-x (+ 12 cw 1))
@@ -84,18 +84,18 @@
                   (send dc set-pen (color-text-main) 2 'solid)
                   (send dc draw-line cursor-x cursor-y cursor-x (+ cursor-y th))))))))
     
-    ;; 处理鼠标点击 - 获得焦点
+    ;; Handle mouse click - gain focus
     (define/override (on-event event)
       (when (send event button-down?)
         (send this focus)
         (set! has-focus? #t)
         (send this refresh)))
     
-    ;; 处理键盘输入
+    ;; Handle keyboard input
     (define/override (on-char event)
       (define key (send event get-key-code))
       (cond
-        ;; 回车键 - 提交
+        ;; Enter key - submit
         [(equal? key #\return)
          (unless (string=? (string-trim current-text) "")
            (callback this))
@@ -103,7 +103,7 @@
          (set! cursor-pos 0)
          (set! showing-placeholder? #t)
          (send this refresh)]
-        ;; 退格键 - 删除光标前的字符
+        ;; Backspace key - delete character before cursor
         [(equal? key 'back)
          (unless (string=? current-text "")
            (when (> cursor-pos 0)
@@ -112,35 +112,35 @@
              (set! cursor-pos (- cursor-pos 1))
              (set! showing-placeholder? (string=? current-text ""))
              (send this refresh)))]
-        ;; 删除键 - 删除光标后的字符
+        ;; Delete key - delete character after cursor
         [(equal? key 'delete)
          (unless (string=? current-text "")
            (when (< cursor-pos (string-length current-text))
              (set! current-text (string-append (substring current-text 0 cursor-pos)
                                               (substring current-text (+ cursor-pos 1))))
-             ;; 保持光标位置在正确范围内
+             ;; Keep cursor position within valid range
              (set! cursor-pos (min cursor-pos (string-length current-text)))
              (set! showing-placeholder? (string=? current-text ""))
              (send this refresh)))]
-        ;; 左箭头键 - 光标左移
+        ;; Left arrow key - move cursor left
         [(equal? key 'left)
          (when (> cursor-pos 0)
            (set! cursor-pos (- cursor-pos 1))
            (send this refresh))]
-        ;; 右箭头键 - 光标右移
+        ;; Right arrow key - move cursor right
         [(equal? key 'right)
          (when (< cursor-pos (string-length current-text))
            (set! cursor-pos (+ cursor-pos 1))
            (send this refresh))]
-        ;; Home键 - 光标移到开头
+        ;; Home key - move cursor to beginning
         [(equal? key 'home)
          (set! cursor-pos 0)
          (send this refresh)]
-        ;; End键 - 光标移到结尾
+        ;; End key - move cursor to end
         [(equal? key 'end)
          (set! cursor-pos (string-length current-text))
          (send this refresh)]
-        ;; 普通字符 - 添加到光标位置
+        ;; Normal character - add at cursor position
         [(char? key)
          (set! current-text (string-append (substring current-text 0 cursor-pos)
                                           (string key)
@@ -149,12 +149,12 @@
          (set! showing-placeholder? #f)
          (send this refresh)]))
     
-    ;; 处理焦点变化
+    ;; Handle focus change
     (define/override (on-focus on?)
       (set! has-focus? on?)
       (if on?
           (begin
-            ;; 获得焦点时，显示光标并启动闪烁定时器
+            ;; When gaining focus, show cursor and start blink timer
             (set! cursor-visible? #t)
             (set! cursor-blink-timer (new timer% 
                                          [interval 500] 
@@ -162,14 +162,14 @@
                                                             (set! cursor-visible? (not cursor-visible?))
                                                             (send this refresh))])))
           (begin
-            ;; 失去焦点时，隐藏光标并停止定时器
+            ;; When losing focus, hide cursor and stop timer
             (set! cursor-visible? #f)
             (when cursor-blink-timer
               (send cursor-blink-timer stop)
               (set! cursor-blink-timer #f))))
       (send this refresh))
     
-    ;; 公开方法
+    ;; Public methods
     (define/public (get-text)
       current-text)
     
@@ -187,6 +187,6 @@
     
     ))
 
-;; 导出控件类
+;; Export widget class
 (provide text-field%)
 (provide (rename-out [text-field% modern-input%]))

@@ -25,7 +25,7 @@
     (define current-text init-value)
     (define is-editing? #f)
     (define has-focus? #f)
-    ;; 光标相关状态
+    ;; Cursor related state
     (define cursor-pos (string-length current-text))
     (define cursor-visible? #t)
     (define cursor-blink-timer #f)
@@ -100,7 +100,7 @@
          (when (and is-editing? (not (string=? current-text "")) (< cursor-pos (string-length current-text)))
            (set! current-text (string-append (substring current-text 0 cursor-pos)
                                             (substring current-text (+ cursor-pos 1))))
-           ;; 保持光标位置在正确范围内
+           ;; Keep cursor position within valid range
            (set! cursor-pos (min cursor-pos (string-length current-text)))
            (send this refresh))]
         
@@ -132,12 +132,12 @@
         ;; Lost focus, save and exit edit mode
         (set! is-editing? #f)
         (callback this)
-        ;; 停止光标闪烁定时器
+        ;; Stop cursor blink timer
         (when cursor-blink-timer
           (send cursor-blink-timer stop)
           (set! cursor-blink-timer #f)))
       (when on?
-        ;; 获得焦点，启动光标闪烁定时器
+        ;; Gain focus, start cursor blink timer
         (set! cursor-visible? #t)
         (set! cursor-blink-timer (new timer% 
                                      [interval 500] 

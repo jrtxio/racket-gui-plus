@@ -2,7 +2,7 @@
 
 (define name "guix")
 (define version "0.0.1")
-(define description "基于 racket/gui 的现代桌面控件库，提供跨平台一致行为的 GUI 控件")
+(define description "Modern desktop widget library based on racket/gui, providing cross-platform consistent GUI controls")
 (define dependencies '((racket "8.0") (racket/gui "1.0")))
 (define author "jrtxio")
 (define license 'MIT)
