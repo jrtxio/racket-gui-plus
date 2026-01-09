@@ -57,9 +57,8 @@
         (new list-item [label "过滤按钮"] [color (make-object color% 52 199 89)] [count 3])
         (new list-item [label "输入控件"] [color (make-object color% 0 122 255)] [count 4])
         (new list-item [label "提示框"] [color (make-object color% 175 82 222)] [count 5])
-        (new list-item [label "待办事项"] [color (make-object color% 90 200 250)] [count 6])
-        (new list-item [label "进度条"] [color (make-object color% 255 45 85)] [count 7])
-        (new list-item [label "其他控件"] [color (make-object color% 142 142 147)] [count 8])))
+        (new list-item [label "进度条"] [color (make-object color% 255 45 85)] [count 6])
+        (new list-item [label "其他控件"] [color (make-object color% 142 142 147)] [count 7])))
 
 (send sidebar-list set-items! mock-items)
 
@@ -125,25 +124,25 @@
                          [stretchable-height #f]
                          [border 10]))
 
-(new filter-button%
+(new category-card%
      [parent filter-panel]
      [label "全部"]
      [icon-symbol "📅"]
-     [callback (lambda ()
+     [on-click (lambda ()
                 (show-toast "选择了: 全部" #:type 'info))])
 
-(new filter-button%
+(new category-card%
      [parent filter-panel]
      [label "未完成"]
      [icon-symbol "⏱️"]
-     [callback (lambda ()
+     [on-click (lambda ()
                 (show-toast "选择了: 未完成" #:type 'info))])
 
-(new filter-button%
+(new category-card%
      [parent filter-panel]
      [label "已完成"]
      [icon-symbol "✅"]
-     [callback (lambda ()
+     [on-click (lambda ()
                 (show-toast "选择了: 已完成" #:type 'info))])
 
 ;; ============================================================
@@ -223,63 +222,11 @@
                 (show-toast "这是一条信息。" #:type 'info))])
 
 ;; ============================================================
-;; 7. 待办事项列表控件示例
-;; ============================================================
-(new label%
-     [parent content-panel]
-     [label "7. 待办事项列表控件"]
-     [font-size 'x-large])
-
-(define todo-list
-  (new todo-list%
-       [parent content-panel]
-       [on-change (lambda (items)
-                   (show-toast (format "任务列表更新: ~a 项任务" (length items)) #:type 'info))]
-       [min-height 200]))
-
-;; 添加示例任务
-(send todo-list add-item "点击文字可以直接编辑任务内容")
-(send todo-list add-item "点击右侧 ⓘ 图标设置日期和备注" #f "2025-12-31" "这是一个示例备注")
-(send todo-list add-item "已完成的任务会显示灰色斜体" #t)
-(send todo-list add-item "尝试添加新任务吧！")
-
-;; 添加底部输入栏
-(define todo-input-panel (new horizontal-panel%
-                             [parent content-panel]
-                             [stretchable-height #f]
-                             [border 10]))
-
-(define todo-input-field
-  (new text-field%
-       [parent todo-input-panel]
-       [label ""]
-       [init-value ""]
-       [style '(single)]
-       [stretchable-width #t]
-       [callback (lambda (field evt)
-                  (when (equal? (send evt get-event-type) 'text-field-enter)
-                    (define txt (send field get-value))
-                    (unless (string=? (string-trim txt) "")
-                      (send todo-list add-item txt)
-                      (send field set-value ""))))]))
-
-(define todo-add-btn
-  (new modern-button%
-       [parent todo-input-panel]
-       [label "添加任务"]
-       [stretchable-width #f]
-       [callback (lambda (btn evt)
-                  (define txt (send todo-input-field get-value))
-                  (unless (string=? (string-trim txt) "")
-                    (send todo-list add-item txt)
-                    (send todo-input-field set-value "")))]))
-
-;; ============================================================
 ;; 8. 进度条控件示例
 ;; ============================================================
 (new label%
      [parent content-panel]
-     [label "8. 进度条控件示例"]
+     [label "7. 进度条控件示例"]
      [font-size 'x-large])
 
 (new label%
@@ -341,7 +288,7 @@
 ;; ============================================================
 (new label%
      [parent content-panel]
-     [label "9. 其他控件示例"]
+     [label "8. 其他控件示例"]
      [font-size 'x-large])
 
 ;; 开关控件
@@ -431,7 +378,7 @@
 ;; ============================================================
 (new label%
      [parent content-panel]
-     [label "10. 主题切换功能"]
+     [label "9. 主题切换功能"]
      [font-size 'x-large])
 
 (define theme-toggle-panel (new horizontal-panel%

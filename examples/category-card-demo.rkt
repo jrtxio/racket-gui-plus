@@ -1,17 +1,17 @@
 #lang racket/gui
 
-;; Simple Filter Button Test File
-;; Test only filter button component, avoid dependencies on other incomplete components
+;; Simple Category Card Demo
+;; Test only category card component, avoid dependencies on other incomplete components
 
 (require racket/class
          racket/draw
          "../guix/style/config.rkt"
-         "../guix/composite/filter-button.rkt")
+         "../guix/composite/category-card.rkt")
 
 ;; Create main window
 (define frame
   (new frame% 
-       [label "Guix Filter Button Test"]
+       [label "Guix Category Card Demo"]
        [width 600]
        [height 400]))
 
@@ -26,43 +26,43 @@
 ;; Add title
 (new message% 
      [parent panel]
-     [label "Filter Button Test"]
+     [label "Category Card Demo"]
      [font (send the-font-list find-or-create-font 16 'default 'normal 'bold)])
 
-;; Create horizontal panel for filter buttons
-(define buttons-panel
+;; Create horizontal panel for category cards
+(define cards-panel
   (new horizontal-panel% 
        [parent panel]
        [alignment '(center center)]
        [spacing 20]
        [border 10]))
 
-;; Test different filter buttons
-(new filter-button%
-     [parent buttons-panel]
+;; Test different category cards
+(new category-card%
+     [parent cards-panel]
      [label "Today"]
      [count 5]
      [icon-symbol "📅"]
-     [callback (λ () 
-                 (displayln "Today filter clicked!"))])
+     [on-click (λ () 
+                 (displayln "Today category clicked!"))])
 
-(new filter-button%
-     [parent buttons-panel]
+(new category-card%
+     [parent cards-panel]
      [label "Week"]
      [count 12]
      [icon-symbol "📆"]
      [bg-color (make-object color% 52 199 89)]
-     [callback (λ () 
-                 (displayln "Week filter clicked!"))])
+     [on-click (λ () 
+                 (displayln "Week category clicked!"))])
 
-(new filter-button%
-     [parent buttons-panel]
+(new category-card%
+     [parent cards-panel]
      [label "Month"]
      [count 30]
      [icon-symbol "📊"]
      [bg-color (make-object color% 255 149 0)]
-     [callback (λ () 
-                 (displayln "Month filter clicked!"))])
+     [on-click (λ () 
+                 (displayln "Month category clicked!"))])
 
 ;; Theme toggle button
 (new message% 
@@ -80,4 +80,4 @@
 ;; Show window
 (send frame show #t)
 
-(displayln "Filter button test started. Try clicking buttons and toggling theme!")
+displayln "Category card demo started. Try clicking cards and toggling theme!"

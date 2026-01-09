@@ -5,25 +5,18 @@
 Composite widgets are built from multiple atomic widgets, combining their 
 functionality to create more complex UI components.
 
-@section{Filter Button}
+@section{Category Card}
 
-@defclass[filter-button% horizontal-panel% ()]{
-  A button with a filter dropdown, typically used for filtering lists or data.
+@defclass[category-card% guix-base-control% ()]{
+  A category display card with icon, count, and label, typically used for filtering or category selection.
   
   @defconstructor[([parent (or/c frame% panel%)]
-                   [label string?]
-                   [options (listof string?)]
-                   [on-click (-> any/c any) void]
-                   [on-filter-change (-> string? any) void])]{
-    Creates a new filter button with the given label, parent, and options.
-  }
-  
-  @defmethod[(set-options [options (listof string?)]) void?]{
-    Sets the filter options.
-  }
-  
-  @defmethod[(get-selected-option) string?]{
-    Returns the currently selected filter option.
+                   [label string? "Today"]
+                   [count number? 0]
+                   [icon-symbol string? "📅"]
+                   [bg-color (or/c color% #f) #f]
+                   [on-click (-> any/c any) void])]{
+    Creates a new category card with the given label, count, icon, and parent.
   }
 }
 

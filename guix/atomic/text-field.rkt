@@ -105,13 +105,12 @@
          (send this refresh)]
         ;; Backspace key - delete character before cursor
         [(equal? key 'back)
-         (unless (string=? current-text "")
-           (when (> cursor-pos 0)
-             (set! current-text (string-append (substring current-text 0 (- cursor-pos 1))
-                                              (substring current-text cursor-pos)))
-             (set! cursor-pos (- cursor-pos 1))
-             (set! showing-placeholder? (string=? current-text ""))
-             (send this refresh)))]
+         (when (> cursor-pos 0)
+           (set! current-text (string-append (substring current-text 0 (- cursor-pos 1))
+                                            (substring current-text cursor-pos)))
+           (set! cursor-pos (- cursor-pos 1))
+           (set! showing-placeholder? (string=? current-text ""))
+           (send this refresh))]
         ;; Delete key - delete character after cursor
         [(equal? key 'delete)
          (unless (string=? current-text "")

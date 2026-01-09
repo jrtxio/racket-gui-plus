@@ -24,7 +24,7 @@
          "atomic/icon.rkt")
 
 ;; Composite Widgets
-(require "composite/filter-button.rkt"
+(require "composite/category-card.rkt"
          "composite/input-field.rkt"
          "composite/progress-bar.rkt"
          "composite/search-field.rkt"
@@ -44,9 +44,7 @@
 (require "extended/calendar.rkt"
          "extended/time-picker.rkt"
          "extended/toast.rkt"
-         "extended/date-time-picker.rkt"
-         "extended/task-item.rkt"
-         "extended/todo-list.rkt")
+         "extended/date-time-picker.rkt")
 
 ;; ===========================
 ;; Export All Public Interfaces
@@ -68,7 +66,7 @@
          (all-from-out "atomic/stepper.rkt")
          (all-from-out "atomic/icon.rkt")
          
-         (all-from-out "composite/filter-button.rkt")
+         (all-from-out "composite/category-card.rkt")
          (all-from-out "composite/input-field.rkt")
          (all-from-out "composite/progress-bar.rkt")
          (all-from-out "composite/search-field.rkt")
@@ -86,19 +84,16 @@
          (all-from-out "extended/calendar.rkt")
         (all-from-out "extended/time-picker.rkt")
         (all-from-out "extended/toast.rkt")
-        (all-from-out "extended/date-time-picker.rkt")
-        (all-from-out "extended/task-item.rkt")
-        (all-from-out "extended/todo-list.rkt"))
+        (all-from-out "extended/date-time-picker.rkt"))
 
 ;; Export specific widget classes
 (provide text-field%
          label%
          modern-button%
-         filter-button%
+         category-card%
          modern-progress-bar%
          modern-slider%
          sidebar-list%
-         todo-list%
          segmented-control%
          
          modern-sidebar%
