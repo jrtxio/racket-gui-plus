@@ -4,6 +4,16 @@
 ;; Event system for handling widget events
 
 ;; ===========================
+;; Event Type Definition Helper
+;; ===========================
+
+;; Event type definition helper
+(define-syntax-rule (define-event-type name)
+  (begin
+    (define name 'name)
+    (provide name)))
+
+;; ===========================
 ;; Event Type Definitions
 ;; ===========================
 
@@ -17,12 +27,6 @@
 ;; Composite control specific event types
 (define-event-type on-activate)       ; Main action (e.g. double-click list item)
 (define-event-type on-secondary)      ; Secondary action (e.g. click delete button)
-
-;; Event type definition helper
-(define-syntax-rule (define-event-type name)
-  (begin
-    (define name (string->symbol (string-append "on-" (symbol->string 'name))))
-    (provide name)))
 
 ;; ===========================
 ;; Hit Test Helper Functions
@@ -46,18 +50,6 @@
     [_ #f]))
 
 ;; ===========================
-;; Export
+;; Export Additional Functions
 ;; ===========================
-(provide
-  ;; Event type constants
-  on-click
-  on-hover-enter
-  on-hover-exit
-  on-focus
-  on-blur
-  on-activate
-  on-secondary
-  
-  ;; Hit test helper functions
-  hit-test-regions
-  point-in-rect?)
+(provide hit-test-regions point-in-rect?)

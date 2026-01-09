@@ -54,13 +54,14 @@ event propagation mechanism across all widgets.
 
 @subsection{Event Types}
 
-@table[#:style 'boxed]
-  @row["on-click" "Mouse click event"]
-  @row["on-double-click" "Mouse double-click event"]
-  @row["on-hover" "Mouse hover event"]
-  @row["on-change" "Value change event"]
-  @row["on-focus" "Focus gained event"]
-  @row["on-blur" "Focus lost event"]
+@itemlist[
+  @item{@bold{on-click}: Mouse click event}
+  @item{@bold{on-double-click}: Mouse double-click event}
+  @item{@bold{on-hover}: Mouse hover event}
+  @item{@bold{on-change}: Value change event}
+  @item{@bold{on-focus}: Focus gained event}
+  @item{@bold{on-blur}: Focus lost event}
+]
 
 @subsection{Event Propagation}
 
@@ -129,10 +130,11 @@ The layout engine provides flexible layout options for organizing widgets.
 
 @subsection{Layout Modes}
 
-@table[#:style 'boxed]
-  @row["stack" "Vertical or horizontal stacking of widgets"]
-  @row["flow" "Flow layout that automatically wraps widgets"]
-  @row["grid" "Grid layout for precise positioning"]
+@itemlist[
+  @item{@bold{stack}: Vertical or horizontal stacking of widgets}
+  @item{@bold{flow}: Flow layout that automatically wraps widgets}
+  @item{@bold{grid}: Grid layout for precise positioning}
+]
 
 @subsection{Layout Constraints}
 

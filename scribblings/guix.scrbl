@@ -3,13 +3,6 @@
 
 @author{Guix Development Team}
 
-@abstract{
-  A modern, cross-platform GUI widget library built on top of racket/gui, 
-  providing a unified user experience and theme system.
-}
-
-@table-of-contents
-
 @section{Introduction}
 
 Guix is a modern GUI widget library for Racket that extends racket/gui with 

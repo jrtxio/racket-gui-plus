@@ -7,7 +7,7 @@
 (define author "jrtxio")
 (define license 'MIT)
 (define homepage "https://github.com/jrtxio/guix")
-(define scribblings '((lib "scribblings/guix.scrbl" "guix")))
+(define scribblings '("scribblings/guix.scrbl"))
 
 ;; Configure package collection mapping
 (define collection-links
