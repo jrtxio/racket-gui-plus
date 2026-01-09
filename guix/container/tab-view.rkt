@@ -3,7 +3,8 @@
 ;; Tab view component
 ;; Modern tab container with customizable tabs and content
 
-(require "../atomic/button.rkt")
+(require "../atomic/button.rkt"
+         "../style/config.rkt")
 
 (provide tab-view%
          guix-tab-view%)
@@ -11,7 +12,8 @@
 (define tab-view%
   (class vertical-panel%
     (init-field [parent #f]
-                [style '()])
+                [style '()]
+                [theme (current-theme)])
     
     (super-new [parent parent]
                [style style]
@@ -44,13 +46,14 @@
     
     ;; 创建标签按钮
     (define (create-tab-button label index)
-      (new modern-button%
+      (new guix-button%
            [parent tab-bar]
            [label label]
            [type 'secondary]
            [callback (λ (btn evt) (switch-tab index))]
            [stretchable-width #t]
-           [stretchable-height #f]))
+           [stretchable-height #f]
+           [theme theme]))
     
     ;; 添加标签
     (define/public (add-tab label callback)

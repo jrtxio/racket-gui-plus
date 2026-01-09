@@ -5,13 +5,14 @@
 
 (require racket/class
          racket/draw
+         "../core/base-control.rkt"
          "../style/config.rkt")
 
 (provide radio-button%
          guix-radio-button%)
 
-(define radio-button%
-  (class canvas%
+(define guix-radio-button%
+  (class guix-base-control%
     (inherit get-client-size get-parent)
     
     ;;; Initialization parameters
@@ -19,60 +20,68 @@
           [label ""]
           [checked? #f]
           [enabled? #t]
-          [theme-aware? #t]
-          [callback #f])
+          [on-change void]
+          [theme-aware? #t]  ; For backward compatibility
+          [callback #f])  ; For backward compatibility
     
     ;;; Instance variables
-    (define current-parent parent)
-    (define current-label label)
-    (define checked-state checked?)
-    (define enabled-state enabled?)
-    (define callback-proc callback)
-    (define hover? #f)
-    (define pressed? #f)
-    (define theme-aware theme-aware?)
+    (field [current-label label]
+           [checked-state checked?]
+           [on-change-callback (if callback callback on-change)])
     
     ;;; Constructor
     (super-new 
      [parent parent]
-     [paint-callback 
-      (λ (canvas dc) 
-        (on-paint dc))]
-     [style '(transparent no-focus)]
+     [enabled? enabled?]
      [min-width 200]
      [min-height 24])
     
-    ;;; Theme management
-    (when theme-aware
-      (register-widget this))
+    ;;; Mouse event handling
+    (define/override (handle-mouse-event event)
+      (case (send event get-event-type)
+        [(enter)
+         (when (and (send this get-enabled) (eq? (get-field state this) 'normal))
+           (set-field! state this 'hover)
+           (send this refresh-now))]
+        [(leave)
+         (set-field! state this (if (send this get-enabled) 'normal 'disabled))
+         (send this refresh-now)]
+        [(left-down)
+         (when (send this get-enabled)
+           (set-field! state this 'pressed)
+           (send this refresh-now))]
+        [(left-up)
+         (when (send this get-enabled)
+           (set-field! state this 'hover)
+           (set! checked-state #t) ; Radio buttons become checked when clicked (unlike checkboxes which toggle)
+           ;; Call callback with either 1 or 2 arguments depending on its arity
+           (if (procedure-arity-includes? on-change-callback 2)
+               (on-change-callback this event)
+               (on-change-callback checked-state))
+           (send this refresh-now))]))
     
-    ;;; Drawing method
-    (define (on-paint dc)
+    ;;; Drawing method as specified in PRD
+    (define/override (render-control dc state theme)
       (let-values ([(width height) (get-client-size)])
         (let* ([radius 10] ; Radio button radius
                [center-x radius]
                [center-y (/ height 2)]
                [label-x (+ (* radius 3) 5)]
                [label-y (- (/ height 2) 7)]
-               [border-color (if enabled-state
-                                 (if hover?
+               [enabled? (send this get-enabled)]
+               [border-color (if enabled?
+                                 (if (eq? state 'hover)
                                      (color-border-hover)
                                      (color-border))
                                  (color-border))]
-               [bg-color (if enabled-state
+               [bg-color (if enabled?
                              (if checked-state
                                  (color-accent)
-                                 (if (equal? (current-theme) light-theme)
-                                     (make-object color% 255 255 255)
-                                     (make-object color% 28 28 30)))
-                             (if (equal? (current-theme) light-theme)
-                                 (make-object color% 242 242 247)
-                                 (make-object color% 44 44 46)))]
-               [text-color (if enabled-state
+                                 (color-bg-white))
+                             (color-bg-pressed))]
+               [text-color (if enabled?
                                (color-text-main)
-                               (if (equal? (current-theme) light-theme)
-                                   (make-object color% 170 170 170)
-                                   (make-object color% 80 80 85)))]
+                               (color-text-disabled))]
                [dot-color (make-object color% 255 255 255)])
           
           ; Draw radio button background
@@ -81,7 +90,7 @@
           (send dc draw-ellipse (- center-x radius) (- center-y radius) (* radius 2) (* radius 2))
           
           ; Draw inner dot if checked
-          (when (and checked-state enabled-state)
+          (when (and checked-state enabled?)
             (send dc set-brush dot-color 'solid)
             (send dc set-pen dot-color 1 'solid)
             (send dc draw-ellipse (- center-x 5) (- center-y 5) 10 10))
@@ -91,40 +100,10 @@
           (send dc set-font (font-regular))
           (send dc draw-text current-label label-x label-y))))
     
-    ;;; Handle mouse events
-    (define (handle-mouse-event event)
-      (case (send event get-event-type)
-        [(enter)
-         (set! hover? #t)
-         (refresh)]
-        [(leave)
-         (set! hover? #f)
-         (set! pressed? #f)
-         (refresh)]
-        [(left-down)
-         (set! pressed? #t)
-         (refresh)]
-        [(left-up)
-         (when (and pressed? hover? enabled-state)
-           (set! checked-state #t) ; Radio buttons become checked when clicked (unlike checkboxes which toggle)
-           (when callback-proc
-             (callback-proc this event)))
-         (set! pressed? #f)
-         (refresh)]))
-    
-    ;;; Override event handling
-    (define/override (on-event event)
-      (handle-mouse-event event)
-      (super on-event event))
-    
-    ;;; Refresh method - respond to theme changes
-    (define/override (refresh)
-      (super refresh))
-    
     ;;; Set checked state
     (define/public (set-checked! [on? #t])
       (set! checked-state on?)
-      (refresh))
+      (send this refresh-now))
     
     ;;; Get checked state
     (define/public (get-checked)
@@ -133,31 +112,26 @@
     ;;; Set label
     (define/public (set-radio-label! new-label)
       (set! current-label new-label)
-      (send this refresh))
+      (send this refresh-now))
     
     ;;; Get label
     (define/public (get-radio-label)
       current-label)
     
     ;;; Set enabled state
-    (define/public (set-enabled! [on? #t])
-      (set! enabled-state on?)
-      (send this refresh))
+    (define/override (set-enabled e)
+      (super set-enabled e)
+      (send this refresh-now))
     
-    ;;; Check if enabled
+    ;;; Backward compatibility methods
     (define/public (get-enabled-state)
-      enabled-state)
+      (send this get-enabled))
     
-    ;;; API consistency: get-enabled (same as get-enabled-state)
-    (define/public (get-enabled)
-      enabled-state)
+    (define/public (set-enabled! [on? #t])
+      (send this set-enabled on?))
     
-    ;;; API consistency: set-enabled (same as set-enabled!)
-    (define/public (set-enabled e)
-      (set! enabled-state e)
-      (send this refresh))
-    
-    ))
+    this)
+  )
 
-;; New guix-radio-button% with updated naming convention
-(define guix-radio-button% radio-button%)
+;; Alias for backward compatibility
+(define radio-button% guix-radio-button%)

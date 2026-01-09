@@ -5,84 +5,101 @@
 
 (require racket/class
          racket/draw
+         "../core/base-control.rkt"
          "../style/config.rkt")
 
 (provide checkbox%
          guix-checkbox%)
 
-(define checkbox%
-  (class canvas%
-    (inherit get-client-size get-parent)
+(define guix-checkbox%
+  (class guix-base-control%
+    (inherit get-client-size get-parent refresh)
     
     ;;; Initialization parameters
     (init parent
           [label ""]
           [checked? #f]
           [enabled? #t]
-          [theme-aware? #t]
-          [callback #f])
+          [on-change void]
+          [theme-aware? #t]  ; For backward compatibility
+          [callback #f])  ; For backward compatibility
     
     ;;; Instance variables
-    (define current-parent parent)
-    (define current-label label)
-    (define checked-state checked?)
-    (define enabled-state enabled?)
-    (define callback-proc callback)
-    (define hover? #f)
-    (define pressed? #f)
-    (define theme-aware theme-aware?)
+    (field [current-label label]
+           [checked-state checked?]
+           [on-change-callback (if callback callback on-change)])
     
     ;;; Constructor
     (super-new 
      [parent parent]
-     [paint-callback 
-      (λ (canvas dc) 
-        (on-paint dc))]
-     [style '(transparent no-focus)]
+     [enabled? enabled?]
      [min-width 30]  ; Reduce min-width to make checkbox more compact
      [stretchable-width #f]  ; Prevent checkbox from stretching
      [min-height 24])
     
-    ;;; Theme management
-    (when theme-aware
-      (register-widget this))
+    ;;; Backward compatibility methods
+    (define/public (get-enabled-state)
+      (send this get-enabled))
     
-    ;;; Drawing method
-    (define (on-paint dc)
+    (define/public (set-enabled! [on? #t])
+      (send this set-enabled on?))
+    
+    ;;; Mouse event handling
+    (define/override (handle-mouse-event event)
+      (case (send event get-event-type)
+        [(enter)
+         (when (and (send this get-enabled) (eq? (get-field state this) 'normal))
+           (set-field! state this 'hover)
+           (send this refresh-now))]
+        [(leave)
+         (set-field! state this (if (send this get-enabled) 'normal 'disabled))
+         (send this refresh-now)]
+        [(left-down)
+         (when (send this get-enabled)
+           (set-field! state this 'pressed)
+           (send this refresh-now))]
+        [(left-up)
+         (when (send this get-enabled)
+           (set-field! state this 'hover)
+           (set! checked-state (not checked-state))
+           ;; Call callback with either 1 or 2 arguments depending on its arity
+           (if (procedure-arity-includes? on-change-callback 2)
+               (on-change-callback this event)
+               (on-change-callback checked-state))
+           (send this refresh-now))]))
+    
+    ;;; Drawing method as specified in PRD
+    (define/override (render-control dc state theme)
       (let-values ([(width height) (get-client-size)])
         (let* ([box-size 20]
                [box-x 0]
                [box-y (- (/ height 2) (/ box-size 2))]
                [label-x (+ box-size 10)]
                [label-y (- (/ height 2) 7)]
-               [border-color (if enabled-state
-                                 (if hover?
+               [enabled? (send this get-enabled)]
+               [border-color (if enabled?
+                                 (if (eq? state 'hover)
                                      (color-border-hover)
                                      (color-border))
                                  (color-border))]
-               [bg-color (if enabled-state
+               [bg-color (if enabled?
                              (if checked-state
                                  (color-accent)
-                                 (if (equal? (current-theme) light-theme)
-                                     (make-object color% 255 255 255)
-                                     (make-object color% 28 28 30)))
-                             (if (equal? (current-theme) light-theme)
-                                 (make-object color% 242 242 247)
-                                 (make-object color% 44 44 46)))]
-               [text-color (if enabled-state
+                                 (color-bg-white))
+                             (color-bg-pressed))]
+               [text-color (if enabled?
                                (color-text-main)
-                               (if (equal? (current-theme) light-theme)
-                                   (make-object color% 170 170 170)
-                                   (make-object color% 80 80 85)))]
+                               (color-text-disabled))]
                [check-color (make-object color% 255 255 255)])
           
           ; Draw checkbox background
           (send dc set-brush bg-color 'solid)
           (send dc set-pen border-color 1 'solid)
-          (send dc draw-rounded-rectangle box-x box-y box-size box-size 4)
+          ; Flat design: ≤2px radius
+          (send dc draw-rounded-rectangle box-x box-y box-size box-size 2)
           
-          ; Draw checkmark if checked
-          (when (and checked-state enabled-state)
+          ; Draw inner dot if checked
+          (when (and checked-state (send this get-enabled))
             (send dc set-brush check-color 'solid)
             (send dc set-pen check-color 2 'solid)
             (send dc draw-lines (list (cons (+ box-x 5) (+ box-y 10))
@@ -94,40 +111,10 @@
           (send dc set-font (font-regular))
           (send dc draw-text current-label label-x label-y))))
     
-    ;;; Handle mouse events
-    (define (handle-mouse-event event)
-      (case (send event get-event-type)
-        [(enter)
-         (set! hover? #t)
-         (refresh)]
-        [(leave)
-         (set! hover? #f)
-         (set! pressed? #f)
-         (refresh)]
-        [(left-down)
-         (set! pressed? #t)
-         (refresh)]
-        [(left-up)
-         (when (and pressed? hover? enabled-state)
-           (set! checked-state (not checked-state))
-           (when callback-proc
-             (callback-proc this event)))
-         (set! pressed? #f)
-         (refresh)]))
-    
-    ;;; Override event handling
-    (define/override (on-event event)
-      (handle-mouse-event event)
-      (super on-event event))
-    
-    ;;; Refresh method - respond to theme changes
-    (define/override (refresh)
-      (super refresh))
-    
     ;;; Set checked state
     (define/public (set-checked! [on? #t])
       (set! checked-state on?)
-      (refresh))
+      (send this refresh-now))
     
     ;;; Get checked state
     (define/public (get-checked)
@@ -136,36 +123,19 @@
     ;;; Set label
     (define/public (set-checkbox-label! new-label)
       (set! current-label new-label)
-      (send this refresh))
+      (send this refresh-now))
     
     ;;; Get label
     (define/public (get-checkbox-label)
       current-label)
     
     ;;; Set enabled state
-    (define/public (set-enabled! [on? #t])
-      (set! enabled-state on?)
-      (send this refresh))
-    
-    ;;; Check if enabled
-    (define/public (get-enabled-state)
-      enabled-state)
-    
-    ;;; API consistency: get-enabled (same as get-enabled-state)
-    (define/public (get-enabled)
-      enabled-state)
-    
-    ;;; API consistency: set-enabled (same as set-enabled!)
-    (define/public (set-enabled e)
-      (set! enabled-state e)
-      (send this refresh))
-    
-    ;;; Set callback function
-    (define/public (set-callback! callback)
-      (set! callback-proc callback))
+    (define/override (set-enabled e)
+      (super set-enabled e)
+      (send this refresh-now))
     
     this)
   )
 
-;; New guix-checkbox% with updated naming convention
-(define guix-checkbox% checkbox%)
+;; Alias for backward compatibility
+(define checkbox% guix-checkbox%)

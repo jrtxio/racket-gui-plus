@@ -17,7 +17,8 @@
                 [max-value 100]
                 [step 1]
                 [callback (λ (t) (void))]
-                [style '()])
+                [style '()]
+                [theme (current-theme)])
     
     (super-new [style style]
                [spacing 4]
@@ -53,14 +54,15 @@
     
     ;; 创建减少按钮
     (define decrement-button
-      (new modern-button%
+      (new guix-button%
            [parent this]
            [label "-" ]
            [type 'secondary]
            [callback (λ (btn evt) (decrement))]
            [min-width 32]
            [min-height 28]
-           [stretchable-width #f]))
+           [stretchable-width #f]
+           [theme theme]))
     
     ;; 创建文本输入框
     (define stepper-text-field
@@ -74,21 +76,23 @@
                          (current-value num)
                          (callback this)))]
            [style '(single horizontal-label)]
-           [min-width 50]))
+           [min-width 50]
+           [theme theme]))
     
     ;; 设置文本输入框为可伸展
     (send stepper-text-field stretchable-width #t)
     
     ;; 创建增加按钮
     (define increment-button
-      (new modern-button%
+      (new guix-button%
            [parent this]
            [label "+" ]
            [type 'secondary]
            [callback (λ (btn evt) (increment))]
            [min-width 32]
            [min-height 28]
-           [stretchable-width #f]))
+           [stretchable-width #f]
+           [theme theme]))
     
     ;; 公开方法
     (define/public (get-value)

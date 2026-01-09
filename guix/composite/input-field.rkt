@@ -14,7 +14,8 @@
                 [style '()]
                 [left-icon #f]
                 [right-icon #f]
-                [validation-state 'normal]) ;; 'normal, 'error, 'warning
+                [validation-state 'normal] ;; 'normal, 'error, 'warning
+                [theme (current-theme)])
     
     (super-new [style style]
                [spacing 8]
@@ -39,7 +40,8 @@
            [placeholder placeholder]
            [callback callback]
            [init-value init-value]
-           [style '()]))
+           [style '()]
+           [theme theme]))
     
     ;; 设置文本输入框为主要伸展组件
     (send text-field stretchable-width #t)

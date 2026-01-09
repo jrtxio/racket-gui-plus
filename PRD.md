@@ -1,28 +1,57 @@
-## 一、项目定位
+## 一、项目概述
 
-基于 racket/gui 的跨平台桌面控件库，提供统一的交互体验和主题系统。
+### 1.1 定位
 
-**核心目标**：
+**guix** 是基于 `racket/gui` 的跨平台桌面控件库，为技术工具和开发者工具提供一致、克制的 GUI 控件体系。
 
-- 统一的视觉风格和交互行为
-- 完善的主题系统
+### 1.2 核心价值主张
+
+- **行为一致性**：跨平台交互行为统一，优先于视觉细节
+- **技术理性**：在 racket/gui 技术约束内提供最佳实践
+- **易于扩展**：完整的主题系统和清晰的控件层次
+- **开发者友好**：面向工具类应用，而非通用消费级软件
+
+### 1.3 明确边界
+
+**核心目标**
+
+- 统一的视觉语言和交互模式
+- 完整可组合的主题系统
 - 补充 racket/gui 缺失的常用控件
-- 保持跨平台一致性
+- 提供最佳实践参考实现
 
-**技术约束**：
+**非目标（Non-Goals）**
 
-- 纯 Racket 实现，基于 racket/gui
-- 不依赖外部 GUI 框架、JNI、FFI
-- 支持 macOS、Windows、Linux
+- ❌ 像素级复刻操作系统原生控件
+- ❌ 引入 HTML/DOM/CSS 范式
+- ❌ 实现完整文本编辑器（IME/撤销栈/剪贴板等系统级功能）
+- ❌ 提供动画引擎或复杂视觉效果
 
 ## 二、设计原则
 
-|原则|说明|
-|---|---|
-|**务实优先**|利用 racket/gui 原生能力，避免重复造轮|
-|**渐进增强**|分阶段实现，优先保证核心功能|
-|**行为一致**|跨平台交互逻辑统一，接受视觉差异|
-|**分层实现**|根据控件复杂度选择自绘/封装/组合|
+### 2.1 核心原则
+
+|原则|说明|示例|
+|---|---|---|
+|**务实优先**|严格基于 racket/gui 能力边界|不使用不存在的透明裁剪|
+|**行为 > 视觉**|交互一致性高于外观统一|同一操作在所有平台触发相同逻辑|
+|**扁平优先**|硬朗技术化风格，避免复杂装饰|直角或 ≤2px 圆角|
+|**自绘 > 拼装**|整体交互控件必须自绘|list-item 用单 canvas，非 button+label|
+|**分层实现**|根据复杂度选择实现策略|原子控件可自绘，容器可拼装|
+
+### 2.2 技术约束认知
+
+#### racket/gui 模型特性
+
+- 控件即原生窗口，非 DOM 节点
+- 无事件冒泡机制
+- 无透明裁剪或 z-index
+- 空白区域不响应事件
+- 子控件不代表父控件接收事件
+
+#### 设计含义
+
+> **用户视为"一个整体"的控件，必须是一个 canvas%，通过内部 hit-test 分发事件**
 
 ## 三、架构设计
 
@@ -31,564 +60,600 @@
 ```
 guix/
 ├─ guix/
-│  ├─ guix.rkt              # 主入口
-│  ├─ core/                 # 核心系统
-│  │  ├─ base-control.rkt   # 控件基类
-│  │  ├─ event.rkt          # 事件系统
-│  │  ├─ state.rkt          # 状态管理
-│  │  └─ layout.rkt         # 布局引擎
-│  ├─ style/                # 主题系统
-│  │  ├─ theme.rkt
-│  │  ├─ colors.rkt
-│  │  ├─ typography.rkt
+│  ├─ guix.rkt                 # 主入口，导出公共 API
+│  ├─ core/                    # 核心系统
+│  │  ├─ base-control.rkt      # 控件基类
+│  │  ├─ event.rkt             # 事件系统
+│  │  ├─ state.rkt             # 状态管理
+│  │  ├─ layout.rkt            # 布局引擎
+│  │  └─ render.rkt            # 渲染辅助工具
+│  ├─ style/                   # 主题系统
+│  │  ├─ theme.rkt             # 主题接口
+│  │  ├─ colors.rkt            # 色彩定义
+│  │  ├─ typography.rkt        # 字体规范
+│  │  ├─ metrics.rkt           # 度量系统
 │  │  └─ presets/
 │  │     ├─ light.rkt
 │  │     └─ dark.rkt
-│  ├─ atomic/               # 原子控件
-│  ├─ composite/            # 组合控件
-│  ├─ container/            # 容器控件
-│  ├─ dialog/               # 对话框
-│  ├─ menu/                 # 菜单
-│  └─ extended/             # 扩展控件
+│  ├─ atomic/                  # 原子控件
+│  │  ├─ button.rkt
+│  │  ├─ checkbox.rkt
+│  │  ├─ radio-button.rkt
+│  │  ├─ text-field.rkt
+│  │  ├─ icon.rkt
+│  │  └─ separator.rkt
+│  ├─ composite/               # 组合控件（整体交互）
+│  │  ├─ list-item.rkt
+│  │  ├─ tree-node.rkt
+│  │  ├─ table-row.rkt
+│  │  └─ toolbar-item.rkt
+│  ├─ container/               # 容器控件
+│  │  ├─ panel.rkt
+│  │  ├─ split-panel.rkt
+│  │  ├─ tab-panel.rkt
+│  │  └─ scroll-panel.rkt
+│  ├─ view/                    # 复杂视图组件
+│  │  ├─ list-view.rkt
+│  │  ├─ tree-view.rkt
+│  │  └─ table-view.rkt
+│  ├─ dialog/                  # 对话框
+│  │  ├─ message-box.rkt
+│  │  └─ input-dialog.rkt
+│  ├─ menu/                    # 菜单系统
+│  │  └─ context-menu.rkt
+│  └─ extended/                # 扩展控件（可选）
+│     ├─ color-picker.rkt
+│     └─ date-picker.rkt
 ├─ tests/
 ├─ examples/
+│  ├─ basic-controls.rkt
+│  ├─ theming.rkt
+│  └─ todo-app.rkt
 └─ scribblings/
+   └─ guix.scrbl
 ```
 
 ### 3.2 分层架构
 
 ```
-┌─────────────────────────────────────┐
-│  扩展控件 (extended)                 │  补充 racket/gui 缺失功能
-├─────────────────────────────────────┤
-│  菜单 (menu) + 对话框 (dialog)       │
-├─────────────────────────────────────┤
-│  容器控件 (container)                │
-├─────────────────────────────────────┤
-│  组合控件 (composite)                │
-├─────────────────────────────────────┤
-│  原子控件 (atomic)                   │
-├─────────────────────────────────────┤
-│  核心系统 (core + style)            │
-└─────────────────────────────────────┘
+┌──────────────────────────────────────┐
+│  扩展控件 (extended)                  │  可选高级功能
+├──────────────────────────────────────┤
+│  对话框 (dialog) + 菜单 (menu)        │  独立子系统
+├──────────────────────────────────────┤
+│  复杂视图 (view)                      │  list/tree/table
+├──────────────────────────────────────┤
+│  容器控件 (container)                 │  布局容器
+├──────────────────────────────────────┤
+│  组合控件 (composite)                 │  整体交互单元
+├──────────────────────────────────────┤
+│  原子控件 (atomic)                    │  基础交互单元
+├──────────────────────────────────────┤
+│  核心系统 (core) + 主题 (style)       │  基础设施
+└──────────────────────────────────────┘
 ```
 
-## 四、核心系统
+## 四、核心系统实现
 
 ### 4.1 控件基类
+
+所有自绘控件继承自 `guix-base-control%`，以 **canvas%** 为唯一视图实体。
 
 ```racket
 (define guix-base-control%
   (class canvas%
     (init-field [enabled? #t]
                 [visible? #t]
-                [theme (current-theme)])
+                [theme (current-theme)]
+                [min-width 0]
+                [min-height 0])
     
-    ;; State management
+    ;; 状态管理
+    (define state 'normal) ; normal | hover | pressed | disabled
+    
+    ;; 公共接口
     (define/public (get-enabled) enabled?)
-    (define/public (set-enabled e) 
+    (define/public (set-enabled e)
       (set! enabled? e)
-      (invalidate))
+      (set! state (if e 'normal 'disabled))
+      (refresh))
     
-    ;; Event handling
-    (define/override (on-event event) 
-      (handle-mouse-event event)
-      (handle-keyboard-event event))
+    (define/public (get-state) state)
     
-    ;; Rendering
-    (define/override (on-paint) 
-      (render-to-dc (send this get-dc)))
+    ;; 事件处理
+    (define/override (on-event event)
+      (when enabled?
+        (handle-mouse-event event)
+        (handle-keyboard-event event)))
     
-    (super-new)))
+    ;; 渲染入口
+    (define/override (on-paint)
+      (define dc (send this get-dc))
+      (render-control dc state theme))
+    
+    ;; 子类必须实现
+    (define/public (render-control dc state theme)
+      (void))
+    
+    ;; 辅助方法
+    (define/public (refresh)
+      (send this refresh-now))
+    
+    (super-new [style '(no-focus)]
+               [min-width min-width]
+               [min-height min-height])))
 ```
 
 ### 4.2 事件系统
 
-**支持的事件类型**：
+#### 4.2.1 事件模型原则
 
-|事件名|触发时机|参数|
-|---|---|---|
-|`on-click`|鼠标点击|event-data|
-|`on-double-click`|双击|event-data|
-|`on-hover`|鼠标悬停|event-data|
-|`on-change`|值变化|new-value|
-|`on-focus`|获得焦点|-|
-|`on-blur`|失去焦点|-|
+**关键认知**
 
-**事件冒泡**：子控件事件向父控件传播，可调用 `stop-propagation` 阻止。
+- racket/gui 控件是独立窗口，无 DOM 式事件冒泡
+- 嵌套控件不会自动合并命中区域
+- 空白区域不响应事件
 
-### 4.3 主题系统
+**设计约束**
+
+> 用户认为是"一个整体"的控件：
+> 
+> - 必须只有一个 canvas%
+> - 在内部实现 hit-test 和事件分发
+> - 禁止用多个原子控件拼装
+
+#### 4.2.2 支持的事件类型
 
 ```racket
-(define-theme modern-theme
-  #:colors (hash 'primary "#007AFF"
-                 'background "#FFFFFF"
-                 'text "#000000"
-                 'border "#D1D1D6"
-                 'hover "#E5E5EA"
-                 'disabled "#C7C7CC")
-  #:metrics (hash 'corner-radius 2      ;; Small radius or square (technical limitation)
-                  'padding 8
-                  'spacing 8
-                  'border-width 1)
-  #:typography (hash 'size 13
-                     'weight 400
-                     'family (get-system-font)))
+;; 基础事件
+(define-event-type on-click)          ; 点击
+(define-event-type on-hover-enter)    ; 鼠标进入
+(define-event-type on-hover-exit)     ; 鼠标离开
+(define-event-type on-focus)          ; 获得焦点
+(define-event-type on-blur)           ; 失去焦点
+
+;; 组合控件特有事件
+(define-event-type on-activate)       ; 主操作（如双击列表项）
+(define-event-type on-secondary)      ; 次级操作（如点击删除按钮）
 ```
 
-**主题切换**：
+#### 4.2.3 内部 hit-test 示例
 
 ```racket
-(set-global-theme! dark-theme)                ;; Global theme switch
-(new guix-panel% [theme custom-theme])        ;; Local override
+(define (hit-test-regions x y width height)
+  (cond
+    [(< x 40) 'icon-region]
+    [(> x (- width 60)) 'action-region]
+    [else 'content-region]))
 ```
 
-### 4.4 布局引擎
-
-**布局模式**：
-
-|模式|说明|实现基础|
-|---|---|---|
-|`stack`|垂直/水平堆叠|racket/gui panel%|
-|`flow`|流式布局|自动换行|
-|`grid`|网格布局|行列定位|
-
-**约束示例**：
+### 4.3 状态管理
 
 ```racket
-(define constraint
-  (hash 'min-width 100
-        'max-width 500
-        'preferred-width 300
-        'stretch 1.0))
-```
-
-## 五、实现策略
-
-### 5.1 控件分类实现
-
-**完全自绘**（简单控件，追求视觉一致性）：
-
-- button, label, icon, separator
-- checkbox, radio-button
-- slider, progress-bar, spinner
-- segmented-control, stepper
-
-**封装增强**（利用原生编辑能力）：
-
-- text-field（封装 text-field% + 回车/Esc 处理 + 占位符）
-- text-area（封装 text% + 样式定制）
-- choice（封装 choice% + 主题）
-
-**混合方案**（平衡效果与成本）：
-
-- editable-list-item（视图用 button%，编辑切换到 text-field%）
-- tree-view（自绘布局 + 原生节点控件）
-
-**直接使用**（系统集成良好）：
-
-- menu-bar%, popup-menu%
-- dialog%, message-box
-- frame%, 系统滚动条
-
-### 5.2 racket/gui 技术限制
-
-**圆角控件问题**：
-
-- **现象**：canvas% 绘制圆角后，四角背后仍有直角边界
-- **原因**：canvas% 本身是矩形，不支持透明背景裁剪
-- **解决方案**：使用小圆角（2-3px）或直角设计，通过配色和间距体现现代感
-- **参考风格**：JetBrains IDEs、VS Code 的扁平化设计
-
-**内联编辑限制**：
-
-- **需求**：单击文本即可编辑（如 macOS Reminders）
-- **racket/gui 困境**：无法在静态显示与可编辑状态间无缝切换
-- **实现方案**：
-```racket
-;; View mode: button% or self-drawn canvas% for display;; Edit mode: hide view, show text-field%;; Ensure position alignment through precise layout
-```
-- **权衡**：切换时可能有轻微视觉跳动，但保证编辑功能完整（IME、剪贴板、撤销）
-
-**文本编辑复杂度**：
-
-- 自绘完整文本编辑器需要实现：光标、IME、剪贴板、撤销栈、选择、双击选词等
-- **策略**：基础文本输入封装原生 text-field%，避免重复造轮
-
-### 5.3 性能优化
-
-**虚拟滚动**（列表/表格控件）：
-
-```racket
-(define/private (render-visible-items dc)
-  (define visible-start (quotient scroll-y item-height))
-  (define visible-count (quotient viewport-height item-height))
-  (define visible-end (+ visible-start visible-count 1))
-  
-  (for ([i (in-range visible-start visible-end)])
-    (when (< i item-count)
-      (render-item dc i))))
-```
-
-**双缓冲**（减少闪烁）：
-
-```racket
-(define offscreen-bmp (make-bitmap width height))
-(define offscreen-dc (new bitmap-dc% [bitmap offscreen-bmp]))
-(render-to-dc offscreen-dc)
-(send screen-dc draw-bitmap offscreen-bmp 0 0)
-```
-
-### 5.4 跨平台适配
-
-**系统字体**：
-
-```racket
-(define (get-system-font)
-  (case (system-type 'os)
-    [(macosx) (make-font #:face "SF Pro Text" #:size 13)]
-    [(windows) (make-font #:face "Segoe UI" #:size 9)]
-    [(unix) (make-font #:face "Ubuntu" #:size 11)]))
-```
-
-**快捷键修饰符**：
-
-```racket
-(define (get-modifier-key)
-  (case (system-type 'os)
-    [(macosx) 'cmd]
-    [else 'ctrl]))
-```
-
-## 六、控件清单
-
-### 6.1 原子控件 (atomic/)
-
-|控件|优先级|实现方式|说明|
-|---|---|---|---|
-|button%|P0|自绘|标准按钮|
-|label%|P0|自绘|文本标签|
-|text-field%|P0|封装 + 回车/Esc|单行输入|
-|text-area%|P0|封装 text%|多行输入|
-|checkbox%|P0|自绘|复选框（二态/三态）|
-|radio-button%|P0|自绘|单选按钮|
-|choice%|P0|封装|下拉选择器|
-|icon%|P0|自绘|SVG/字体图标|
-|separator%|P0|自绘|分隔线|
-|slider%|P1|自绘|滑块|
-|switch%|P1|自绘|开关控件|
-|image-view%|P1|bitmap%|图片显示|
-|progress-bar%|P1|自绘|进度条|
-|spinner%|P1|自绘|加载指示器|
-|segmented-control%|P2|自绘|分段选择器|
-|stepper%|P2|自绘|数值步进器|
-
-### 6.2 组合控件 (composite/)
-
-|控件|优先级|组成|说明|
-|---|---|---|---|
-|input-field%|P0|label + text-field|带标签的输入框|
-|search-field%|P0|text-field + icon + button|搜索框|
-|radio-group%|P0|radio-button[]|单选组（互斥管理）|
-|list-view%|P0|scroll-view + items|列表（支持虚拟滚动）|
-|editable-list-item%|P1|button/canvas + text-field|可内联编辑的列表项|
-|table-view%|P1|scroll-view + grid|表格（排序、编辑）|
-|tree-view%|P1|list-view + tree|树形控件|
-
-### 6.3 容器控件 (container/)
-
-|控件|优先级|功能|说明|
-|---|---|---|---|
-|panel%|P0|基础容器|封装 racket/gui panel%|
-|scroll-view%|P0|可滚动容器|系统滚动条|
-|h-panel%|P0|水平布局|自动排列|
-|v-panel%|P0|垂直布局|自动排列|
-|tab-panel%|P0|标签页|多页面切换|
-|group-box%|P1|分组容器|边框 + 标题|
-|split-panel%|P1|分割布局|拖拽调整|
-|collapsible-panel%|P2|折叠容器|展开/折叠|
-
-### 6.4 对话框 (dialog/)
-
-|控件|优先级|实现方式|说明|
-|---|---|---|---|
-|message-box%|P0|封装 dialog%|消息提示|
-|input-dialog%|P0|dialog% + text-field|输入对话框|
-|confirm-dialog%|P0|dialog%|确认对话框|
-|notification%|P1|自绘 canvas + timer|应用内通知|
-
-### 6.5 菜单 (menu/)
-
-|控件|优先级|实现方式|说明|
-|---|---|---|---|
-|menu-bar%|P0|直接使用 racket/gui|菜单栏|
-|popup-menu%|P0|直接使用 racket/gui|右键菜单|
-
-### 6.6 扩展控件 (extended/)
-
-补充 racket/gui 缺失的常用控件：
-
-|控件|优先级|实现方式|说明|
-|---|---|---|---|
-|color-picker%|P1|自绘|RGB/HSV 选择器|
-|date-picker%|P1|自绘日历|日期选择器|
-|toolbar%|P1|h-panel + buttons|工具栏容器|
-|statusbar%|P1|h-panel + labels|状态栏容器|
-|breadcrumb%|P2|buttons + separators|面包屑导航|
-|badge%|P2|自绘|徽章提示|
-|chip%|P2|button + icon|可关闭标签|
-|tooltip%|P2|浮动 canvas|自定义提示框|
-
-## 七、API 设计
-
-### 7.1 控件创建
-
-```racket
-(new guix-button%
-     [parent panel]
-     [label "Click Me"]
-     [enabled? #t]
-     [callback (lambda (event) ...)])
-```
-
-### 7.2 状态更新
-
-```racket
-(send button set-label "New Label")
-(send button set-enabled #f)
-(send button invalidate)
-```
-
-### 7.3 主题应用
-
-```racket
-(send control apply-theme dark-theme)
-(set-global-theme! dark-theme)
-```
-
-### 7.4 内联编辑示例
-
-```racket
-(define editable-item%
-  (class horizontal-panel%
-    (init-field text)
-    (define editing? #f)
-    (define view-control #f)
-    (define edit-control #f)
+;; 控件状态
+(define guix-state%
+  (class object%
+    (init-field [value #f]
+                [on-change (λ (v) (void))])
     
-    (define/private (enter-edit-mode)
-      (set! editing? #t)
-      (send view-control show #f)
-      (send edit-control show #t)
-      (send edit-control focus))
-    
-    (define/private (exit-edit-mode)
-      (set! editing? #f)
-      (set! text (send edit-control get-value))
-      (send view-control set-label text)
-      (send view-control show #t)
-      (send edit-control show #f))
-    
-    (super-new)
-    
-    ;; View mode: clickable button
-    (set! view-control
-          (new button%
-               [parent this]
-               [label text]
-               [style '(flat)]
-               [callback (λ (b e) (enter-edit-mode))]))
-    
-    ;; Edit mode: text input field
-    (set! edit-control
-          (new text-field%
-               [parent this]
-               [label ""]
-               [init-value text]
-               [callback (λ (t e) 
-                          (when (equal? (send e get-event-type) 'text-field-enter)
-                            (exit-edit-mode)))]))
-    
-    (send edit-control show #f)))
-```
-
-## 八、命名规范
-
-|类型|规范|示例|
-|---|---|---|
-|控件类|`guix-<name>%`|`guix-button%`|
-|文件名|小写-连字符|`text-field.rkt`|
-|函数名|小写-连字符|`set-enabled`|
-|常量|大写下划线|`DEFAULT_PADDING`|
-|事件|`on-<action>`|`on-click`|
-
-## 九、版本规划
-
-### v0.1 核心基础（2-3 个月）
-
-**目标**：核心系统 + 基础控件
-
-**交付**：
-
-- 核心系统：事件、状态、主题、布局
-- 原子控件（P0）：9 个
-- 组合控件（P0）：4 个
-- 容器控件（P0）：5 个
-- 对话框（P0）：3 个
-- 菜单（P0）：2 个
-- 测试覆盖率 >70%
-
-### v0.2 现代控件（2-3 个月）
-
-**目标**：扩展控件 + 高级特性
-
-**交付**：
-
-- 原子控件（P1）：5 个
-- 组合控件（P1）：2 个（含 editable-list-item%）
-- 容器控件（P1）：2 个
-- 扩展控件（P1）：4 个
-- 虚拟滚动支持
-
-### v0.3 高级控件（1-2 个月）
-
-**目标**：完善高级控件
-
-**交付**：
-
-- 原子控件（P2）：2 个
-- 容器控件（P2）：1 个
-- 扩展控件（P2）：4 个
-- 全键盘导航
-
-### v1.0 稳定版本（1-2 个月）
-
-**目标**：API 稳定 + 文档完善
-
-**交付**：
-
-- API 冻结（向后兼容承诺）
-- 测试覆盖率 >85%
-- 完整 Scribble 文档
-- 跨平台测试通过
-
-## 十、质量指标
-
-### 10.1 性能指标
-
-|指标|目标|
-|---|---|
-|渲染帧率|>60 FPS|
-|虚拟滚动|10000+ 项流畅|
-|主题切换|<100ms|
-|内存占用|<50MB（100 控件）|
-
-### 10.2 兼容性
-
-|平台|最低版本|
-|---|---|
-|Racket|8.0|
-|macOS|10.14|
-|Windows|10|
-|Linux|Ubuntu 20.04|
-
-### 10.3 代码质量
-
-|指标|v0.1|v1.0|
-|---|---|---|
-|测试覆盖率|>70%|>85%|
-|文档覆盖率|100%|100%|
-|平均函数长度|<30 行|<30 行|
-
-## 十一、技术风险
-
-|风险|影响|缓解措施|
-|---|---|---|
-|圆角控件视觉问题|中|采用小圆角或扁平化设计|
-|内联编辑切换不流畅|中|接受合理的视觉跳动，文档中说明|
-|文本编辑功能受限|中|封装原生控件，保证核心功能|
-|性能不达标|中|虚拟滚动、双缓冲等优化|
-
-## 十二、实现注意事项
-
-### 12.1 给 AI 的实现指引
-
-**自绘控件模板**：
-
-```racket
-(define guix-<name>%
-  (class canvas%
-    (init-field [enabled? #t]
-                [theme (current-theme)])
-    
-    (define hover? #f)
-    (define pressed? #f)
-    
-    (define/override (on-event event)
-      (case (send event get-event-type)
-        [(enter) (set! hover? #t) (invalidate)]
-        [(leave) (set! hover? #f) (invalidate)]
-        [(left-down) (set! pressed? #t) (invalidate)]
-        [(left-up) 
-         (set! pressed? #f)
-         (when (and hover? enabled?)
-           (fire-callback))
-         (invalidate)]))
-    
-    (define/override (on-paint)
-      (define dc (send this get-dc))
-      (define bg-color 
-        (cond [pressed? (theme-ref theme 'pressed)]
-              [hover? (theme-ref theme 'hover)]
-              [else (theme-ref theme 'background)]))
-      
-      (send dc set-brush (new brush% [color bg-color]))
-      (send dc set-pen (new pen% [color (theme-ref theme 'border)]))
-      (send dc draw-rectangle 0 0 width height))
-    
-    (super-new [style '(transparent no-focus)])))
-```
-
-**封装增强模板**：
-
-```racket
-(define guix-enhanced-text-field%
-  (class text-field%
-    (init-field [placeholder ""]
-                [on-submit void])
-    
-    (define/augment (on-char event)
-      (case (send event get-key-code)
-        [(#\return) (on-submit (send this get-value)) #t]
-        [(escape) (send this set-value "") #t]
-        [else (inner #f on-char event)]))
-    
-    (define/override (on-paint)
-      (super on-paint)
-      (when (and (string=? (send this get-value) "")
-                 (not (send this has-focus?)))
-        (draw-placeholder)))
+    (define/public (get) value)
+    (define/public (set! new-value)
+      (unless (equal? value new-value)
+        (set! value new-value)
+        (on-change new-value)))
     
     (super-new)))
 ```
 
-### 12.2 测试要求
+### 4.4 布局引擎
+
+基于 racket/gui 的 panel 系统，提供常用布局辅助：
 
 ```racket
-(require rackunit)
+;; 水平/垂直布局
+(define (hbox #:spacing [spacing 8] 
+              #:alignment [alignment '(left center)]
+              . children)
+  ...)
 
-;; Unit test example
-(test-case "button state"
-  (define btn (new guix-button% [label "Test"]))
-  (check-true (send btn get-enabled))
-  (send btn set-enabled #f)
-  (check-false (send btn get-enabled)))
-
-;; Integration test example
-(test-case "theme application"
-  (define panel (new guix-panel%))
-  (define btn (new guix-button% [parent panel]))
-  (set-global-theme! dark-theme)
-  (check-equal? (send btn get-background-color)
-                (theme-ref dark-theme 'background)))
+;; 网格布局
+(define (grid #:columns columns
+              #:spacing [spacing 8]
+              . children)
+  ...)
 ```
+
+## 五、视觉与主题系统
+
+### 5.1 扁平化设计规范
+
+#### 5.1.1 形状约束
+
+- **圆角**：默认 0px，特殊场景 ≤2px
+- **边框**：1px 实线，无阴影
+- **层次表达**：通过背景色差异，非阴影
+
+#### 5.1.2 状态视觉规范
+
+|状态|视觉特征|
+|---|---|
+|normal|默认背景色 + 边框|
+|hover|背景色加深 5-10%|
+|pressed|背景色加深 15-20%|
+|disabled|降低不透明度至 40%|
+|focused|添加 2px accent 色边框|
+
+### 5.2 主题结构
+
+```racket
+(define-theme light-theme
+  #:colors (hash
+    'bg-primary "#FFFFFF"
+    'bg-secondary "#F5F5F5"
+    'border "#CCCCCC"
+    'text-primary "#000000"
+    'text-secondary "#666666"
+    'accent "#007AFF"
+    'danger "#FF3B30"
+    'success "#34C759")
+  
+  #:metrics (hash
+    'corner-radius 0
+    'border-width 1
+    'padding 8
+    'spacing 8
+    'icon-size 16
+    'line-height 1.4)
+  
+  #:typography (hash
+    'font-family "system-ui"
+    'font-size 13
+    'font-weight 'normal))
+```
+
+### 5.3 色彩系统
+
+```racket
+;; 语义化颜色
+(define (theme-color theme key [fallback "#000000"])
+  (hash-ref (theme-colors theme) key fallback))
+
+;; 自动生成 hover/pressed 色
+(define (darken-color color percent)
+  ...)
+```
+
+## 六、控件分类与实现策略
+
+### 6.1 控件分类标准
+
+#### A. 原子控件（Atomic）
+
+**定义**：单一交互语义，无子区域差异响应
+
+**特征**
+
+- 整个区域响应相同事件
+- 无内部复杂 hit-test
+- 可自绘或轻度封装 racket/gui 原生控件
+
+**示例**
+
+- button%：整体可点击
+- checkbox%：单一切换
+- icon%：纯展示
+- separator%：纯装饰
+
+**实现方式**
+
+```racket
+;; 自绘示例
+(define guix-button%
+  (class guix-base-control%
+    (init-field [label "Button"]
+                [on-click void])
+    
+    (define/override (render-control dc state theme)
+      (draw-button-background dc state theme)
+      (draw-button-text dc label theme))
+    
+    (define/override (on-event event)
+      (when (eq? (send event get-event-type) 'left-up)
+        (on-click)))
+    
+    (super-new)))
+```
+
+#### B. 容器控件（Container）
+
+**定义**：仅负责布局和子控件组织，无整体交互语义
+
+**特征**
+
+- 子控件独立响应事件
+- 容器本身无业务逻辑
+- 可用原生 panel% 或自定义布局
+
+**示例**
+
+- panel%：基础容器
+- split-panel%：可调整分隔
+- tab-panel%：标签页切换
+- scroll-panel%：滚动容器
+
+**实现方式**
+
+```racket
+;; 封装 racket/gui
+(define guix-panel%
+  (class vertical-panel%
+    (init-field [spacing 8]
+                [padding 8])
+    
+    (super-new [border padding]
+               [spacing spacing])))
+```
+
+#### C. 整体交互控件（Composite）
+
+**定义**：用户认为是"一个整体"，但内部有多个可交互区域
+
+**关键特征**
+
+- ⚠️ **必须用单一 canvas% 自绘**
+- 内部实现 hit-test 区域划分
+- 不同区域触发不同回调
+- 整体响应 hover 状态
+
+**示例**
+
+- list-item%：整行可选中，但删除按钮独立点击
+- tree-node%：展开按钮 + 内容区域
+- table-row%：整行 hover，单元格可编辑
+- toolbar-item%：图标 + 下拉菜单
+
+**错误做法**
+
+```racket
+;; ❌ 错误：用多个控件拼装
+(define wrong-list-item%
+  (new horizontal-panel%
+       [children (list
+                  (new label% [label icon])
+                  (new label% [label text])
+                  (new button% [label "Delete"]))]))
+;; 问题：无法实现整行 hover，空白区域不响应点击
+```
+
+**正确做法**
+
+```racket
+;; ✅ 正确：单 canvas 自绘
+(define guix-list-item%
+  (class guix-base-control%
+    (init-field [text "Item"]
+                [icon #f]
+                [on-click void]
+                [on-delete void])
+    
+    (define delete-button-rect #f)
+    
+    (define/override (render-control dc state theme)
+      ;; 绘制整体背景
+      (when (member state '(hover pressed selected))
+        (draw-background dc state))
+      
+      ;; 绘制图标
+      (when icon
+        (draw-icon dc icon 8 (/ height 2)))
+      
+      ;; 绘制文本
+      (draw-text dc text 40 (/ height 2))
+      
+      ;; 绘制删除按钮（记录区域）
+      (set! delete-button-rect (make-rect (- width 50) 5 40 height))
+      (draw-delete-button dc delete-button-rect))
+    
+    (define/override (on-event event)
+      (define x (send event get-x))
+      (define y (send event get-y))
+      
+      (when (eq? (send event get-event-type) 'left-up)
+        (if (point-in-rect? x y delete-button-rect)
+            (on-delete)
+            (on-click))))
+    
+    (super-new [min-height 32])))
+```
+
+### 6.2 实现策略决策树
+
+```
+控件需求
+  ├─ 单一交互语义？
+  │   └─ YES → 原子控件 → 可自绘或封装
+  │
+  ├─ 仅布局子控件？
+  │   └─ YES → 容器控件 → 可拼装
+  │
+  └─ 用户视为整体，但内部有多区域？
+      └─ YES → 整体交互控件 → **必须自绘**
+```
+
+## 七、控件清单
+
+### 7.1 原子控件（atomic/）
+
+|控件|实现方式|优先级|
+|---|---|---|
+|button%|自绘|P0|
+|checkbox%|自绘|P0|
+|radio-button%|自绘|P0|
+|text-field%|封装 racket/gui|P0|
+|icon%|自绘|P0|
+|separator%|自绘|P1|
+|label%|封装 racket/gui|P1|
+
+### 7.2 组合控件（composite/）
+
+|控件|实现方式|说明|
+|---|---|---|
+|list-item%|**单 canvas 自绘**|整行 hover + 删除按钮|
+|tree-node%|**单 canvas 自绘**|展开符号 + 内容|
+|table-row%|**单 canvas 自绘**|整行选中 + 单元格编辑|
+|toolbar-item%|**单 canvas 自绘**|图标 + 可选下拉|
+
+### 7.3 容器控件（container/）
+
+|控件|实现方式|优先级|
+|---|---|---|
+|panel%|封装 racket/gui|P0|
+|split-panel%|自绘分隔条 + 封装|P1|
+|tab-panel%|自绘标签栏 + 封装|P1|
+|scroll-panel%|封装 racket/gui|P1|
+
+### 7.4 复杂视图（view/）
+
+|控件|实现方式|优先级|
+|---|---|---|
+|list-view%|自绘虚拟滚动|P1|
+|tree-view%|自绘树形结构|P2|
+|table-view%|自绘表格|P2|
+
+## 八、为什么不采用 HTML 式嵌套
+
+### 8.1 对比分析
+
+#### HTML/浏览器模型
+
+- ✅ 逻辑树 ≈ 渲染树
+- ✅ 事件自动冒泡
+- ✅ 透明背景可叠加
+- ✅ 命中区域自动合并
+- 💡 适合：`<div class="card"><button>Delete</button></div>`
+
+#### racket/gui 模型
+
+- ❌ 控件 = 独立窗口
+- ❌ 无事件冒泡
+- ❌ 无透明裁剪
+- ❌ 空白区域不响应事件
+- 💡 必须：单 canvas + 内部 hit-test
+
+### 8.2 实际影响
+
+**场景**：实现一个可删除的列表项
+
+```
+HTML 方式（不适用于 racket/gui）：
+┌────────────────────────────┐
+│ [Icon] Item Text   [Delete]│  ← 整个 div 响应 hover
+└────────────────────────────┘
+  ↓ 点击空白处触发 item click
+  ↓ 点击 Delete 触发 button click
+
+racket/gui 拼装方式（错误）：
+┌────────────────────────────┐
+│ [Icon] Item Text   [Delete]│
+└────────────────────────────┘
+  ↓ 点击空白处：无响应 ❌
+  ↓ 只有 button 区域可点击
+  ↓ 无法实现整行 hover
+
+racket/gui 正确方式：
+┌────────────────────────────┐
+│  单一 canvas%               │
+│  内部 hit-test:            │
+│   - 0~40px: icon           │
+│   - 40~width-60: content   │
+│   - width-60~width: delete │
+└────────────────────────────┘
+  ✅ 整行响应 hover
+  ✅ 不同区域触发不同回调
+```
+
+### 8.3 结论
+
+> **在 racket/gui 中，复杂交互控件只有一条正确道路：  
+> 自绘整体 + 内部事件分发**
+
+## 九、开发规范
+
+### 9.1 命名约定
+
+```racket
+;; 控件类：guix-<name>%
+(define guix-button% ...)
+
+;; 辅助函数：<context>-<action>
+(define (theme-get-color theme key) ...)
+
+;; 事件回调：on-<event>
+(init-field [on-click void])
+```
+
+### 9.2 文档要求
+
+每个控件提供：
+
+- 简要说明
+- 初始化参数列表
+- 公共方法
+- 事件回调
+- 使用示例
+
+### 9.3 测试要求
+
+- 单元测试：核心逻辑
+- 集成测试：控件组合
+- 视觉测试：主题切换
+- 跨平台测试：macOS/Windows/Linux
+
+## 十、版本规划
+
+### v0.1（基础）
+
+- 核心系统
+- 基础主题
+- 5个原子控件
+
+### v0.2（扩展）
+
+- 容器控件
+- 3个组合控件
+- 暗色主题
+
+### v0.3（完善）
+
+- 复杂视图
+- 对话框
+- 完整文档
+
+### v1.0（稳定）
+
+- API 稳定
+- 完整测试
+- 最佳实践指南
+
+## 十一、总结
+
+### 核心理念
+
+1. **技术理性**：guix 不是 HTML GUI，基于 racket/gui 现实
+2. **视觉克制**：扁平风格是技术选择，非审美妥协
+3. **实现明确**："整块响应"控件必须自绘，拼装仅适合布局
+4. **行为优先**：跨平台交互一致性高于视觉统一
+
+### 关键约束
+
+- 整体交互控件 = 单 canvas% + 内部 hit-test
+- 扁平设计 = ≤2px 圆角 + 无阴影
+- 事件模型 ≠ DOM 冒泡
+- 透明裁剪不存在
+
+### 成功标准
+
+- 开发者能快速理解控件选择和实现策略
+- 跨平台行为完全一致
+- 主题切换无缝流畅
+- 代码可维护、可扩展

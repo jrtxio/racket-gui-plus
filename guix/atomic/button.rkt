@@ -7,72 +7,72 @@
 (require racket/class
          racket/draw
          "../core/base-control.rkt"
-         "../core/event.rkt"
-         "../core/state.rkt"
-         "../core/layout.rkt"
          "../style/config.rkt")
 
-(provide modern-button%
-         guix-button%
-         button%)
+(provide guix-button%
+         button%
+         modern-button%)
 
-(define modern-button% 
+(define guix-button% 
   (class guix-base-control%
-    (inherit get-client-size get-parent invalidate)
+    (inherit get-client-size get-parent refresh)
     
     ;;; Initialization parameters
     (init parent
           [label "Button"]
           [type 'primary]      ; Button type: 'primary, 'secondary, 'text
-          [theme-aware? #t]    ; Whether to respond to theme changes
-          [radius 'medium]     ; Border radius: 'small, 'medium, 'large
-          [enabled? #t]        ; Whether to enable
-          [callback #f])       ; Click callback
+          [on-click void])     ; Click callback
     
     ;;; Instance variables
-    (define current-label label)
-    (define current-type type)
-    (define current-radius radius)
+    (field [current-label label]
+           [current-type type]
+           [on-click-callback on-click])
     
     ;;; Constructor
     (super-new 
      [parent parent]
-     [enabled? enabled?]
-     [on-click (λ (event) (when callback (callback this event)))])
+     [min-width 100]
+     [min-height (button-height)])
     
-    ;;; Set minimum size
-    (send this min-width 100)
-    (send this min-height (button-height))
-    
-    ;;; Theme management is handled by base-control
-    
-    ;;; Get current border radius value
-    (define (get-radius-value)
-      (case current-radius
-        [(small) (border-radius-small)]
-        [(medium) (border-radius-medium)]
-        [(large) (border-radius-large)]
-        [else (border-radius-medium)]))
+    ;;; Mouse event handling
+    (define/override (handle-mouse-event event)
+      (case (send event get-event-type)
+        [(left-down)
+         (set-field! state this 'pressed)
+         (send this refresh-now)]
+        [(left-up)
+         (set-field! state this 'hover)
+         (on-click-callback)
+         (send this refresh-now)]
+        [(enter)
+         (when (eq? (get-field state this) 'normal)
+           (set-field! state this 'hover)
+           (send this refresh-now))]
+        [(leave)
+         (set-field! state this (if (send this get-enabled) 'normal 'disabled))
+         (send this refresh-now)]))
     
     ;;; Get background color based on button type and state
-    (define (get-background-color)
+    (define (get-background-color state theme)
       (if (send this get-enabled)
           (case current-type
             [(primary)
-             (if (send this get-pressed)
-                 (color-accent-pressed)
-                 (color-accent))]
+             (case state
+               [(pressed) (color-accent-pressed)]
+               [(hover) (color-accent)]
+               [else (color-accent)])]
             [(secondary)
-             (if (send this get-pressed)
-                 (color-bg-pressed)
-                 (color-bg-light))]
+             (case state
+               [(pressed) (color-bg-pressed)]
+               [(hover) (color-bg-hover)]
+               [else (color-bg-light)])]
             [(text) (make-object color% 0 0 0 0)]  ; Transparent background
             [else (color-accent)])
           ; Disabled state
           (color-bg-pressed)))
     
     ;;; Get text color based on button type and state
-    (define (get-text-color)
+    (define (get-text-color state theme)
       (if (send this get-enabled)
           (case current-type
             [(primary) (make-object color% 255 255 255)]
@@ -83,7 +83,7 @@
           (color-text-disabled)))
     
     ;;; Get border color based on button type
-    (define (get-border-color)
+    (define (get-border-color state theme)
       (if (send this get-enabled)
           (case current-type
             [(primary) (make-object color% 0 0 0 0)]  ; Primary button has no border
@@ -92,18 +92,18 @@
             [else (color-border)])
           (make-object color% 0 0 0 0)))
     
-    ;;; Drawing method
-    (define/override (draw dc)
+    ;;; Drawing method as specified in PRD
+    (define/override (render-control dc state theme)
       (let-values ([(width height) (get-client-size)])
-      (let* ([radius (get-radius-value)]
-             [bg-color (get-background-color)]
-             [text-color (get-text-color)]
-             [border-color (get-border-color)])
+      (let* ([bg-color (get-background-color state theme)]
+             [text-color (get-text-color state theme)]
+             [border-color (get-border-color state theme)])
         
         ; Draw background
         (send dc set-brush bg-color 'solid)
         (send dc set-pen border-color 1 'solid)
-        (send dc draw-rounded-rectangle 0 0 width height radius)
+        ; Flat design: ≤2px radius
+        (send dc draw-rounded-rectangle 0 0 width height 2)
         
         ; Draw text
         (send dc set-text-foreground text-color)
@@ -113,7 +113,7 @@
     ;;; Set button type
     (define/public (set-type! new-type)
       (set! current-type new-type)
-      (invalidate))
+      (send this refresh-now))
     
     ;;; Get button type
     (define/public (get-type)
@@ -122,25 +122,11 @@
     ;;; Set label
     (define/public (set-button-label! new-label)
       (set! current-label new-label)
-      (invalidate))
+      (send this refresh-now))
     
     ;;; Get label
     (define/public (get-button-label)
       current-label)
-    
-    ;;; Set border radius
-    (define/public (set-radius! new-radius)
-      (set! current-radius new-radius)
-      (invalidate))
-    
-    ;;; Get border radius
-    (define/public (get-radius)
-      current-radius)
-    
-    ;;; Set enabled state (override to ensure proper invalidation)
-    (define/override (set-enabled e)
-      (super set-enabled e)
-      (invalidate))
     
     ;;; Backward compatibility methods
     (define/public (get-enabled-state)
@@ -152,5 +138,8 @@
     this)
   )
 
-;; New guix-button% with updated naming convention
-(define guix-button% modern-button%)
+;; Alias for backward compatibility
+(define button% guix-button%)
+
+;; Modern button alias for backward compatibility
+(define modern-button% guix-button%)

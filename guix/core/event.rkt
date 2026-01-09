@@ -3,180 +3,61 @@
 ;; Guix - Modern Racket GUI Widget Library
 ;; Event system for handling widget events
 
-(require racket/class
-         racket/gui/base)
-
 ;; ===========================
-;; Event Structure
+;; Event Type Definitions
 ;; ===========================
 
-;; Define event types
-(define EVENT-TYPES '(on-click on-double-click on-hover on-change on-focus on-blur))
+;; Basic event types as specified in PRD
+(define-event-type on-click)          ; Click event
+(define-event-type on-hover-enter)    ; Mouse enter event
+(define-event-type on-hover-exit)     ; Mouse leave event
+(define-event-type on-focus)          ; Focus gain event
+(define-event-type on-blur)           ; Focus loss event
 
-;; Event structure
-(struct event (
-  type        ; Event type (symbol)
-  source      ; Event source widget
-  data        ; Event data (any)
-  (stopped? #:mutable) ; Whether event propagation is stopped
-  timestamp)) ; Event timestamp
+;; Composite control specific event types
+(define-event-type on-activate)       ; Main action (e.g. double-click list item)
+(define-event-type on-secondary)      ; Secondary action (e.g. click delete button)
 
-;; Create event with default values
-(define (make-event type source data)
-  (event type source data #f (current-inexact-milliseconds)))
-
-;; ===========================
-;; Event Manager
-;; ===========================
-
-;; Event manager class to handle event registration and dispatching
-(define guix-event-manager% 
-  (class object%
-    (super-new)
-    
-    ;; Event callbacks storage
-    (field [callbacks (make-hash)])
-    
-    ;; ===========================
-    ;; Event Registration
-    ;; ===========================
-    
-    ;; Register event callback
-    (define/public (register-callback event-type callback)
-      (unless (member event-type EVENT-TYPES)
-        (error "Invalid event type: ~a" event-type))
-      
-      (hash-update! callbacks event-type
-                    (λ (existing) (cons callback existing))
-                    '()))
-    
-    ;; Unregister event callback
-    (define/public (unregister-callback event-type callback)
-      (when (hash-has-key? callbacks event-type)
-        (hash-update! callbacks event-type
-                      (λ (existing) (remove callback existing))
-                      '())))
-    
-    ;; ===========================
-    ;; Event Dispatching
-    ;; ===========================
-    
-    ;; Dispatch event to registered callbacks
-    (define/public (dispatch-event event)
-      (when (hash-has-key? callbacks (event-type event))
-        (for-each (λ (callback) (callback event))
-                  (hash-ref callbacks (event-type event)))))
-    
-    ;; ===========================
-    ;; Event Creation
-    ;; ===========================
-    
-    ;; Create new event
-    (define/public (create-event type source data)
-      (event type source data #f (current-inexact-milliseconds)))
-    
-    ))
+;; Event type definition helper
+(define-syntax-rule (define-event-type name)
+  (begin
+    (define name (string->symbol (string-append "on-" (symbol->string 'name))))
+    (provide name)))
 
 ;; ===========================
-;; Event Handling Mixin
+;; Hit Test Helper Functions
 ;; ===========================
 
-;; Mixin for adding event handling capabilities to widgets
-(define event-handler-mixin
-  (mixin () ()
-    
-    ;; Event manager for this widget
-    (field [event-manager (new guix-event-manager%)])
-    
-    ;; ===========================
-    ;; Event Registration API
-    ;; ===========================
-    
-    ;; Register event callback
-    (define/public (register-event-callback event-type callback)
-      (send event-manager register-callback event-type callback))
-    
-    ;; Unregister event callback
-    (define/public (unregister-event-callback event-type callback)
-      (send event-manager unregister-callback event-type callback))
-    
-    ;; ===========================
-    ;; Event Emission
-    ;; ===========================
-    
-    ;; Emit event from this widget
-    (define/public (emit-event event-type data)
-      (let ([event (send event-manager create-event event-type this data)])
-        ;; Dispatch event locally
-        (send event-manager dispatch-event event)
-        
-        ;; Propagate event to parent if not stopped
-        (unless (event-stopped? event)
-          (propagate-event event))))
-    
-    ;; ===========================
-    ;; Event Propagation
-    ;; ===========================
-    
-    ;; Propagate event to parent widget
-    (define/public (propagate-event event)
-      (let ([parent (and (is-a? this area<%>) (send this get-parent))])
-        (when (and parent (is-a? parent guix-event-manager%))
-          (send parent dispatch-event event)
-          (unless (event-stopped? event)
-            (send parent propagate-event event)))))
-    
-    ;; ===========================
-    ;; Event Stopping
-    ;; ===========================
-    
-    ;; Stop event propagation
-    (define/public (stop-event event)
-      (set-event-stopped?! event #t))
-    
-    ;; Check if event is stopped
-    (define/public (event-stopped? event)
-      (event-stopped? event))
-    
-    ))
+;; Example hit-test function for regions within a control
+;; Returns the region symbol based on coordinates
+(define (hit-test-regions x y width height)
+  (cond
+    [(< x 40) 'icon-region]              ; Left 40px: icon region
+    [(> x (- width 60)) 'action-region]  ; Right 60px: action region
+    [else 'content-region]))             ; Middle: content region
 
-;; ===========================
-;; Event Helper Functions
-;; ===========================
-
-;; Create a click event
-(define (create-click-event source)
-  (event 'on-click source #f #f (current-inexact-milliseconds)))
-
-;; Create a change event
-(define (create-change-event source new-value)
-  (event 'on-change source new-value #f (current-inexact-milliseconds)))
-
-;; Create a focus event
-(define (create-focus-event source)
-  (event 'on-focus source #f #f (current-inexact-milliseconds)))
-
-;; Create a blur event
-(define (create-blur-event source)
-  (event 'on-blur source #f #f (current-inexact-milliseconds)))
-
-;; Create a hover event
-(define (create-hover-event source)
-  (event 'on-hover source #f #f (current-inexact-milliseconds)))
+;; Hit test helper for point in rectangle
+(define (point-in-rect? x y rect)  
+  (match rect
+    [(list left top right bottom)
+     (and (<= left x right) (<= top y bottom))]
+    [(vector left top right bottom)
+     (and (<= left x right) (<= top y bottom))]
+    [_ #f]))
 
 ;; ===========================
 ;; Export
 ;; ===========================
 (provide
- ;; Event structure and types
- event event-type event-source event-data event-stopped? set-event-stopped?!
- EVENT-TYPES
- 
- ;; Event manager class
- guix-event-manager%
- 
- ;; Event handler mixin
- event-handler-mixin
- 
- ;; Event helper functions
- create-click-event create-change-event create-focus-event create-blur-event create-hover-event)
+  ;; Event type constants
+  on-click
+  on-hover-enter
+  on-hover-exit
+  on-focus
+  on-blur
+  on-activate
+  on-secondary
+  
+  ;; Hit test helper functions
+  hit-test-regions
+  point-in-rect?)

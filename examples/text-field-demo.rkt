@@ -69,16 +69,17 @@
                            [alignment '(center center)]
                            [spacing 10]))
   
-  (define theme-toggle (new button% [parent theme-panel]
+  (define theme-toggle (new modern-button% [parent theme-panel]
                             [label "Switch to Dark Theme"]
-                            [callback (λ (btn evt)
+                            [type 'primary]
+                            [on-click (λ ()
                                         (cond
                                           [(equal? (current-theme) light-theme)
                                            (set-theme! 'dark)
-                                           (send btn set-label "Switch to Light Theme")]
+                                           (send theme-toggle set-button-label! "Switch to Light Theme")]
                                           [else
                                            (set-theme! 'light)
-                                           (send btn set-label "Switch to Dark Theme")]))]))
+                                           (send theme-toggle set-button-label! "Switch to Dark Theme")]))]))
   
   ;; Show the frame
   (send frame show #t)

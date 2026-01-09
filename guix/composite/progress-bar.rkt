@@ -6,7 +6,6 @@
 (define modern-progress-bar%  
   (class guix-base-control%
     (init-field [progress 0.0] [target 0.0])
-    (inherit-field min-width min-height)
     
     (super-new [min-width 200] [min-height (progress-bar-height)])
     
@@ -22,18 +21,18 @@
     (define/public (get-progress)
       progress)
     
-    (define/override (draw dc)
+    (define/override (render-control dc state theme)
       (define w (send this get-width))
       (define h (send this get-height))
       
       (send dc set-smoothing 'smoothed)
-      (send dc clear)
       
       (define draw-h (progress-bar-height))
       (define y (/ (- h draw-h) 2))
       (define radius (/ draw-h 2))
       (define bar-width (* w progress))
       
+      ;; Get colors from theme
       (define bg-color (color-bg-light))
       (define fg-color (color-accent))
       

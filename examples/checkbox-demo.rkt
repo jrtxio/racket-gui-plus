@@ -6,7 +6,8 @@
 (require racket/class
          racket/draw
          "../guix/style/config.rkt"
-         "../guix/atomic/checkbox.rkt")
+         "../guix/atomic/checkbox.rkt"
+         "../guix/atomic/button.rkt")
 
 ;; Create main window
 (define frame
@@ -96,10 +97,10 @@
 
 ;; Create a simple theme toggle
 (define theme-toggle
-  (new button%
+  (new modern-button%
        [parent panel]
        [label "Toggle Theme"]
-       [callback (λ (button event)
+       [on-click (λ ()
                    (if (equal? (current-theme) light-theme)
                        (set-theme! 'dark)
                        (set-theme! 'light))

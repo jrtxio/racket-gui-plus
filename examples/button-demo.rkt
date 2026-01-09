@@ -34,21 +34,21 @@
      [parent panel]
      [label "Primary Button"]
      [type 'primary]
-     [callback (λ (button event) 
+     [on-click (λ () 
                  (displayln "Primary button clicked!"))])
 
 (new modern-button% 
      [parent panel]
      [label "Secondary Button"]
      [type 'secondary]
-     [callback (λ (button event) 
+     [on-click (λ () 
                  (displayln "Secondary button clicked!"))])
 
 (new modern-button% 
      [parent panel]
      [label "Text Button"]
      [type 'text]
-     [callback (λ (button event) 
+     [on-click (λ () 
                  (displayln "Text button clicked!"))])
 
 ;; Test disabled buttons
@@ -63,7 +63,7 @@
      [parent panel]
      [label "Toggle Theme"]
      [type 'primary]
-     [callback (λ (button event) 
+     [on-click (λ () 
                  (if (equal? (current-theme) light-theme)
                      (set-theme! 'dark)
                      (set-theme! 'light)))])

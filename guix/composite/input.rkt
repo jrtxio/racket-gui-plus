@@ -11,7 +11,8 @@
     (init-field [placeholder ""]
                 [callback (λ (t) (void))]
                 [init-value ""]
-                [style '()])
+                [style '()]
+                [theme (current-theme)])
     
     (super-new [style (cons 'border style)]
                [spacing 0]
@@ -29,7 +30,8 @@
            [placeholder placeholder]
            [callback callback]
            [init-value init-value]
-           [style '()]))
+           [style '()]
+           [theme theme]))
     
     ;; 公开方法，代理到内部text-field%
     (define/public (get-text)

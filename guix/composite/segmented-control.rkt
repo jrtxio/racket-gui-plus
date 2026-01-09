@@ -44,7 +44,7 @@
                          [parent this]
                          [label segment]
                          [type 'secondary]
-                         [callback (λ (btn evt) 
+                         [on-click (λ () 
                                      (set-selected-index idx))]
                          [stretchable-width #t]))
         (set! button-list (append button-list (list btn)))))

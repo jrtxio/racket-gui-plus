@@ -15,7 +15,8 @@
     (init-field [placeholder "Search..."]
                 [callback (λ (t) (void))]
                 [init-value ""]
-                [style '()])
+                [style '()]
+                [theme (current-theme)])
     
     (super-new [style style]
                [spacing 8]
@@ -33,20 +34,21 @@
            [placeholder placeholder]
            [callback callback]
            [init-value init-value]
-           [style '()]))
+           [style '()]
+           [theme theme]))
     
     ;; 设置文本输入框为主要伸展组件
     (send search-text-field stretchable-width #t)
     
     ;; 创建搜索按钮
     (define search-button
-      (new modern-button%
+      (new guix-button%
            [parent this]
            [label "Search"]
            [type 'secondary]
-           [callback (λ (btn evt) (callback search-text-field))]
-           [min-width 80]
-           [stretchable-width #f]))
+           [on-click (λ () (callback search-text-field))]
+           [stretchable-width #f]
+           [theme theme]))
     
     ;; 公开方法，代理到内部text-field%
     (define/public (get-text)

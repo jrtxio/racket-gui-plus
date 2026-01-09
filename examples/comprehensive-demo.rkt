@@ -206,19 +206,19 @@
 (new modern-button%
      [parent toast-buttons-panel]
      [label "显示成功提示"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                 (show-toast "操作成功！" #:type 'success))])
 
 (new modern-button%
      [parent toast-buttons-panel]
      [label "显示错误提示"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                 (show-toast "操作失败！" #:type 'error))])
 
 (new modern-button%
      [parent toast-buttons-panel]
      [label "显示信息提示"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                 (show-toast "这是一条信息。" #:type 'info))])
 
 ;; ============================================================
@@ -236,7 +236,6 @@
 (define progress-bar
   (new modern-progress-bar%
        [parent content-panel]
-       [min-width 400]
        [stretchable-width #t]))
 
 ;; 添加示例按钮控制进度
@@ -249,31 +248,31 @@
 (new modern-button%
      [parent progress-panel]
      [label "0%"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                 (send progress-bar set-progress 0.0))])
 
 (new modern-button%
      [parent progress-panel]
      [label "25%"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                 (send progress-bar set-progress 0.25))])
 
 (new modern-button%
      [parent progress-panel]
      [label "50%"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                 (send progress-bar set-progress 0.5))])
 
 (new modern-button%
      [parent progress-panel]
      [label "75%"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                 (send progress-bar set-progress 0.75))])
 
 (new modern-button%
      [parent progress-panel]
      [label "100%"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                 (send progress-bar set-progress 1.0))])
 
 ;; 添加定时器来更新进度条动画
@@ -401,7 +400,7 @@
 (new modern-button%
      [parent theme-toggle-panel]
      [label "切换主题"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                 (if (eq? (current-theme) 'light)
                     (begin
                       (set-theme! 'dark)

@@ -62,8 +62,8 @@
               (color-text-main)
               (color-text-disabled))))
     
-    ;;; Drawing method
-    (define/override (draw dc)
+    ;;; Drawing method as specified in PRD
+    (define/override (render-control dc state theme)
       (let-values ([(width height) (get-client-size)])
         (let* ([text-color (get-text-color)]
                [font (get-font)]
