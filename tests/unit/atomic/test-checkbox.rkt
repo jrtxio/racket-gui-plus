@@ -1,7 +1,7 @@
 #lang racket/gui
 
-;; Checkbox组件自动化测试
-;; 使用Racket的rackunit测试框架
+;; Automated tests for Checkbox component
+;; Using Racket's rackunit testing framework
 
 (require rackunit
          racket/class

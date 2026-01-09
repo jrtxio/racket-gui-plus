@@ -1,7 +1,7 @@
 #lang racket/gui
 
-;; Time Picker组件自动化测试
-;; 使用Racket的rackunit测试框架
+;; Automated tests for Time Picker component
+;; Using Racket's rackunit testing framework
 
 (require rackunit
          racket/class

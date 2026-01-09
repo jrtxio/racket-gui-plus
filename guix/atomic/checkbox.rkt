@@ -33,8 +33,8 @@
     (super-new 
      [parent parent]
      [enabled? enabled?]
-     [min-width 30]  ; Reduce min-width to make checkbox more compact
-     [stretchable-width #f]  ; Prevent checkbox from stretching
+     [min-width 150]  ; Set minimum width to accommodate text
+     [stretchable-width #t]  ; Allow checkbox to stretch based on text length
      [min-height 24])
     
     ;;; Backward compatibility methods
@@ -89,7 +89,12 @@
                [text-color (if enabled?
                                (color-text-main)
                                (color-text-disabled))]
-               [check-color (make-object color% 255 255 255)])
+               [check-color (make-object color% 255 255 255)]
+               [control-bg-color (color-bg-white)])  ; Use theme background color for control
+          
+          ; Clear the control area to match parent panel's background
+          ; This prevents white artifacts around the checkbox
+          (send dc clear)
           
           ; Draw checkbox background
           (send dc set-brush bg-color 'solid)

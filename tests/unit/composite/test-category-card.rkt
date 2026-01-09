@@ -1,7 +1,7 @@
 #lang racket/gui
 
-;; Category Card组件自动化测试
-;; 使用Racket的rackunit测试框架
+;; Automated tests for Category Card component
+;; Using Racket's rackunit testing framework
 
 (require rackunit
          racket/class
@@ -46,7 +46,7 @@
             [parent test-frame]
             [label "Test Category"]
             [count 5]
-            [on-click (λ (event) (set! clicked #t))]))
+            [on-click (λ () (set! clicked #t))]))
      
      ;; 模拟鼠标进入、按下和抬起事件
      (define enter-event (make-object mouse-event% 'enter 0 0 0 0 '() 0 #f 0 0 0 #f))

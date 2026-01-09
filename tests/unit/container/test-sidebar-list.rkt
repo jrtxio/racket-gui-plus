@@ -1,7 +1,7 @@
 #lang racket/gui
 
-;; Sidebar List组件自动化测试
-;; 使用Racket的rackunit测试框架
+;; Automated tests for Sidebar List component
+;; Using Racket's rackunit testing framework
 
 (require rackunit
          racket/class

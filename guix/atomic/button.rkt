@@ -97,9 +97,14 @@
       (let-values ([(width height) (get-client-size)])
       (let* ([bg-color (get-background-color state theme)]
              [text-color (get-text-color state theme)]
-             [border-color (get-border-color state theme)])
+             [border-color (get-border-color state theme)]
+             [control-bg-color (color-bg-white)])  ; Use theme background color for control
         
-        ; Draw background
+        ; Clear the control area to match parent panel's background
+        ; This prevents white artifacts around the button
+        (send dc clear)
+        
+        ; Draw button background
         (send dc set-brush bg-color 'solid)
         (send dc set-pen border-color 1 'solid)
         ; Flat design: ≤2px radius
