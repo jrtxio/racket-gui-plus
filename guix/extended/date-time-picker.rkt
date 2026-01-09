@@ -9,9 +9,6 @@
 (provide date-time-picker%
          guix-date-time-picker%)
 
-;; New guix-date-time-picker% with updated naming convention
-(define guix-date-time-picker% date-time-picker%)
-
 (define date-time-picker%
   (class vertical-panel%
     (init-field [parent #f]
@@ -135,4 +132,7 @@
     (define/public (set-value y m d h min)
       (send this set-date-time y m d h min))
     )
-)
+  )
+
+;; New guix-date-time-picker% with updated naming convention
+(define guix-date-time-picker% date-time-picker%)

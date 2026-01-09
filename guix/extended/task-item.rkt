@@ -15,9 +15,6 @@
 (provide task-item%
          guix-task-item%)
 
-;; New guix-task-item% with updated naming convention
-(define guix-task-item% task-item%)
-
 ;; ============================================================;
 ;; Task Item Widget - A simple and reliable task item component;
 ;; ============================================================;
@@ -123,3 +120,6 @@
       (set! current-notes notes)
       (void))
     ))
+
+;; New guix-task-item% with updated naming convention
+(define guix-task-item% task-item%)

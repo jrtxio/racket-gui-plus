@@ -8,9 +8,6 @@
 (provide tab-view%
          guix-tab-view%)
 
-;; New guix-tab-view% with updated naming convention
-(define guix-tab-view% tab-view%)
-
 (define tab-view%
   (class vertical-panel%
     (init-field [parent #f]
@@ -47,9 +44,10 @@
     
     ;; 创建标签按钮
     (define (create-tab-button label index)
-      (new button%
+      (new modern-button%
            [parent tab-bar]
            [label label]
+           [type 'secondary]
            [callback (λ (btn evt) (switch-tab index))]
            [stretchable-width #t]
            [stretchable-height #f]))
@@ -137,3 +135,6 @@
         (send (third tab) refresh)))
     
     ))
+
+;; New guix-tab-view% with updated naming convention
+(define guix-tab-view% tab-view%)

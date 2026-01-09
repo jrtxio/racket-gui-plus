@@ -10,9 +10,6 @@
 (provide side-panel%
          guix-side-panel%)
 
-;; New guix-side-panel% with updated naming convention
-(define guix-side-panel% side-panel%)
-
 ;; Side panel widget implementation
 (define side-panel%
   (class horizontal-panel%
@@ -169,4 +166,7 @@
       (set! on-width-change new-callback))
     
     )
-)
+  )
+
+;; New guix-side-panel% with updated naming convention
+(define guix-side-panel% side-panel%)

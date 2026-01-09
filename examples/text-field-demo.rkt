@@ -3,11 +3,8 @@
 ;; Text Field Demo
 ;; Shows how to use the text-field component
 
-(require (rename-in "../guix/atomic/text-field.rkt" [text-field% guix-text-field%]))
-(require "../guix/style/config.rkt")
-
-;; Import necessary GUI classes
-(require racket/gui/base)
+;; Import all components from main guix module
+(require "../guix/guix.rkt")
 
 (define (main)
   (define frame (new frame% [label "Text Field Demo"]
@@ -48,10 +45,10 @@
   (new message% [parent labels-panel] [label "With Callback:"][min-width 80])
   
   ;; Basic text field
-  (new guix-text-field% [parent fields-panel])
+  (new text-field% [parent fields-panel])
   
   ;; Text field with placeholder
-  (new guix-text-field% [parent fields-panel] [placeholder "Enter your text here"])
+  (new text-field% [parent fields-panel] [placeholder "Enter your text here"])
   
   ;; Create a callback that updates a label
   (define callback-label (new message% [parent panel]
@@ -61,9 +58,11 @@
                               [stretchable-width #t]))
   
   ;; Text field with callback
-  (new guix-text-field% [parent fields-panel]
+  (new text-field% [parent fields-panel]
        [placeholder "Press Enter to submit"]
-       [callback (λ (text) (send callback-label set-label (format "Entered: ~a" text)))])
+       [callback (λ (field event) 
+                   (when (equal? (send event get-event-type) 'text-field-enter)
+                     (send callback-label set-label (format "Entered: ~a" (send field get-text)))))])
   
   ;; Create a theme toggle button
   (define theme-panel (new horizontal-panel% [parent panel]

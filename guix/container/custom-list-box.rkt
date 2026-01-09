@@ -8,9 +8,6 @@
          guix-sidebar%
          sidebar-item-data)
 
-;; New guix-sidebar% with updated naming convention
-(define guix-sidebar% modern-sidebar%)
-
 (define sidebar-item-data
   (class object%
     (init-field [label ""]
@@ -110,3 +107,6 @@
       (super refresh))
     
     ))
+
+;; New guix-sidebar% with updated naming convention
+(define guix-sidebar% modern-sidebar%)

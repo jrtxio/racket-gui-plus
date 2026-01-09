@@ -7,9 +7,6 @@
 (provide calendar%
          guix-calendar%)
 
-;; New guix-calendar% with updated naming convention
-(define guix-calendar% calendar%)
-
 (define calendar%
   (class canvas%
     (init-field [parent #f]
@@ -171,4 +168,7 @@
     (define/public (get-day)
       selected-day)
     )
-)
+  )
+
+;; New guix-calendar% with updated naming convention
+(define guix-calendar% calendar%)

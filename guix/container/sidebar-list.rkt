@@ -11,9 +11,6 @@
          guix-sidebar-list%
          list-item)
 
-;; New guix-sidebar-list% with updated naming convention
-(define guix-sidebar-list% sidebar-list%)
-
 ;; List item class for sidebar items
 (define list-item
   (class object%
@@ -265,3 +262,6 @@
         (send this refresh)))
     
     ))
+
+;; New guix-sidebar-list% with updated naming convention
+(define guix-sidebar-list% sidebar-list%)

@@ -45,7 +45,8 @@
          "extended/time-picker.rkt"
          "extended/toast.rkt"
          "extended/date-time-picker.rkt"
-         "extended/task-item.rkt")
+         "extended/task-item.rkt"
+         "extended/todo-list.rkt")
 
 ;; ===========================
 ;; Export All Public Interfaces
@@ -86,7 +87,8 @@
         (all-from-out "extended/time-picker.rkt")
         (all-from-out "extended/toast.rkt")
         (all-from-out "extended/date-time-picker.rkt")
-        (all-from-out "extended/task-item.rkt"))
+        (all-from-out "extended/task-item.rkt")
+        (all-from-out "extended/todo-list.rkt"))
 
 ;; Export specific widget classes
 (provide text-field%
@@ -94,11 +96,17 @@
          modern-button%
          filter-button%
          modern-progress-bar%
+         modern-slider%
+         sidebar-list%
+         todo-list%
+         segmented-control%
          
          modern-sidebar%
          sidebar-item-data
+         list-item
          
          calendar%
          time-picker%
+         date-time-picker%
          guix-toast%
          show-toast)

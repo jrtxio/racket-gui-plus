@@ -6,9 +6,6 @@
 (provide stack-view%
          guix-stack-view%)
 
-;; New guix-stack-view% with updated naming convention
-(define guix-stack-view% stack-view%)
-
 (define stack-view%
   (class panel%
     (init-field [parent #f]
@@ -122,3 +119,6 @@
           (send view refresh))))
     
     ))
+
+;; New guix-stack-view% with updated naming convention
+(define guix-stack-view% stack-view%)

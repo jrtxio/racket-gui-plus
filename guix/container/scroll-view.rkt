@@ -6,9 +6,6 @@
 (provide scroll-view%
          guix-scroll-view%)
 
-;; New guix-scroll-view% with updated naming convention
-(define guix-scroll-view% scroll-view%)
-
 (define scroll-view%
   (class horizontal-panel%
     (init-field [parent #f]
@@ -50,3 +47,6 @@
           (send child refresh))))
     
     ))
+
+;; New guix-scroll-view% with updated naming convention
+(define guix-scroll-view% scroll-view%)

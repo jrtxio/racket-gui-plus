@@ -7,9 +7,6 @@
 (provide time-picker%
          guix-time-picker%)
 
-;; New guix-time-picker% with updated naming convention
-(define guix-time-picker% time-picker%)
-
 (define time-picker%
   (class canvas%
     (init-field [parent #f]
@@ -167,4 +164,7 @@
       (super refresh))
     
     )
-)
+  )
+
+;; New guix-time-picker% with updated naming convention
+(define guix-time-picker% time-picker%)

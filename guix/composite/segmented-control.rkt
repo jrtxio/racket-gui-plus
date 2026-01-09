@@ -9,9 +9,6 @@
 (provide segmented-control%
          guix-segmented-control%)
 
-;; New guix-segmented-control% with updated naming convention
-(define guix-segmented-control% segmented-control%)
-
 (define segmented-control%
   (class horizontal-panel%
     (init-field [segments '()]
@@ -43,9 +40,10 @@
     ;; 创建分段按钮
     (define (create-segment-buttons)
       (for ([(segment idx) (in-indexed segments)])
-        (define btn (new button%
+        (define btn (new modern-button%
                          [parent this]
                          [label segment]
+                         [type 'secondary]
                          [callback (λ (btn evt) 
                                      (set-selected-index idx))]
                          [stretchable-width #t]))
@@ -87,3 +85,6 @@
         (send btn refresh)))
     
     ))
+
+;; New guix-segmented-control% with updated naming convention
+(define guix-segmented-control% segmented-control%)

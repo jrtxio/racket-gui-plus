@@ -10,9 +10,6 @@
 (provide search-field%
          guix-search-field%)
 
-;; New guix-search-field% with updated naming convention
-(define guix-search-field% search-field%)
-
 (define search-field%
   (class horizontal-panel%
     (init-field [placeholder "Search..."]
@@ -43,9 +40,10 @@
     
     ;; 创建搜索按钮
     (define search-button
-      (new button%
+      (new modern-button%
            [parent this]
            [label "Search"]
+           [type 'secondary]
            [callback (λ (btn evt) (callback search-text-field))]
            [min-width 80]
            [stretchable-width #f]))
@@ -67,3 +65,6 @@
       (send search-button refresh))
     
     ))
+
+;; New guix-search-field% with updated naming convention
+(define guix-search-field% search-field%)

@@ -11,9 +11,6 @@
 (provide modern-slider%
          guix-slider%)
 
-;; New guix-slider% with updated naming convention
-(define guix-slider% modern-slider%)
-
 (define modern-slider% 
   (class slider%
     ;;; Initialization parameters
@@ -45,3 +42,6 @@
     
     this)
   )
+
+;; New guix-slider% with updated naming convention
+(define guix-slider% modern-slider%)

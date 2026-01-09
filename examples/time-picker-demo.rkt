@@ -5,7 +5,7 @@
 
 (require racket/class
          racket/draw
-         "../guix/app/time-picker.rkt")
+         "../guix/guix.rkt")
 
 ;; Create main window
 (define frame

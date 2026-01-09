@@ -10,9 +10,6 @@
 (provide stepper-input%
          guix-stepper-input%)
 
-;; New guix-stepper-input% with updated naming convention
-(define guix-stepper-input% stepper-input%)
-
 (define stepper-input%
   (class horizontal-panel%
     (init-field [init-value 0]
@@ -56,9 +53,10 @@
     
     ;; 创建减少按钮
     (define decrement-button
-      (new button%
+      (new modern-button%
            [parent this]
            [label "-" ]
+           [type 'secondary]
            [callback (λ (btn evt) (decrement))]
            [min-width 32]
            [min-height 28]
@@ -83,9 +81,10 @@
     
     ;; 创建增加按钮
     (define increment-button
-      (new button%
+      (new modern-button%
            [parent this]
            [label "+" ]
+           [type 'secondary]
            [callback (λ (btn evt) (increment))]
            [min-width 32]
            [min-height 28]
@@ -109,3 +108,6 @@
       (send increment-button refresh))
     
     ))
+
+;; New guix-stepper-input% with updated naming convention
+(define guix-stepper-input% stepper-input%)

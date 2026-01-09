@@ -6,9 +6,6 @@
 (provide split-view%
          guix-split-view%)
 
-;; New guix-split-view% with updated naming convention
-(define guix-split-view% split-view%)
-
 (define split-view%
   (class horizontal-panel%
     (init-field [parent #f]
@@ -96,3 +93,6 @@
     ;; 初始化
     (init-split-view)
     ))
+
+;; New guix-split-view% with updated naming convention
+(define guix-split-view% split-view%)
