@@ -75,7 +75,6 @@
                [box-x 0]
                [box-y (- (/ height 2) (/ box-size 2))]
                [label-x (+ box-size 10)]
-               [label-y (- (/ height 2) 7)]
                [enabled? (send this get-enabled)]
                [border-color (if enabled?
                                  (if (eq? state 'hover)
@@ -104,12 +103,14 @@
             (send dc set-pen check-color 2 'solid)
             (send dc draw-lines (list (cons (+ box-x 5) (+ box-y 10))
                                       (cons (+ box-x 8) (+ box-y 13))
-                                      (cons (+ box-x 15) (+ box-y 6)))))
-          
+                                      (cons (+ box-x 15) (+ box-y 6)))))          
           ; Draw label
           (send dc set-text-foreground text-color)
           (send dc set-font (font-regular))
-          (send dc draw-text current-label label-x label-y))))
+          ; Calculate text vertical position for proper alignment
+          ; Center text vertically with checkbox
+          (let-values ([(text-width text-height ascent descent) (send dc get-text-extent current-label)])
+            (send dc draw-text current-label label-x (- (/ height 2) (/ text-height 2)))))))
     
     ;;; Set checked state
     (define/public (set-checked! [on? #t])

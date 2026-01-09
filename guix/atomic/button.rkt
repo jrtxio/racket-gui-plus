@@ -108,7 +108,12 @@
         ; Draw text
         (send dc set-text-foreground text-color)
         (send dc set-font (font-regular))
-        (send dc draw-text current-label 10 (- (/ height 2) 7)))))
+        ; Calculate text position for proper alignment
+        ; Center text horizontally and vertically in button
+        (let-values ([(text-width text-height ascent descent) (send dc get-text-extent current-label)])
+          (send dc draw-text current-label 
+                (- (/ width 2) (/ text-width 2))  ; Center horizontally
+                (- (/ height 2) (/ text-height 2)))))))
     
     ;;; Set button type
     (define/public (set-type! new-type)
