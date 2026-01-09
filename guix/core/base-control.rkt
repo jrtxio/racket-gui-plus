@@ -110,8 +110,8 @@
     ;; Event Handling
     ;; ===========================
     
-    ;; Mouse event handling
-    (define/override (on-event event)
+    ;; Mouse event handler
+    (define/public (handle-mouse-event event)
       (cond
         [(send event button-down?)
          (set! pressed? #t)
@@ -137,6 +137,16 @@
          (set! focused? #f)
          (on-blur)
          (invalidate)]))
+    
+    ;; Keyboard event handler
+    (define/public (handle-keyboard-event event)
+      ;; Default implementation - override in subclasses if needed
+      (void))
+    
+    ;; Mouse event handling
+    (define/override (on-event event)
+      (handle-mouse-event event)
+      (handle-keyboard-event event))
     
     ;; ===========================
     ;; Layout and Sizing
