@@ -4,10 +4,8 @@
 ;; Demonstrates various text area features and interactions
 
 (require racket/class
-         "../core/base-container.rkt"
-         "../core/theme.rkt"
-         "../style/config.rkt"
-         "text-area.rkt")
+         racket/draw
+         "../guix/guix.rkt")
 
 ;; Create a frame for the demo
 (define frame (new frame% [label "Text Area Component Demo"]
@@ -23,12 +21,12 @@
 ;; Title label
 (new message% [parent main-panel]
      [label "Text Area Component Demo"]
-     [font (font-bold 16)])
+     [font (send the-font-list find-or-create-font 16 'default 'normal 'bold)])
 
 ;; Section: Basic Text Areas
 (new message% [parent main-panel]
      [label "1. Basic Text Areas"]
-     [font (font-semibold 12)])
+     [font (send the-font-list find-or-create-font 12 'default 'normal 'bold)])
 
 (define basic-panel (new horizontal-panel% [parent main-panel]
                         [alignment '(center center)]
@@ -50,7 +48,7 @@
 ;; Section: Placeholder Text
 (new message% [parent main-panel]
      [label "2. Placeholder Text"]
-     [font (font-semibold 12)])
+     [font (send the-font-list find-or-create-font 12 'default 'normal 'bold)])
 
 (define placeholder-panel (new horizontal-panel% [parent main-panel]
                               [alignment '(center center)]
@@ -71,7 +69,7 @@
 ;; Section: Text Area Sizes
 (new message% [parent main-panel]
      [label "3. Different Sizes"]
-     [font (font-semibold 12)])
+     [font (send the-font-list find-or-create-font 12 'default 'normal 'bold)])
 
 (define sizes-panel (new vertical-panel% [parent main-panel]
                         [alignment '(center center)]
@@ -96,7 +94,7 @@
 ;; Section: Dynamic Text Changes
 (new message% [parent main-panel]
      [label "4. Dynamic Operations"]
-     [font (font-semibold 12)])
+     [font (send the-font-list find-or-create-font 12 'default 'normal 'bold)])
 
 (define dynamic-panel (new horizontal-panel% [parent main-panel]
                           [alignment '(center center)]
@@ -113,26 +111,26 @@
                              [alignment '(center center)]
                              [spacing 10]))
 
-(new button% [parent ta-controls]
+(new guix-button% [parent ta-controls]
      [label "Set Text"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                  (send dynamic-ta set-text "Dynamically set text\nWith multiple lines\nAdded programmatically"))])
 
-(new button% [parent ta-controls]
+(new guix-button% [parent ta-controls]
      [label "Clear"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                  (send dynamic-ta clear))])
 
-(new button% [parent ta-controls]
+(new guix-button% [parent ta-controls]
      [label "Get Text"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                  (let ([text (send dynamic-ta get-text)])
                    (displayln (format "Dynamic field text: ~a" text))))])
 
 ;; Section: Theme Switching
 (new message% [parent main-panel]
      [label "5. Theme Switching"]
-     [font (font-semibold 12)])
+     [font (send the-font-list find-or-create-font 12 'default 'normal 'bold)])
 
 (define theme-panel (new horizontal-panel% [parent main-panel]
                         [alignment '(center center)]
@@ -145,22 +143,22 @@
                  (displayln (format "Theme demo field changed: ~a" (send ta get-text))))])
 
 ;; Theme switch buttons
-(new button% [parent theme-panel]
+(new guix-button% [parent theme-panel]
      [label "Light Theme"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                  (set-theme! 'light)
                  (displayln "Switched to light theme"))])
 
-(new button% [parent theme-panel]
+(new guix-button% [parent theme-panel]
      [label "Dark Theme"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                  (set-theme! 'dark)
                  (displayln "Switched to dark theme"))])
 
 ;; Section: Real-time Input Display
 (new message% [parent main-panel]
      [label "6. Real-time Input Display"]
-     [font (font-semibold 12)])
+     [font (send the-font-list find-or-create-font 12 'default 'normal 'bold)])
 
 (define realtime-panel (new vertical-panel% [parent main-panel]
                            [alignment '(center center)]
@@ -176,12 +174,12 @@
 ;; Realtime display message
 (define realtime-message (new message% [parent realtime-panel]
                               [label "Input: "]
-                              [font (font-regular)]))
+                              [font (send the-font-list find-or-create-font 13 'default 'normal 'normal)]))
 
 ;; Section: Multiple Text Areas
 (new message% [parent main-panel]
      [label "7. Multiple Text Areas"]
-     [font (font-semibold 12)])
+     [font (send the-font-list find-or-create-font 12 'default 'normal 'bold)])
 
 (define multiple-panel (new horizontal-panel% [parent main-panel]
                            [alignment '(center center)]
@@ -195,7 +193,7 @@
   
   (new message% [parent ta-panel]
        [label label]
-       [font (font-regular 10)])
+       [font (send the-font-list find-or-create-font 10 'default 'normal 'normal)])
   
   (new guix-text-area% [parent ta-panel]
        [placeholder placeholder]
@@ -208,7 +206,7 @@
 ;; Section: Keyboard Navigation Demo
 (new message% [parent main-panel]
      [label "8. Keyboard Navigation"]
-     [font (font-semibold 12)])
+     [font (send the-font-list find-or-create-font 12 'default 'normal 'bold)])
 
 (define keyboard-panel (new vertical-panel% [parent main-panel]
                            [alignment '(center center)]
@@ -216,39 +214,39 @@
 
 (new message% [parent keyboard-panel]
      [label "Try these keyboard shortcuts:"]
-     [font (font-regular 10)])
+     [font (send the-font-list find-or-create-font 10 'default 'normal 'normal)])
 
 (new message% [parent keyboard-panel]
      [label "- Click to start editing"]
-     [font (font-regular 10)])
+     [font (send the-font-list find-or-create-font 10 'default 'normal 'normal)])
 
 (new message% [parent keyboard-panel]
      [label "- Type to enter text"]
-     [font (font-regular 10)])
+     [font (send the-font-list find-or-create-font 10 'default 'normal 'normal)])
 
 (new message% [parent keyboard-panel]
      [label "- Enter for new line"]
-     [font (font-regular 10)])
+     [font (send the-font-list find-or-create-font 10 'default 'normal 'normal)])
 
 (new message% [parent keyboard-panel]
      [label "- Backspace/Delete to remove text"]
-     [font (font-regular 10)])
+     [font (send the-font-list find-or-create-font 10 'default 'normal 'normal)])
 
 (new message% [parent keyboard-panel]
      [label "- Arrow keys to navigate"]
-     [font (font-regular 10)])
+     [font (send the-font-list find-or-create-font 10 'default 'normal 'normal)])
 
 (new message% [parent keyboard-panel]
      [label "- Home/End to jump to line start/end"]
-     [font (font-regular 10)])
+     [font (send the-font-list find-or-create-font 10 'default 'normal 'normal)])
 
 (new message% [parent keyboard-panel]
      [label "- Tab for indentation"]
-     [font (font-regular 10)])
+     [font (send the-font-list find-or-create-font 10 'default 'normal 'normal)])
 
 (new message% [parent keyboard-panel]
      [label "- Click outside to finish editing"]
-     [font (font-regular 10)])
+     [font (send the-font-list find-or-create-font 10 'default 'normal 'normal)])
 
 ;; Demo field for keyboard navigation
 (new guix-text-area% [parent keyboard-panel]
@@ -259,7 +257,7 @@
 ;; Section: Scrollable Text Area
 (new message% [parent main-panel]
      [label "9. Scrollable Text Area"]
-     [font (font-semibold 12)])
+     [font (send the-font-list find-or-create-font 12 'default 'normal 'bold)])
 
 (define scrollable-panel (new vertical-panel% [parent main-panel]
                               [alignment '(center center)]
@@ -273,30 +271,7 @@
 
 ;; Scrollable text area with long initial text
 (new guix-text-area% [parent scrollable-container]
-     [init-value "This is a scrollable text area with a lot of content.\n" 
-                 #<<EOF
-Line 1: This text area demonstrates scrolling behavior.
-Line 2: When you have more text than can fit in the visible area,
-Line 3: the container will show scrollbars.
-Line 4: You can use the scrollbar to navigate through the content.
-Line 5: This is useful for long documents or multi-line input.
-Line 6: You can also use keyboard shortcuts to navigate.
-Line 7: Try using the arrow keys to move around.
-Line 8: Or use Page Up and Page Down.
-Line 9: This text is intentionally long to demonstrate scrolling.
-Line 10: Continue typing to see how the scrollbars work.
-Line 11: The text area will automatically expand if needed.
-Line 12: Or you can set a fixed size with scrollbars.
-Line 13: This example uses a container with auto-vscroll style.
-Line 14: You can also add horizontal scrollbars if needed.
-Line 15: Scrollable text areas are useful for many applications.
-Line 16: They provide a good user experience for long text input.
-Line 17: Try adding more text to see the scrollbars in action.
-Line 18: You can also use the mouse wheel to scroll.
-Line 19: This is a convenient way to navigate through content.
-Line 20: Scrollable text areas are a common UI component.
-EOF
-                 ]
+     [init-value "This is a scrollable text area with a lot of content.\n"]
      [callback (lambda (ta)
                  (displayln "Scrollable text area content changed"))])
 

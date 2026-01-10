@@ -32,7 +32,7 @@
       (new text-field%
            [parent this]
            [placeholder placeholder]
-           [callback callback]
+           [callback (λ (field event) (callback field))] ; 包装回调，只传递第一个参数
            [init-value init-value]
            [style '()]
            [theme theme]))

@@ -34,24 +34,6 @@
      [min-width 100]
      [min-height (button-height)])
     
-    ;;; Mouse event handling
-    (define/override (handle-mouse-event event)
-      (case (send event get-event-type)
-        [(left-down)
-         (set-field! state this 'pressed)
-         (send this refresh-now)]
-        [(left-up)
-         (set-field! state this 'hover)
-         (on-click-callback)
-         (send this refresh-now)]
-        [(enter)
-         (when (eq? (get-field state this) 'normal)
-           (set-field! state this 'hover)
-           (send this refresh-now))]
-        [(leave)
-         (set-field! state this (if (send this get-enabled) 'normal 'disabled))
-         (send this refresh-now)]))
-    
     ;;; Get background color based on button type and state
     (define (get-background-color state theme)
       (if (send this get-enabled)
@@ -91,6 +73,24 @@
             [(text) (make-object color% 0 0 0 0)]  ; Text button has no border
             [else (color-border)])
           (make-object color% 0 0 0 0)))
+    
+    ;;; Mouse event handling
+    (define/override (handle-mouse-event event)
+      (case (send event get-event-type)
+        [(left-down)
+         (set-field! state this 'pressed)
+         (send this refresh-now)]
+        [(left-up)
+         (set-field! state this 'hover)
+         (on-click-callback)
+         (send this refresh-now)]
+        [(enter)
+         (when (eq? (get-field state this) 'normal)
+           (set-field! state this 'hover)
+           (send this refresh-now))]
+        [(leave)
+         (set-field! state this (if (send this get-enabled) 'normal 'disabled))
+         (send this refresh-now)]))
     
     ;;; Drawing method as specified in PRD
     (define/override (render-control dc state theme)

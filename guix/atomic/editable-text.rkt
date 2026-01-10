@@ -121,6 +121,13 @@
     (define/public (get-text) current-text)
     (define/public (set-text str)
       (set! current-text str)
+      (set! cursor-pos (string-length current-text)) ; 更新光标位置
+      (send this refresh))
+    
+    ;; 清除文本内容
+    (define/public (clear)
+      (set! current-text "")
+      (set! cursor-pos 0) ; 重置光标位置
       (send this refresh))
     ))
 
