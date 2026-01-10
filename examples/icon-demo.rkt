@@ -46,13 +46,13 @@
 ;; Show all available icons
 (define icon-names '("plus" "minus" "close" "arrow-left" "arrow-right" "arrow-up" "arrow-down" "search" "menu" "check" "star"))
 
-(for-each (λ (icon-name)
-            (let ([icon-panel (new vertical-panel% [parent icons-panel] [alignment '(center center)])])
+(for-each (lambda (icon-name)
+            (let ((icon-panel (new vertical-panel% [parent icons-panel] [alignment '(center center)])))
               (new icon% 
                    [parent icon-panel]
                    [icon-name icon-name]
                    [size 32]
-                   [callback (λ (icon event)
+                   [callback (lambda (icon event)
                                (displayln (format "~a icon clicked!" icon-name)))])))
           icon-names)
 
@@ -70,9 +70,9 @@
 
 ;; Show same icon in different sizes
 (define (create-size-demo icon-name)
-  (let ([size 16])
+  (let ((size 16))
     (for ([i (in-range 4)])
-      (let ([size-panel (new vertical-panel% [parent sizes-panel] [alignment '(center center)])])
+      (let ((size-panel (new vertical-panel% [parent sizes-panel] [alignment '(center center)])))
         (new icon% 
              [parent size-panel]
              [icon-name icon-name]
@@ -98,13 +98,13 @@
 
 ;; Show same icon in different colors
 (define (create-color-demo icon-name size)
-  (let ([colors (list (make-object color% 255 0 0)    ; Red
+  (let ((colors (list (make-object color% 255 0 0)    ; Red
                       (make-object color% 0 255 0)    ; Green
                       (make-object color% 0 0 255)    ; Blue
                       (make-object color% 255 255 0)  ; Yellow
                       (make-object color% 255 0 255)  ; Magenta
-                      (make-object color% 0 255 255))]) ; Cyan
-    (for-each (λ (color)
+                      (make-object color% 0 255 255)))) ; Cyan
+    (for-each (lambda (color)
                 (new icon% 
                      [parent colors-panel]
                      [icon-name icon-name]
@@ -132,7 +132,7 @@
        [parent interactive-panel]
        [icon-name icon-name]
        [size 48]
-       [callback (λ (icon event)
+       [callback (lambda (icon event)
                    (displayln (format "Interactive ~a icon clicked!" icon-name)))]))
 
 (create-interactive-icon "plus")
@@ -157,7 +157,7 @@
      [icon-name "star"]
      [size 48]
      [enabled? #t]
-     [callback (λ (icon event)
+     [callback (lambda (icon event)
                  (displayln "Enabled star icon clicked!"))])
 
 ;; Disabled icon
@@ -166,7 +166,7 @@
      [icon-name "star"]
      [size 48]
      [enabled? #f]
-     [callback (λ (icon event)
+     [callback (lambda (icon event)
                  (displayln "This should never be called!"))])
 
 ;; Section 6: Dynamic Icon Changes
@@ -187,56 +187,8 @@
        [parent dynamic-panel]
        [icon-name "arrow-right"]
        [size 48]
-       [callback (λ (icon event)
+       [callback (lambda (icon event)
                    (displayln "Dynamic icon clicked!"))]))
-
-;; Control panel for dynamic changes
-(define dynamic-control-panel
-  (new horizontal-panel% 
-       [parent dynamic-panel]
-       [alignment '(center center)]
-       [spacing 10]))
-
-;; Button to change icon name
-(new button% 
-     [parent dynamic-control-panel]
-     [label "Change Icon"]
-     [min-width 120]
-     [callback (λ (btn event) 
-                 (let ([current-icon (send dynamic-icon get-icon-name)])
-                   (if (equal? current-icon "arrow-right")
-                       (begin
-                         (send dynamic-icon set-icon-name! "arrow-left")
-                         (displayln "Icon changed to arrow-left"))
-                       (begin
-                         (send dynamic-icon set-icon-name! "arrow-right")
-                         (displayln "Icon changed to arrow-right")))))])
-  )
-
-;; Button to change icon size
-(new button% 
-     [parent dynamic-control-panel]
-     [label "Change Size"]
-     [min-width 120]
-     [callback (λ (btn event) 
-                 (let ([current-size (send dynamic-icon get-icon-size)])
-                   (if (= current-size 48)
-                       (begin
-                         (send dynamic-icon set-icon-size! 32)
-                         (displayln "Icon size changed to 32px"))
-                       (begin
-                         (send dynamic-icon set-icon-size! 48)
-                         (displayln "Icon size changed to 48px"))))])
-
-;; Button to toggle enabled state
-(new button% 
-     [parent dynamic-control-panel]
-     [label "Toggle Enabled"]
-     [min-width 120]
-     [callback (λ (btn event) 
-                 (let ([current-state (send dynamic-icon get-enabled)])
-                   (send dynamic-icon set-enabled (not current-state))
-                   (displayln (format "Icon enabled: ~a" (not current-state))))])
 
 ;; Section 7: Theme Switching
 (new message% 
@@ -271,15 +223,14 @@
      [parent main-panel]
      [label "Toggle Theme (Light/Dark)"]
      [min-width 180]
-     [callback (λ (btn event) 
+     [callback (lambda (btn event) 
                  (if (equal? (current-theme) light-theme)
                      (begin
                        (set-theme! 'dark)
                        (displayln "Theme switched to dark"))
                      (begin
                        (set-theme! 'light)
-                       (displayln "Theme switched to light"))))]
-  )
+                       (displayln "Theme switched to light"))))])
 
 ;; Show window
 (send frame show #t)
@@ -296,5 +247,3 @@
 (displayln "  - Enabled/disabled states")
 (displayln "  - Dynamic icon changes (name, size, enabled state)")
 (displayln "  - Theme switching support")
-(displayln "")
-(displayln "Try clicking the interactive icons and changing the theme!")
