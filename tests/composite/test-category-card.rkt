@@ -9,7 +9,7 @@
          "../../guix/composite/category-card.rkt"
         "../../guix/style/config.rkt")
 
-;; 创建一个简单的测试框架
+;; Create a simple test frame
 (define test-frame
   (new frame%
        [label "Category Card Test Frame"]
@@ -17,14 +17,11 @@
        [height 300]
        [style '(no-resize-border)]))
 
-;; 显示测试框架
-
-;; 测试套件
+;; Test suite
 (define category-card-tests
   (test-suite
    "category-card% Tests"
    
-   ;; 测试1: 基本创建和属性设置
    (test-case "Basic Creation and Properties" 
      (define button
        (new category-card%
@@ -33,11 +30,10 @@
             [count 5]
             [icon-symbol "🔍"]))
      
-     ;; 验证控件创建成功
+     ;; Verify control was created successfully
      (check-not-false button "Category card should be created successfully")
      )
    
-   ;; 测试2: 点击回调
    (test-case "Click Callback" 
      (define clicked #f)
      (define card
@@ -47,7 +43,7 @@
             [count 5]
             [on-click (λ () (set! clicked #t))]))
      
-     ;; 模拟鼠标进入、按下和抬起事件
+     ;; Simulate mouse enter, down, and up events
      (define enter-event (make-object mouse-event% 'enter 0 0 0 0 '() 0 #f 0 0 0 #f))
      (define mouse-down-event (make-object mouse-event% 'left-down 0 0 0 0 '(left) 0 #f 0 0 0 #f))
      (define mouse-up-event (make-object mouse-event% 'left-up 0 0 0 0 '(left) 0 #f 0 0 0 #f))
@@ -56,11 +52,10 @@
      (send card handle-mouse-event mouse-down-event)
      (send card handle-mouse-event mouse-up-event)
      
-     ;; 验证回调被调用
+     ;; Verify callback was called
      (check-equal? clicked #t "Callback should be called when card is clicked")
      )
    
-   ;; 测试3: 主题响应
    (test-case "Theme Response" 
      (define card
        (new category-card%
@@ -68,20 +63,19 @@
             [label "Test Category"]
             [count 5]))
      
-     ;; 保存当前主题
+     ;; Save current theme
      (define original-theme (current-theme))
      
-     ;; 切换到深色主题
+     ;; Switch to dark theme
      (set-theme! 'dark)
-     ;; 验证主题已切换
+     ;; Verify theme switched
      (check-equal? (current-theme) dark-theme "Theme should be dark")
      
-     ;; 切换回浅色主题
+     ;; Switch back to light theme
      (set-theme! 'light)
      (check-equal? (current-theme) light-theme "Theme should be light")
      )
    
-   ;; 测试4: 鼠标状态变化
    (test-case "Mouse State Changes" 
      (define card
        (new category-card%
@@ -89,23 +83,23 @@
             [label "Test Category"]
             [count 5]))
      
-     ;; 模拟鼠标进入事件
+     ;; Simulate mouse enter event
      (define enter-event (make-object mouse-event% 'enter 0 0 0 0 '() 0 #f 0 0 0 #f))
      (send card on-event enter-event)
      
-     ;; 模拟鼠标离开事件
+     ;; Simulate mouse leave event
      (define leave-event (make-object mouse-event% 'leave 0 0 0 0 '() 0 #f 0 0 0 #f))
      (send card on-event leave-event)
      
-     ;; 验证控件能够处理鼠标事件
+     ;; Verify control can handle mouse events
      (check-not-false card "Category card should handle mouse events")
      )
    )
 )
 
-;; 运行测试
+;; Run tests
 (require rackunit/text-ui)
 (run-tests category-card-tests)
 
-;; 关闭测试框架
+;; Close the test frame
 (send test-frame show #f)

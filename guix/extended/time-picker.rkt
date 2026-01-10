@@ -20,8 +20,8 @@
     (super-new [parent parent]
                [style (append style '(no-focus))]
                [label label]
-               [min-width 82]
-               [min-height 24])
+               [min-width 70]
+               [min-height 22])
 
     (define selected 'hour)  ; Currently selected part: 'hour or 'minute
     (define has-focus? #f)   ; Whether the control has focus
@@ -32,9 +32,9 @@
       (set! callbacks (cons on-change callbacks)))
 
     ;; Layout constants
-    (define WIDTH 82)
-    (define HEIGHT 24)
-    (define STEPPER-W 18) ; Width of the right arrow area
+    (define WIDTH 70)
+    (define HEIGHT 22)
+    (define STEPPER-W 16) ; Width of the right arrow area
 
     ;; Color scheme (consistent with other controls in the library)
     (define color-accent (make-object color% 0 122 255))      ; Apple blue
@@ -61,7 +61,7 @@
          (cond 
            ;; Click left time area
            [(< x (- WIDTH STEPPER-W))
-            (set! selected (if (< x (/ (- WIDTH STEPPER-W) 2)) 'hour 'minute))]
+            (set! selected (if (< x 26) 'hour 'minute))]
            ;; Click right up arrow area
            [(< y (/ HEIGHT 2)) (adjust-val 1)]
            ;; Click right down arrow area
@@ -103,25 +103,30 @@
       (send dc set-pen hl-color 1 'transparent)
       
       (if (eq? selected 'hour)
-          (send dc draw-rounded-rectangle 2 2 30 (- HEIGHT 4) 4)
-          (send dc draw-rounded-rectangle 32 2 30 (- HEIGHT 4) 4))
+          (send dc draw-rounded-rectangle 2 2 24 (- HEIGHT 4) 4)
+          (send dc draw-rounded-rectangle 28 2 24 (- HEIGHT 4) 4))
 
       ;; 3. Draw time numbers and colon
       (send dc set-font (make-object font% 11 'system 'normal 'bold))
-      (define (draw-txt str x color)
+      (define (draw-txt str x center-x color)
         (send dc set-text-foreground color)
-        (send dc draw-text str x 3))
+        (define-values (txt-w txt-h txt-descender txt-ascent) (send dc get-text-extent str))
+        (define y-pos (quotient (- HEIGHT txt-h) 2))
+        (send dc draw-text str (+ x (- center-x (quotient txt-w 2))) y-pos))
 
       ;; Hour number
-      (draw-txt (~r hour #:min-width 2 #:pad-string "0") 7
+      (draw-txt (~r hour #:min-width 2 #:pad-string "0") 2 12
                 (if (and (eq? selected 'hour) has-focus?) "white" color-text-main))
       
       ;; Colon
       (send dc set-text-foreground color-text-main)
-      (send dc draw-text ":" 28 3)
+      (send dc set-font (make-object font% 11 'system 'normal 'bold))
+      (define-values (colon-w colon-h colon-descender colon-ascent) (send dc get-text-extent ":"))
+      (define colon-y (quotient (- HEIGHT colon-h) 2))
+      (send dc draw-text ":" 26 colon-y)
       
       ;; Minute number
-      (draw-txt (~r minute #:min-width 2 #:pad-string "0") 36
+      (draw-txt (~r minute #:min-width 2 #:pad-string "0") 28 12
                 (if (and (eq? selected 'minute) has-focus?) "white" color-text-main))
 
       ;; 4. Draw right stepper divider line (very light gray)
@@ -133,9 +138,9 @@
       (send dc set-pen "black" 1 'transparent)
       
       ;; Up triangle arrow
-      (send dc draw-polygon (list '(0 . 0) '(6 . 0) '(3 . -3.5)) (- WIDTH 12) 10)
+      (send dc draw-polygon (list '(0 . 0) '(6 . 0) '(3 . -3.5)) (- WIDTH 10) 9)
       ;; Down triangle arrow
-      (send dc draw-polygon (list '(0 . 0) '(6 . 0) '(3 . 3.5)) (- WIDTH 12) 15))
+      (send dc draw-polygon (list '(0 . 0) '(6 . 0) '(3 . 3.5)) (- WIDTH 10) 14))
 
     ;; Public interface: add callback function for value changes
     (define/public (add-callback cb)
