@@ -42,12 +42,15 @@
             (send this set-field-background (color-bg-white)))
           (when is-placeholder-shown?
             (set! is-placeholder-shown? #f)
-            (send this set-value ""))))
+            ;; Only clear if the current value is exactly the placeholder
+            ;; Otherwise, the user has started typing - keep their input
+            (when (string=? current-value current-placeholder)
+              (send this set-value "")))))
     
     ;;; Constructor
     (super-new [parent parent]
                [label label]
-               [init-value (if (string=? init-value "") placeholder init-value)]
+               [init-value (if (string=? init-value "") "" init-value)]
                [callback internal-callback]
                [style (cons 'single style)]
                [min-height (input-height)]
@@ -55,6 +58,8 @@
     
     ;; Initialize placeholder state
     (set! is-placeholder-shown? (string=? init-value ""))
+    (when is-placeholder-shown?
+      (send this set-value current-placeholder))
     
     ;; Register widget to global list for theme switch refresh
     (register-widget this)
@@ -83,8 +88,8 @@
     (define/public (set-placeholder new-placeholder)
       (set! current-placeholder new-placeholder)
       (update-placeholder))
-    
-    ))
+  )
+)
 
 ;; New guix-text-field% with updated naming convention
 (define guix-text-field% text-field%)

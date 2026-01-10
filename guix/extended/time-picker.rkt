@@ -72,14 +72,6 @@
         [(eq? type 'wheel-up)   (adjust-val 1)]
         [(eq? type 'wheel-down) (adjust-val -1)]))
 
-    ;; Handle keyboard input: support arrow keys and Tab key switching
-    (define/override (on-char event)
-      (case (send event get-key-code)
-        [(up)   (adjust-val 1)]
-        [(down) (adjust-val -1)]
-        [(tab)  (set! selected (if (eq? selected 'hour) 'minute 'hour))
-                (send this refresh)]))
-
     ;; Redraw when focus state changes (blue highlight becomes gray)
     (define/override (on-focus on?)
       (set! has-focus? on?)

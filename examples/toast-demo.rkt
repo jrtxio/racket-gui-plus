@@ -35,28 +35,28 @@
 (new modern-button%
      [parent buttons-panel]
      [label "Show Success Toast"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                  (show-toast "Operation completed successfully!" #:type 'success))])
 
 ;; Error toast button
 (new modern-button%
      [parent buttons-panel]
      [label "Show Error Toast"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                  (show-toast "An error occurred during operation!" #:type 'error))])
 
 ;; Info toast button
 (new modern-button%
      [parent buttons-panel]
      [label "Show Info Toast"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                  (show-toast "This is an informational message." #:type 'info))])
 
 ;; Multiple toasts button
 (new modern-button%
      [parent buttons-panel]
      [label "Show Multiple Toasts"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                  (show-toast "First notification message" #:type 'success)
                  (show-toast "Second notification message" #:type 'info)
                  (show-toast "Third notification message" #:type 'error))])
@@ -78,7 +78,7 @@
 (new modern-button%
      [parent theme-toggle-panel]
      [label "Toggle Light/Dark"]
-     [callback (lambda (btn evt)
+     [on-click (lambda ()
                  (if (eq? (current-theme) 'light)
                      (begin
                        (set-theme! 'dark)

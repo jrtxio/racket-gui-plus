@@ -161,7 +161,7 @@
 (define (font-large) (theme-font 'lg 'bold))
 
 ;; Widget sizes
-(define (input-height) (theme-ref* '(widget-sizes input-height) 40))
+(define (input-height) (theme-ref* '(widget-sizes input-height) 28))
 (define (button-height) (theme-ref* '(widget-sizes button-height) 40))
 (define (progress-bar-height) (theme-ref* '(widget-sizes progress-bar-height) 12))
 (define (toast-height) (theme-ref* '(widget-sizes toast-height) 68))

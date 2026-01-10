@@ -28,18 +28,18 @@
 
 ;; Create a theme toggle button
 (define theme-button (new modern-button% 
-                          [parent panel]
-                          [label "Toggle Dark Mode"]
-                          [callback (lambda (button event) 
-                                      (if (eq? (current-theme) light-theme)
-                                          (set-theme! 'dark)
-                                          (set-theme! 'light)))]))
+                         [parent panel]
+                         [label "Toggle Dark Mode"]
+                         [on-click (lambda () 
+                                     (if (eq? (current-theme) light-theme)
+                                         (set-theme! 'dark)
+                                         (set-theme! 'light)))]))
 
 ;; Create a button to animate progress
 (define animate-button (new modern-button% 
                            [parent panel]
                            [label "Animate Progress"]
-                           [callback (lambda (button event) 
+                           [on-click (lambda () 
                                        (define value (/ (random 101) 100.0))
                                        (send slider set-value (inexact->exact (floor (* value 100.0))))
                                        (send progress-bar set-progress value))]))

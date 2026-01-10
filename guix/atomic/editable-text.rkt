@@ -40,17 +40,22 @@
       
       (send dc set-font (font-regular))
       
-      (if (and (string=? current-text "") (not is-editing?))
-          (begin
-            (send dc set-text-foreground (color-text-placeholder))
-            (send dc draw-text placeholder 12 12))
-          (begin
-            (send dc set-text-foreground (color-text-main))
-            (send dc draw-text current-text 12 12)
-            (when (and is-editing? has-focus? cursor-visible?)
-              (let-values ([(text-width _1 _2 _3) (send dc get-text-extent (substring current-text 0 cursor-pos))])
-                (send dc set-pen (color-text-main) 2 'solid)
-                (send dc draw-line (+ 12 text-width) 5 (+ 12 text-width) (- h 5)))))))
+      ;; Calculate vertical center position
+      (let-values ([(_w _h ascent descent) (send dc get-text-extent "Test")])
+        (define font-height (+ ascent descent))
+        (define y-position (/ (- h font-height) 2))
+        
+        (if (and (string=? current-text "") (not is-editing?))
+            (begin
+              (send dc set-text-foreground (color-text-placeholder))
+              (send dc draw-text placeholder 12 y-position))
+            (begin
+              (send dc set-text-foreground (color-text-main))
+              (send dc draw-text current-text 12 y-position)
+              (when (and is-editing? has-focus? cursor-visible?)
+                (let-values ([(text-width _1 _2 _3) (send dc get-text-extent (substring current-text 0 cursor-pos))])
+                  (send dc set-pen (color-text-main) 2 'solid)
+                  (send dc draw-line (+ 12 text-width) 5 (+ 12 text-width) (- h 5))))))))
     
     (define/override (on-event event)
       (when (send event button-down?)

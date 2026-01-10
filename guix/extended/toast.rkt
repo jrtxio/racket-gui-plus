@@ -56,7 +56,7 @@
                   (send bg-path rounded-rectangle 
                         1 1 
                         (- w 2) (- h 2)
-                        (border-radius-large))
+                        2)
                   
                   ;; 1. Draw main background
                   (send dc set-brush (get-bg-color) 'solid)
@@ -68,7 +68,7 @@
                   (send border-path rounded-rectangle 
                         0.5 0.5 
                         (- w 1) (- h 1)
-                        (border-radius-large))
+                        2)
                   
                   (send dc set-brush "white" 'transparent)
                   (send dc set-pen (get-border-color) 1 'solid)
