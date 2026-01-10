@@ -200,37 +200,42 @@
        [alignment '(center center)]
        [spacing 10]))
 
+;; Define callback functions
+(define (toggle-switch-callback btn event)
+  (let ([current-state (send dynamic-switch get-checked)])
+    (send dynamic-switch set-checked! (not current-state))
+    (displayln (format "Switch toggled to: ~a" (not current-state)))))
+
+(define (toggle-enabled-callback btn event)
+  (let ([current-state (send dynamic-switch get-enabled)])
+    (send dynamic-switch set-enabled! (not current-state))
+    (displayln (format "Switch enabled: ~a" (not current-state)))))
+
+(define (get-state-callback btn event)
+  (let ([checked (send dynamic-switch get-checked)]
+        [enabled (send dynamic-switch get-enabled)])
+    (displayln (format "Current state - Checked: ~a, Enabled: ~a" checked enabled))))
+
 ;; Button to toggle switch state
 (new button% 
      [parent dynamic-control-panel]
      [label "Toggle Switch"]
      [min-width 120]
-     [callback (λ (btn event) 
-                 (let ([current-state (send dynamic-switch get-checked)])
-                   (send dynamic-switch set-checked! (not current-state))
-                   (displayln (format "Switch toggled to: ~a" (not current-state))))])
-  )
+     [callback toggle-switch-callback])
 
 ;; Button to enable/disable switch
 (new button% 
      [parent dynamic-control-panel]
      [label "Toggle Enabled"]
      [min-width 120]
-     [callback (λ (btn event) 
-                 (let ([current-state (send dynamic-switch get-enabled)])
-                   (send dynamic-switch set-enabled! (not current-state))
-                   (displayln (format "Switch enabled: ~a" (not current-state))))])
-  )
+     [callback toggle-enabled-callback])
 
 ;; Button to get current state
 (new button% 
      [parent dynamic-control-panel]
      [label "Get State"]
      [min-width 120]
-     [callback (λ (btn event) 
-                 (let ([checked (send dynamic-switch get-checked)]
-                       [enabled (send dynamic-switch get-enabled)])
-                   (displayln (format "Current state - Checked: ~a, Enabled: ~a" checked enabled))))])
+     [callback get-state-callback])
 
 ;; Section 5: Switch with Real-time Status Display
 (new message% 
@@ -372,23 +377,25 @@
        [label "Original Label"]
        [checked? #f]
        [callback (λ (swt event)
-                   (displayln (format "Label switch checked: ~a" (send swt get-checked))))])
-  )
+                   (displayln (format "Label switch checked: ~a" (send swt get-checked))))]))
+
+;; Define callback function for label change
+(define (change-label-callback btn event)
+  (let ([current-label (send label-switch get-switch-label)])
+    (if (equal? current-label "Original Label")
+        (begin
+          (send label-switch set-switch-label! "New Label")
+          (displayln "Switch label changed to: New Label"))
+        (begin
+          (send label-switch set-switch-label! "Original Label")
+          (displayln "Switch label changed to: Original Label")))))
 
 ;; Button to change switch label
 (new button% 
      [parent label-change-panel]
      [label "Change Label"]
      [min-width 120]
-     [callback (λ (btn event) 
-                 (let ([current-label (send label-switch get-switch-label)])
-                   (if (equal? current-label "Original Label")
-                       (begin
-                         (send label-switch set-switch-label! "New Label")
-                         (displayln "Switch label changed to: New Label"))
-                       (begin
-                         (send label-switch set-switch-label! "Original Label")
-                         (displayln "Switch label changed to: Original Label"))))])
+     [callback change-label-callback])
 
 ;; Usage instructions
 (new message% 

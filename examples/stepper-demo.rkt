@@ -189,8 +189,7 @@
        [max-value 100]
        [step 1]
        [callback (λ (stp value)
-                   (displayln (format "Dynamic stepper value: ~a" value)))])
-  )
+                   (displayln (format "Dynamic stepper value: ~a" value)))]))
 
 ;; Control panel for dynamic operations
 (define dynamic-control-panel
@@ -208,54 +207,61 @@
                  (send dynamic-stepper set-value! (send dynamic-stepper get-min-value))
                  (displayln "Stepper set to minimum value"))])
 
+;; Define callback functions
+(define (set-middle-callback btn event)
+  (let ([min-val (send dynamic-stepper get-min-value)]
+        [max-val (send dynamic-stepper get-max-value)])
+    (send dynamic-stepper set-value! (quotient (+ min-val max-val) 2))
+    (displayln "Stepper set to middle value")))
+
+(define (set-max-callback btn event)
+  (send dynamic-stepper set-value! (send dynamic-stepper get-max-value))
+  (displayln "Stepper set to maximum value"))
+
+(define (toggle-step-callback btn event)
+  (let ([current-step (send dynamic-stepper get-step)])
+    (if (= current-step 1)
+        (begin
+          (send dynamic-stepper set-step! 10)
+          (displayln "Step changed to 10")
+          (send dynamic-stepper set-value! 0))
+        (begin
+          (send dynamic-stepper set-step! 1)
+          (displayln "Step changed to 1")
+          (send dynamic-stepper set-value! 0)))))
+
+(define (toggle-enabled-callback btn event)
+  (let ([current-state (send dynamic-stepper get-enabled)])
+    (send dynamic-stepper set-enabled! (not current-state))
+    (displayln (format "Stepper enabled: ~a" (not current-state)))))
+
 ;; Button to set stepper to middle value
 (new button% 
      [parent dynamic-control-panel]
      [label "Set Middle"]
      [min-width 100]
-     [callback (λ (btn event) 
-                 (let ([min-val (send dynamic-stepper get-min-value)]
-                       [max-val (send dynamic-stepper get-max-value)])
-                   (send dynamic-stepper set-value! (quotient (+ min-val max-val) 2))
-                   (displayln "Stepper set to middle value")))]
-  )
+     [callback set-middle-callback])
 
 ;; Button to set stepper to maximum value
 (new button% 
      [parent dynamic-control-panel]
      [label "Set Max"]
      [min-width 100]
-     [callback (λ (btn event) 
-                 (send dynamic-stepper set-value! (send dynamic-stepper get-max-value))
-                 (displayln "Stepper set to maximum value"))])
+     [callback set-max-callback])
 
 ;; Button to change step size
 (new button% 
      [parent dynamic-control-panel]
      [label "Toggle Step"]
      [min-width 100]
-     [callback (λ (btn event) 
-                 (let ([current-step (send dynamic-stepper get-step)])
-                   (if (= current-step 1)
-                       (begin
-                         (send dynamic-stepper set-step! 10)
-                         (displayln "Step changed to 10")
-                         (send dynamic-stepper set-value! 0))
-                       (begin
-                         (send dynamic-stepper set-step! 1)
-                         (displayln "Step changed to 1")
-                         (send dynamic-stepper set-value! 0))))])
+     [callback toggle-step-callback])
 
 ;; Button to toggle enabled state
 (new button% 
      [parent dynamic-control-panel]
      [label "Toggle Enabled"]
      [min-width 100]
-     [callback (λ (btn event) 
-                 (let ([current-state (send dynamic-stepper get-enabled)])
-                   (send dynamic-stepper set-enabled! (not current-state))
-                   (displayln (format "Stepper enabled: ~a" (not current-state))))])
-  )
+     [callback toggle-enabled-callback])
 
 ;; Section 7: Multiple Steppers in a Group
 (new message% 
