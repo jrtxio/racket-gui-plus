@@ -11,4 +11,9 @@
 
 ;; Configure package collection mapping
 (define collection-links
-  `(("guix" ,(build-path "guix"))))
+  `("guix" ,(build-path "guix")))
+
+;; Test configuration for CI environment
+;; Skip all test files since they require GUI environment
+(define test-omit-paths
+  '("tests"))

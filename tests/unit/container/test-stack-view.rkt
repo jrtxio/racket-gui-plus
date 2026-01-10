@@ -19,7 +19,6 @@
        [style '(no-resize-border)]))
 
 ;; Show test frame
-(send test-frame show #t)
 
 ;; Test suite
 (define stack-view-tests

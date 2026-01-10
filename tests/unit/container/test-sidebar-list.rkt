@@ -18,7 +18,6 @@
        [style '(no-resize-border)]))
 
 ;; 显示测试框架
-(send test-frame show #t)
 
 ;; 创建测试用的列表项
 (define (create-test-items count)

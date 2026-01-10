@@ -17,7 +17,6 @@
        [style '(no-resize-border)]))
 
 ;; 显示测试框架
-(send test-frame show #t)
 
 ;; 测试套件
 (define date-time-picker-tests
