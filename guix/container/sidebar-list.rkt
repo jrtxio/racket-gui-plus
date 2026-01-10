@@ -121,15 +121,19 @@
                               truncated
                               (loop (- length 1))))))
                   full-label)))
-          (send dc draw-text label-to-draw text-start-x (+ y 7.0))
+          ;; Calculate text vertical centering
+          (define-values (tw th _1 _2) (send dc get-text-extent label-to-draw))
+          (define text-y (+ y (/ (- item-h th) 2.0)))
+          (send dc draw-text label-to-draw text-start-x text-y)
           
           ;; 4. Counter
           (let* ([count-str (number->string (send item get-count))]
                  [text-color (if is-selected "white" (color-text-placeholder))])
             (send dc set-font (font-small))
             (send dc set-text-foreground text-color)
-            (define-values (tw _1 _2 _3) (send dc get-text-extent count-str))
-            (send dc draw-text count-str (- w margin 12.0 tw) (+ y 8.0))))))
+            (define-values (count-tw count-th _1 _2) (send dc get-text-extent count-str))
+            (define count-y (+ y (/ (- item-h count-th) 2.0)))
+            (send dc draw-text count-str (- w margin 12.0 count-tw) count-y)))))
     
     ;; Create context menu
     (define (create-context-menu)
@@ -211,8 +215,11 @@
       (define y (send event get-y))
       (define-values (w h) (send this get-client-size))
       
-      (define idx (if (< y (spacing-medium)) -1 (inexact->exact (quotient (truncate (- y (spacing-medium))) (+ 34.0 (spacing-small))))))
-      (define is-over-item (and (>= x (spacing-medium)) (<= x (- w (spacing-medium)))
+      (define margin (spacing-xs))
+      (define item-h 34.0)
+      (define gap 0)
+      (define idx (if (< y margin) -1 (inexact->exact (quotient (truncate (- y margin)) (+ item-h gap)))))
+      (define is-over-item (and (>= x margin) (<= x (- w margin))
                                 (>= idx 0) (< idx (length items))))
 
       (case (send event get-event-type)
