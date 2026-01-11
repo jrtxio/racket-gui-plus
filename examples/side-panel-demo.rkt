@@ -60,7 +60,7 @@
 (new button%
      [parent sidebar-pane]
      [label "Sidebar Button"]
-     [callback (λ (btn evt) (displayln "Sidebar button clicked"))])
+     [on-click (λ () (displayln "Sidebar button clicked"))])
 
 ;; Add content to main content area
 (new message%
@@ -119,7 +119,7 @@
 (new button%
      [parent control-panel]
      [label "Set Width: 200"]
-     [callback (λ (btn evt)
+     [on-click (λ ()
                  (send side-panel set-side-panel-width! 200)
                  (update-width-display))])
 
@@ -127,7 +127,7 @@
 (new button%
      [parent control-panel]
      [label "Set Width: 300"]
-     [callback (λ (btn evt)
+     [on-click (λ ()
                  (send side-panel set-side-panel-width! 300)
                  (update-width-display))])
 
@@ -135,7 +135,7 @@
 (new button%
      [parent control-panel]
      [label "Set Min Width: 200"]
-     [callback (λ (btn evt)
+     [on-click (λ ()
                  (send side-panel set-min-width! 200)
                  (displayln (format "Min width set to: ~a" (send side-panel get-min-width))))])
 
@@ -143,7 +143,7 @@
 (new button%
      [parent control-panel]
      [label "Set Max Width: 350"]
-     [callback (λ (btn evt)
+     [on-click (λ ()
                  (send side-panel set-max-width! 350)
                  (displayln (format "Max width set to: ~a" (send side-panel get-max-width))))])
 
@@ -151,7 +151,7 @@
 (new button%
      [parent control-panel]
      [label "Reset Min/Max Width"]
-     [callback (λ (btn evt)
+     [on-click (λ ()
                  (send side-panel set-min-width! 150)
                  (send side-panel set-max-width! 400)
                  (displayln "Min/max width reset to default values"))])
@@ -160,7 +160,7 @@
 (new button%
      [parent control-panel]
      [label "Toggle Theme"]
-     [callback (λ (btn evt)
+     [on-click (λ ()
                  (if (equal? (current-theme) light-theme)
                      (set-theme! 'dark)
                      (set-theme! 'light))

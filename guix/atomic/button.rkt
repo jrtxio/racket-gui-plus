@@ -35,44 +35,44 @@
      [min-height (button-height)])
     
     ;;; Get background color based on button type and state
-    (define (get-background-color state theme)
-      (if (send this get-enabled)
-          (case current-type
-            [(primary)
-             (case state
-               [(pressed) (color-accent-pressed)]
-               [(hover) (color-accent)]
-               [else (color-accent)])]
-            [(secondary)
-             (case state
-               [(pressed) (color-bg-pressed)]
-               [(hover) (color-bg-hover)]
-               [else (color-bg-light)])]
-            [(text) (make-object color% 0 0 0 0)]  ; Transparent background
-            [else (color-accent)])
-          ; Disabled state
-          (color-bg-pressed)))
-    
-    ;;; Get text color based on button type and state
-    (define (get-text-color state theme)
-      (if (send this get-enabled)
-          (case current-type
-            [(primary) (make-object color% 255 255 255)]
-            [(secondary) (color-accent)]
-            [(text) (color-accent)]
-            [else (color-text-main)])
-          ; Disabled state
-          (color-text-disabled)))
-    
-    ;;; Get border color based on button type
-    (define (get-border-color state theme)
-      (if (send this get-enabled)
-          (case current-type
-            [(primary) (make-object color% 0 0 0 0)]  ; Primary button has no border
-            [(secondary) (color-border)]
-            [(text) (make-object color% 0 0 0 0)]  ; Text button has no border
-            [else (color-border)])
-          (make-object color% 0 0 0 0)))
+(define (get-background-color state theme)
+  (if (send this get-enabled)
+      (case current-type
+        [(primary)
+         (case state
+           [(pressed) (color-bg-pressed)]
+           [(hover) (color-accent)]
+           [else (color-accent)])]
+        [(secondary)
+         (case state
+           [(pressed) (color-bg-pressed)]
+           [(hover) (color-bg-hover)]
+           [else (color-bg-light)])]
+        [(text) (make-object color% 0 0 0 0)]  ; Transparent background
+        [else (color-accent)])
+      ; Disabled state
+      (color-bg-pressed)))
+
+;;; Get text color based on button type and state
+(define (get-text-color state theme)
+  (if (send this get-enabled)
+      (case current-type
+        [(primary) (make-object color% 255 255 255)]
+        [(secondary) (color-accent)]
+        [(text) (color-accent)]
+        [else (color-text-main)])
+      ; Disabled state
+      (color-text-disabled)))
+
+;;; Get border color based on button type
+(define (get-border-color state theme)
+  (if (send this get-enabled)
+      (case current-type
+        [(primary) (make-object color% 0 0 0 0)]  ; Primary button has no border
+        [(secondary) (color-border)]
+        [(text) (make-object color% 0 0 0 0)]  ; Text button has no border
+        [else (color-border)])
+      (make-object color% 0 0 0 0)))
     
     ;;; Mouse event handling
     (define/override (handle-mouse-event event)
@@ -97,8 +97,7 @@
       (let-values ([(width height) (get-client-size)])
       (let* ([bg-color (get-background-color state theme)]
              [text-color (get-text-color state theme)]
-             [border-color (get-border-color state theme)]
-             [control-bg-color (color-bg-white)])  ; Use theme background color for control
+             [border-color (get-border-color state theme)])
         
         ; Clear the control area to match parent panel's background
         ; This prevents white artifacts around the button
