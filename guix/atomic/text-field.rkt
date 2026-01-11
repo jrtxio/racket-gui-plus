@@ -21,45 +21,69 @@
     
     ;;; Instance variables
     (define current-placeholder placeholder)
-    (define is-placeholder-shown? #f)
+    (define actual-value init-value)
+    (define is-focused? #f)
     
-    ;;; Internal callback that handles placeholder behavior
+    ;;; Update display based on focus and actual value
+    (define (update-display)
+      (let ([current-field-value (super get-value)])
+        (cond
+          [(and (string=? actual-value "") 
+                (not is-focused?) 
+                (string=? current-field-value "")
+                (not (string=? current-placeholder "")))
+           ;; Only show placeholder when:
+           ;; 1. No actual value
+           ;; 2. Not focused
+           ;; 3. Current field is truly empty (not just placeholder text)
+           ;; 4. Placeholder is not empty
+           (super set-value current-placeholder)]
+          [(and (string=? actual-value "") is-focused?)
+           ;; When focused and no actual value, ensure field is empty
+           ;; This prevents placeholder from reappearing during IME input
+           (unless (string=? current-field-value "")
+             (super set-value ""))]
+          [else
+           ;; When there's actual content, ensure field shows it
+           ;; Only update if values differ to avoid unnecessary jumps
+           (unless (string=? current-field-value actual-value)
+             (super set-value actual-value))])))
+    
+    ;;; Internal callback that handles placeholder behavior and focus events
     (define (internal-callback field event)
-      ;; Call original callback
-      (callback field event)
+      ;; Handle focus events
+      (case (send event get-event-type)
+        [(focus-in)
+         (set! is-focused? #t)
+         (update-display)]
+        [(focus-out)
+         (set! is-focused? #f)
+         (update-display)]
+        [(text-field-char text-field-delete text-field-change)
+         ;; Update actual value immediately for any text change event
+         ;; This ensures proper handling of Chinese IME input
+         (set! actual-value (super get-value))
+         ;; No need to call update-display here - actual value is already shown
+         ])
       
-      ;; Update placeholder state
-      (update-placeholder))
-    
-    ;;; Update placeholder visibility based on text content
-    (define (update-placeholder)
-      (define current-value (send this get-value))
-      (if (and (string=? current-value "") (not (string=? current-placeholder "")))
-          (unless is-placeholder-shown?
-            (set! is-placeholder-shown? #t)
-            ;; Set placeholder text with gray color
-            (send this set-value current-placeholder)
-            (send this set-field-background (color-bg-white)))
-          (when is-placeholder-shown?
-            (set! is-placeholder-shown? #f)
-            ;; Only clear if the current value is exactly the placeholder
-            ;; Otherwise, the user has started typing - keep their input
-            (when (string=? current-value current-placeholder)
-              (send this set-value "")))))
+      ;; Call original callback
+      (callback field event))
     
     ;;; Constructor
     (super-new [parent parent]
                [label label]
                [init-value (if (string=? init-value "") "" init-value)]
                [callback internal-callback]
-               [style (cons 'single style)]
-               [min-height (input-height)]
-               [min-width 200])
+               [style (append '(single) style)]
+               [font (font-regular)]
+               [min-height 26] ; Reduced height to fix Chinese-English alignment
+               [min-width 200]
+               [vert-margin 4] ; Adjusted margin for new height
+               [horiz-margin 4])
     
-    ;; Initialize placeholder state
-    (set! is-placeholder-shown? (string=? init-value ""))
-    (when is-placeholder-shown?
-      (send this set-value current-placeholder))
+    ;; Initialize actual value and display
+    (set! actual-value init-value)
+    (update-display)
     
     ;; Register widget to global list for theme switch refresh
     (register-widget this)
@@ -69,16 +93,24 @@
     
     ;; Public methods for backward compatibility
     (define/public (get-text)
-      (if is-placeholder-shown? "" (send this get-value)))
+      actual-value)
     
     (define/public (set-text str)
-      (when is-placeholder-shown?
-        (set! is-placeholder-shown? #f))
-      (send this set-value str))
+      (set! actual-value str)
+      (update-display))
     
     (define/public (clear)
-      (send this set-value "")
-      (update-placeholder))
+      (set! actual-value "")
+      (update-display))
+    
+    ;; Override get-value to return actual value
+    (define/override (get-value)
+      actual-value)
+    
+    ;; Override set-value to update actual value
+    (define/override (set-value str)
+      (set! actual-value str)
+      (update-display))
     
     ;; Public method to get placeholder
     (define/public (get-placeholder)
@@ -87,7 +119,7 @@
     ;; Public method to set placeholder
     (define/public (set-placeholder new-placeholder)
       (set! current-placeholder new-placeholder)
-      (update-placeholder))
+      (update-display))
   )
 )
 
