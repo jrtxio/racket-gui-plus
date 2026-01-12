@@ -1,7 +1,7 @@
 #lang racket/gui
 
 (require racket/class
-         (only-in racket/gui text-field% [text-field% original-text-field%])
+         (only-in racket/gui [text-field% original-text-field%])
          "../style/config.rkt")
 
 (provide text-field%
@@ -30,7 +30,7 @@
         (cond
           [(and (string=? actual-value "") 
                 (not is-focused?) 
-                (string=? current-field-value "")
+               (not (string=? current-field-value ""))
                 (not (string=? current-placeholder "")))
            ;; Only show placeholder when:
            ;; 1. No actual value
@@ -120,6 +120,16 @@
     (define/public (set-placeholder new-placeholder)
       (set! current-placeholder new-placeholder)
       (update-display))
+    
+    ;; Get minimum height (for testing)
+    (define/public (get-min-height)
+      26)
+    
+    ;; Get minimum width (for testing)
+    (define/public (get-min-width)
+      200)
+    
+    ;; No need to override on-char method - superclass handles it properly
   )
 )
 

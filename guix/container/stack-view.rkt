@@ -80,7 +80,8 @@
     (define/public (remove-view index)
       (when (and (>= index 0) (< index (length view-stack)))
         ;; 销毁视图
-        (send (list-ref view-stack index) destroy)
+        (define view-panel (list-ref view-stack index))
+        (send this delete-child view-panel)
         
         ;; 移除视图数据
         (set! view-stack (append (take view-stack index)
@@ -101,7 +102,7 @@
     (define/public (clear-views)
       ;; 销毁所有视图
       (for ([view view-stack])
-        (send view destroy))
+        (send this delete-child view))
       
       ;; 重置数据
       (set! view-stack '())

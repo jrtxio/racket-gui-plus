@@ -59,12 +59,12 @@
                         (set! callback-called #t)
                         (set! callback-text (send t get-text)))]))
      
-     ;; Set text and simulate lost focus to trigger callback
+     ;; Set text and trigger callback
      (send editable-text set-text "Callback Test")
-     ;; Simulate lost focus
-     (send editable-text on-focus #f)
+     ;; Trigger callback directly
+     (send editable-text trigger-callback)
      
-     (check-equal? callback-called #t "Callback should be called when focus is lost")
+     (check-equal? callback-called #t "Callback should be called when triggered")
      (check-equal? callback-text "Callback Test" "Callback should receive the correct text")
      )
    

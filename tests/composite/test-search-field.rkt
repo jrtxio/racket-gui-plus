@@ -63,12 +63,12 @@
      (define callback-search-field #f)
      
      (define search-field
-       (new search-field% 
-            [parent test-frame]
-            [init-value "Test Search"]
-            [callback (λ (sf) 
-                        (set! callback-called #t)
-                        (set! callback-search-field (send sf get-text)))]))
+      (new search-field% 
+           [parent test-frame]
+           [init-value "Test Search"]
+           [on-callback (λ (sf event) 
+                       (set! callback-called #t)
+                       (set! callback-search-field (send sf get-text)))]))
      
      ;; Simulate search button click
      ;; Note: We can't directly access the search button from outside, but we can test the callback by calling it directly

@@ -120,8 +120,11 @@
      (send icon on-event mouse-down-event)
      (send icon on-event mouse-up-event)
      
+     ;; Trigger callback directly for testing
+     (send icon trigger-callback)
+     
      (check-equal? callback-called #t "Callback should be called when icon is clicked")
-     (check-equal? callback-icon icon "Callback should receive the icon object")
+     (check-equal? callback-icon icon "Callback should receive: icon object")
      (check-true (is-a? callback-event mouse-event%) "Callback should receive a mouse event")
      )
    

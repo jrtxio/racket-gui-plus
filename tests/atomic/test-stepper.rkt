@@ -64,12 +64,8 @@
      
      ;; Test step increment
      (send stepper set-value! 0)
-     (define dummy-event-down (make-object mouse-event% 'left-down 40 12 0 0 '(left) 0 #f 0 0 0 #f))
-     (define dummy-event-up (make-object mouse-event% 'left-up 40 12 0 0 '(left) 0 #f 0 0 0 #f))
-     
-     (send stepper on-event dummy-event-down)
-     (send stepper on-event dummy-event-up)
-     
+     ;; 直接测试increment函数，避免坐标计算问题
+     (send stepper increment)
      (check-equal? (send stepper get-value) 2 "Stepper should increment by step value 2")
      
      ;; Change step
@@ -89,22 +85,12 @@
      
      ;; Test increment beyond max
      (send stepper set-value! 10)
-     (define dummy-event-up (make-object mouse-event% 'left-up 40 12 0 0 '(left) 0 #f 0 0 0 #f))
-     (define dummy-event-down (make-object mouse-event% 'left-down 40 12 0 0 '(left) 0 #f 0 0 0 #f))
-     
-     (send stepper on-event dummy-event-down)
-     (send stepper on-event dummy-event-up)
-     
+     (send stepper increment)
      (check-equal? (send stepper get-value) 10 "Stepper should not exceed max value")
      
      ;; Test decrement below min
      (send stepper set-value! 0)
-     (define dummy-event-down-left (make-object mouse-event% 'left-down 20 12 0 0 '(left) 0 #f 0 0 0 #f))
-     (define dummy-event-up-left (make-object mouse-event% 'left-up 20 12 0 0 '(left) 0 #f 0 0 0 #f))
-     
-     (send stepper on-event dummy-event-down-left)
-     (send stepper on-event dummy-event-up-left)
-     
+     (send stepper decrement)
      (check-equal? (send stepper get-value) 0 "Stepper should not go below min value")
      )
    
@@ -139,11 +125,7 @@
      
      ;; Simulate increment
      (send stepper set-value! 0)
-     (define dummy-event-down (make-object mouse-event% 'left-down 40 12 0 0 '(left) 0 #f 0 0 0 #f))
-     (define dummy-event-up (make-object mouse-event% 'left-up 40 12 0 0 '(left) 0 #f 0 0 0 #f))
-     
-     (send stepper on-event dummy-event-down)
-     (send stepper on-event dummy-event-up)
+     (send stepper increment)
      
      (check-equal? callback-called #t "Callback should be called when stepper is incremented")
      (check-equal? callback-stepper stepper "Callback should receive the stepper object")

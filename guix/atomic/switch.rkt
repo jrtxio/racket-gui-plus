@@ -20,7 +20,8 @@
           [label ""]
           [checked? #f]
           [enabled? #t]
-          [callback #f])
+          [callback #f]
+          [theme-aware? #t])
     
     ;;; Instance variables
     (define current-parent parent)
@@ -131,7 +132,11 @@
     
     ;;; API consistency: get-enabled (inherited from base class)
     
-    ;;; Set enabled state (inherited from base class)
+    ;;; Get enabled state (alias for consistency)
+    (define/public (get-enabled-state)
+      (send this get-enabled))
+    
+    ;; Set enabled state (inherited from base class)
     
     ;;; API consistency: set-enabled! (backward compatibility)
     (define/public (set-enabled! [on? #t])

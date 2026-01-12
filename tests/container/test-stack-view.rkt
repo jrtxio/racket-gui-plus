@@ -42,11 +42,11 @@
             [parent test-frame]))
      
      ;; Create some test panels with labels
-     (define view1 (new panel% [parent stack-view] [style '()]))
-     (new label% [parent view1] [label "View 1"] [alignment '(center center)])
-     
-     (define view2 (new panel% [parent stack-view] [style '()]))
-     (new label% [parent view2] [label "View 2"] [alignment '(center center)])
+    (define view1 (new panel% [parent stack-view] [style '()] [alignment '(center center)]))
+    (new guix-label% [parent view1] [label "View 1"])
+    
+    (define view2 (new panel% [parent stack-view] [style '()] [alignment '(center center)]))
+    (new guix-label% [parent view2] [label "View 2"])
      
      ;; Add views to stack-view
      (define index1 (send stack-view add-view view1))
@@ -64,42 +64,42 @@
             [parent test-frame]))
      
      ;; Create some test panels with labels
-     (define view1 (new panel% [parent stack-view] [style '()]))
-     (new label% [parent view1] [label "View 1"] [alignment '(center center)])
-     
-     (define view2 (new panel% [parent stack-view] [style '()]))
-     (new label% [parent view2] [label "View 2"] [alignment '(center center)])
-     
-     ;; Add views to stack-view
-     (send stack-view add-view view1)
-     (send stack-view add-view view2)
-     
-     ;; Switch to view 1 (index 0)
-     (send stack-view switch-view 0)
-     (check-equal? (send stack-view get-current-view-index) 0 "Current view index should be 0 after switching to view 0")
-     (check-equal? (send stack-view get-current-view) view1 "Current view should be view1 after switching to view 0")
-     
-     ;; Switch to view 2 (index 1)
-     (send stack-view switch-view 1)
-     (check-equal? (send stack-view get-current-view-index) 1 "Current view index should be 1 after switching to view 1")
-     (check-equal? (send stack-view get-current-view) view2 "Current view should be view2 after switching to view 1")
-     )
-   
-   ;; Test 4: Next and Previous View
-   (test-case "Next and Previous View" 
-     (define stack-view
-       (new stack-view% 
+    (define view1 (new panel% [parent stack-view] [style '()] [alignment '(center center)]))
+    (new guix-label% [parent view1] [label "View 1"])
+    
+    (define view2 (new panel% [parent stack-view] [style '()] [alignment '(center center)]))
+    (new guix-label% [parent view2] [label "View 2"])
+    
+    ;; Add views to stack-view
+    (send stack-view add-view view1)
+    (send stack-view add-view view2)
+    
+    ;; Switch to view 1 (index 0)
+    (send stack-view switch-view 0)
+    (check-equal? (send stack-view get-current-view-index) 0 "Current view index should be 0 after switching to view 0")
+    (check-equal? (send stack-view get-current-view) view1 "Current view should be view1 after switching to view 0")
+    
+    ;; Switch to view 2 (index 1)
+    (send stack-view switch-view 1)
+    (check-equal? (send stack-view get-current-view-index) 1 "Current view index should be 1 after switching to view 1")
+    (check-equal? (send stack-view get-current-view) view2 "Current view should be view2 after switching to view 1")
+    )
+  
+  ;; Test 4: Next and Previous View
+  (test-case "Next and Previous View" 
+    (define stack-view
+      (new stack-view% 
             [parent test-frame]))
-     
-     ;; Create some test panels with labels
-     (define view1 (new panel% [parent stack-view] [style '()]))
-     (new label% [parent view1] [label "View 1"] [alignment '(center center)])
-     
-     (define view2 (new panel% [parent stack-view] [style '()]))
-     (new label% [parent view2] [label "View 2"] [alignment '(center center)])
-     
-     (define view3 (new panel% [parent stack-view] [style '()]))
-     (new label% [parent view3] [label "View 3"] [alignment '(center center)])
+    
+    ;; Create some test panels with labels
+    (define view1 (new panel% [parent stack-view] [style '()]))
+    (new guix-label% [parent view1] [label "View 1"])
+    
+    (define view2 (new panel% [parent stack-view] [style '()]))
+    (new guix-label% [parent view2] [label "View 2"])
+    
+    (define view3 (new panel% [parent stack-view] [style '()]))
+    (new guix-label% [parent view3] [label "View 3"])
      
      ;; Add views to stack-view
      (send stack-view add-view view1)
@@ -134,14 +134,14 @@
             [parent test-frame]))
      
      ;; Create some test panels with labels
-     (define view1 (new panel% [parent stack-view] [style '()]))
-     (new label% [parent view1] [label "View 1"] [alignment '(center center)])
-     
-     (define view2 (new panel% [parent stack-view] [style '()]))
-     (new label% [parent view2] [label "View 2"] [alignment '(center center)])
-     
-     (define view3 (new panel% [parent stack-view] [style '()]))
-     (new label% [parent view3] [label "View 3"] [alignment '(center center)])
+    (define view1 (new panel% [parent stack-view] [style '()] [alignment '(center center)]))
+    (new guix-label% [parent view1] [label "View 1"])
+    
+    (define view2 (new panel% [parent stack-view] [style '()] [alignment '(center center)]))
+    (new guix-label% [parent view2] [label "View 2"])
+    
+    (define view3 (new panel% [parent stack-view] [style '()] [alignment '(center center)]))
+    (new guix-label% [parent view3] [label "View 3"])
      
      ;; Add views to stack-view
      (send stack-view add-view view1)

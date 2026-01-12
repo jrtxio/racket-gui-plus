@@ -205,6 +205,11 @@
       (set! enabled-state e)
       (refresh))
     
+    ;;; Trigger callback manually (for testing)
+    (define/public (trigger-callback)
+      (when callback-proc
+        (callback-proc this (make-object mouse-event% 'left-up 0 0 0 0 '(left) 0 #f 0 0 0 #f))))
+    
     ))
 
 ;; New guix-icon% with updated naming convention

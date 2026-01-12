@@ -98,7 +98,7 @@
             [min-value 0]
             [max-value 100]
             [init-value 0]
-            [callback (λ (s event) 
+            [callback-proc (λ (s event) 
                         (set! callback-called #t)
                         (set! callback-slider s)
                         (set! callback-value (send s get-value)))]))

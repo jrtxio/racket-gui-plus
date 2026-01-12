@@ -20,10 +20,12 @@
           [max-value 100]
           [init-value 0]
           [style '(horizontal plain)]
-          [callback #f])
+          [callback-proc #f])
     
     ;;; Instance variables
-    (define current-callback callback)
+    (define current-callback callback-proc)
+    (define min-val min-value)
+    (define max-val max-value)
     
     ;;; Constructor
     (super-new 
@@ -39,6 +41,23 @@
     
     ;;; Register widget for theme updates
     (register-widget this)
+    
+    ;;; Get minimum value (alias for consistency)
+    (define/public (get-min-value)
+      min-val)
+    
+    ;;; Get maximum value (alias for consistency)
+    (define/public (get-max-value)
+      max-val)
+    
+    ;;; Set value (alias for consistency)
+    (define/public (set-value! val)
+      (send this set-value val))
+    
+    ;;; Trigger callback manually (for testing)
+    (define/public (callback slider event)
+      (when current-callback
+        (current-callback slider event)))
     
     this)
   )

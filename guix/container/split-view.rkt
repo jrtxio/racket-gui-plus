@@ -34,9 +34,7 @@
     ;; 初始化拆分视图
     (define (init-split-view)
       ;; 根据方向创建基础面板
-      (if (eq? orientation 'horizontal)
-          (super-new [style (append style '(border))])
-          (super-new [style (append style '(border vertical))]))
+      (void)
       
       ;; 创建第一个面板
       (define panel1 (new panel%

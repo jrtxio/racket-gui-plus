@@ -68,8 +68,9 @@
             [parent panel2]
             [label "Panel 2 Label"]))
      
-     (check-true (member label1 (send panel1 get-children)) "Label should be added to first panel")
-     (check-true (member label2 (send panel2 get-children)) "Label should be added to second panel")
+     ;; 由于panel%没有get-children方法，我们通过检查组件的父对象来验证添加是否成功
+     (check-equal? (send label1 get-parent) panel1 "Label 1's parent should be panel 1")
+     (check-equal? (send label2 get-parent) panel2 "Label 2's parent should be panel 2")
      )
    
    ;; Test 4: Size Ratio Setting

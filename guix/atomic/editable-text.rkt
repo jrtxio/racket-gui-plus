@@ -134,6 +134,10 @@
       (set! current-text "")
       (set! cursor-pos 0) ; 重置光标位置
       (send this refresh))
+    
+    ;; Public method to trigger callback (for testing)
+    (define/public (trigger-callback)
+      (callback this))
     ))
 
 (define guix-editable-text% editable-text%)

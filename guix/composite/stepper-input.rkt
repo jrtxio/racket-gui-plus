@@ -58,9 +58,7 @@
            [parent this]
            [label "-" ]
            [type 'secondary]
-           [callback (λ (btn evt) (decrement))]
-           [min-width 32]
-           [min-height 28]
+           [on-click (λ () (decrement))]
            [stretchable-width #f]
            [theme theme]))
     
@@ -75,9 +73,11 @@
                        (when (and num (>= num min-value) (<= num max-value))
                          (current-value num)
                          (callback this)))]
-           [style '(single horizontal-label)]
-           [min-width 50]
+           [style '(horizontal-label)] ; 移除重复的'single样式，因为text-field%已经默认添加
            [theme theme]))
+    
+    ;; 使用setter方法设置最小宽度
+    (send stepper-text-field min-width 50)
     
     ;; 设置文本输入框为可伸展
     (send stepper-text-field stretchable-width #t)
@@ -88,9 +88,7 @@
            [parent this]
            [label "+" ]
            [type 'secondary]
-           [callback (λ (btn evt) (increment))]
-           [min-width 32]
-           [min-height 28]
+           [on-click (λ () (increment))]
            [stretchable-width #f]
            [theme theme]))
     

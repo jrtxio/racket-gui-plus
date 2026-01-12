@@ -12,12 +12,14 @@
 
 (define search-field%
   (class horizontal-panel%
+    ;; 定义类参数
     (init-field [placeholder "Search..."]
-                [callback (λ (t) (void))]
+                [on-callback (λ (sf event) (void))] ; 使用on-callback参数
                 [init-value ""]
                 [style '()]
                 [theme (current-theme)])
     
+    ;; 调用父类构造函数
     (super-new [style style]
                [spacing 8]
                [alignment '(center center)]
@@ -32,7 +34,7 @@
       (new text-field%
            [parent this]
            [placeholder placeholder]
-           [callback (λ (field event) (callback field))] ; 包装回调，只传递第一个参数
+           [callback (λ (field event) (on-callback field event))] ; 传递on-callback参数
            [init-value init-value]
            [style '()]
            [theme theme]))
@@ -46,7 +48,7 @@
            [parent this]
            [label "Search"]
            [type 'secondary]
-           [on-click (λ () (callback search-text-field))]
+           [on-click (λ () (on-callback search-text-field #f))] ; 点击按钮时调用on-callback
            [stretchable-width #f]
            [theme theme]))
     
@@ -59,6 +61,10 @@
     
     (define/public (clear)
       (send search-text-field clear))
+    
+    ;; 公共方法callback，兼容测试代码
+    (define/public (callback [sf #f] [event #f])
+      (on-callback search-text-field event))
     
     ;; 主题切换时刷新
     (define/override (refresh)

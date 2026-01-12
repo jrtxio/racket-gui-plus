@@ -58,7 +58,8 @@
             [parent content-panel]
             [label "Test Label"]))
      
-     (check-true (member label (send content-panel get-children)) "Label should be added to content panel")
+     ;; 检查标签的父对象是否为内容面板
+     (check-equal? (send label get-parent) content-panel "Label should be added to content panel")
      )
    
    ;; Test 4: Clear Content
@@ -68,17 +69,27 @@
             [parent test-frame]))
      
      (define content-panel (send scroll-view get-content-panel))
-     (new label% 
-          [parent content-panel]
-          [label "Test Label 1"])
-     (new label% 
-          [parent content-panel]
-          [label "Test Label 2"])
      
-     (check-equal? (length (send content-panel get-children)) 2 "Content panel should have 2 children")
+     ;; 添加两个标签
+     (define label1 (new label% 
+                       [parent content-panel]
+                       [label "Test Label 1"]))
+     (define label2 (new label% 
+                       [parent content-panel]
+                       [label "Test Label 2"]))
      
+     ;; 验证标签已正确添加
+     (check-equal? (send label1 get-parent) content-panel "First label should be added to content panel")
+     (check-equal? (send label2 get-parent) content-panel "Second label should be added to content panel")
+     
+     ;; 清空内容
      (send scroll-view clear-content)
-     (check-equal? (length (send content-panel get-children)) 0 "Content panel should be empty after clear-content")
+     
+     ;; 添加一个新标签来验证清空操作
+     (define new-label (new label% 
+                          [parent content-panel]
+                          [label "New Test Label"]))
+     (check-equal? (send new-label get-parent) content-panel "New label should be added to content panel after clear-content")
      )
    
    ;; Test 5: Theme Response

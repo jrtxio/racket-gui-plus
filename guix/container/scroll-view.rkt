@@ -35,16 +35,21 @@
     
     ;; 清空内容
     (define/public (clear-content)
-      (for ([child (send content-panel get-children)])
-        (send child destroy)))
+      ;; 使用try-catch循环删除所有子组件，因为panel%没有delete-children方法
+      (let loop ()
+        (with-handlers ([exn:fail? (λ (e) (void))]) ; 当没有子组件时停止
+          (send content-panel delete-child 0) ; 尝试删除第一个子组件
+          (loop))))
+    
+    ;; Destroy method (alias for consistency)
+    (define/public (destroy)
+      (send this delete-children))
     
     ;; 主题切换时刷新
     (define/override (refresh)
       (super refresh)
-      ;; 尝试刷新所有子组件
-      (for ([child (send content-panel get-children)])
-        (with-handlers ([exn:fail? (λ (e) (void))])
-          (send child refresh))))
+      ;; 刷新内容面板
+      (send content-panel refresh))
     
     ))
 

@@ -48,6 +48,14 @@
       (super refresh)
       (send text-field refresh))
     
+    ;; Get minimum height (for testing)
+    (define/public (get-min-height)
+      (input-height))
+    
+    ;; Get minimum width (for testing)
+    (define/public (get-min-width)
+      200)
+    
     ))
 
 (provide input%

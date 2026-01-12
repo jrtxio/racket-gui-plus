@@ -144,6 +144,12 @@
     (define/public (set-enabled! [on? #t])
       (send this set-enabled on?))
     
+    ;;; Destroy method (for testing)
+    (define/public (destroy)
+      (define parent (get-parent))
+      (when parent
+        (send parent delete-child this)))
+    
     this)
   )
 

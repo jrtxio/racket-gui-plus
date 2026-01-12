@@ -33,7 +33,7 @@
                        [parent this]
                        [style '(border)]
                        [spacing 0]
-                       [alignment '(center left)]
+                       [alignment '(left center)]
                        [stretchable-width #t]
                        [stretchable-height #f]))
     
@@ -50,7 +50,7 @@
            [parent tab-bar]
            [label label]
            [type 'secondary]
-           [callback (λ (btn evt) (switch-tab index))]
+           [on-click (λ () (switch-tab index))]
            [stretchable-width #t]
            [stretchable-height #f]
            [theme theme]))
@@ -108,7 +108,8 @@
     ;; 移除标签
     (define/public (remove-tab index)
       ;; 销毁内容面板
-      (send (third (list-ref tab-data index)) destroy)
+      (define content-panel (third (list-ref tab-data index)))
+      (send content-area delete-child content-panel)
       
       ;; 移除标签数据
       (set! tab-data (append (take tab-data index)
@@ -116,7 +117,11 @@
       
       ;; 重新创建标签栏
       ;; 注意：这是一个简单实现，实际可能需要更高效的方法
-      (send tab-bar clear)
+      ;; 使用try-catch循环删除所有子组件，因为horizontal-panel%没有get-children或delete-all-children方法
+      (let loop ()
+        (with-handlers ([exn:fail? (λ (e) (void))]) ; 当没有子组件时停止
+          (send tab-bar delete-child 0) ; 尝试删除第一个子组件
+          (loop)))
       (for ([(tab idx) (in-indexed tab-data)])
         (create-tab-button (first tab) idx))
       
