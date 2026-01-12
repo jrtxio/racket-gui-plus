@@ -29,8 +29,9 @@
     
     ;; Text input state
     (field [text-value init-value]
-           [search-button-rect #f]
            [cursor-position (string-length init-value)]
+           [selection-start 0]           ; Selection start position
+           [selection-end (string-length init-value)] ; Selection end position
            [is-focused? #f])
     
     ;; ===========================
@@ -38,19 +39,11 @@
     ;; ===========================
     
     ;; Define regions for hit-testing
-    (define/override (get-regions) '(search-input search-button))
+    (define/override (get-regions) '(search-input))
     
     ;; Hit test implementation
     (define/override (hit-test x y)
-      (match-define (cons width height) (get-size))
-      
-      ;; Search button region (right side)
-      (define button-width 60)
-      (define button-left (- width button-width 8))
-      
-      (cond
-        [(and (>= x button-left) (<= x width)) 'search-button]
-        [else 'search-input]))
+      'search-input)  ; Entire area is search input
     
     ;; Get region bounds
     (define/override (get-region-bounds region)
@@ -58,9 +51,7 @@
       
       (match region
         ['search-input
-         (list 8 0 (- width 76) height)]
-        ['search-button
-         (list (- width 68) 0 (- width 8) height)]
+         (list 0 0 width height)]
         [_ #f]))
     
     ;; ===========================
@@ -80,11 +71,10 @@
       (match region
         ['search-input
          ;; Focus the control when input region is clicked
-         (send this focus)
-         (set! is-focused? #t)]
-        ['search-button
-         ;; Trigger search callback when button is clicked
-         (on-callback this #f)]))
+         (set! is-focused? #t)
+         (send this set-focused-region 'search-input)
+         (send this focus) ;; 获取系统焦点
+         (send this refresh-now)]))
     
     ;; Handle region release
     (define/override (on-region-release region event)
@@ -94,9 +84,149 @@
     ;; Event Handling Enhancements
     ;; ===========================
     
+    ;; Handle character input for text entry
+    (define/override (on-char event)
+      (when (or is-focused? (send this has-focus?))
+        (define key-code (send event get-key-code))
+        (define control-down? (send event get-control-down))
+        
+        (cond
+          ;; Handle Ctrl+A (select all)
+          [(and control-down? (eq? key-code #\a))
+           (set! selection-start 0)
+           (set! selection-end (string-length text-value))
+           (send this refresh-now)]
+          
+          ;; Handle printable characters
+          [(char? key-code)
+           ;; If text is selected, replace it with the new character
+           (if (< selection-start selection-end)
+               (begin
+                 (set! text-value (string-append (substring text-value 0 selection-start)
+                                                (string key-code)
+                                                (substring text-value selection-end)))
+                 (set! cursor-position (add1 selection-start))
+                 (set! selection-start cursor-position)
+                 (set! selection-end cursor-position))
+               (begin
+                 (set! text-value (string-append (substring text-value 0 cursor-position)
+                                                (string key-code)
+                                                (substring text-value cursor-position)))
+                 (set! cursor-position (add1 cursor-position))
+                 (set! selection-start cursor-position)
+                 (set! selection-end cursor-position)))
+           (on-callback this #f)
+           (send this refresh-now)]
+          
+          ;; Handle backspace
+          [(eq? key-code #\backspace)
+           (if (< selection-start selection-end)
+               ;; Delete selected text
+               (begin
+                 (set! text-value (string-append (substring text-value 0 selection-start)
+                                                (substring text-value selection-end)))
+                 (set! cursor-position selection-start)
+                 (set! selection-start cursor-position)
+                 (set! selection-end cursor-position)
+                 (on-callback this #f)
+                 (send this refresh-now))
+               ;; Delete character before cursor
+               (when (> cursor-position 0)
+                 (set! text-value (string-append (substring text-value 0 (sub1 cursor-position))
+                                                (substring text-value cursor-position)))
+                 (set! cursor-position (sub1 cursor-position))
+                 (set! selection-start cursor-position)
+                 (set! selection-end cursor-position)
+                 (on-callback this #f)
+                 (send this refresh-now)))]
+          
+          ;; Handle delete
+          [(eq? key-code 'delete)
+           (if (< selection-start selection-end)
+               ;; Delete selected text
+               (begin
+                 (set! text-value (string-append (substring text-value 0 selection-start)
+                                                (substring text-value selection-end)))
+                 (set! cursor-position selection-start)
+                 (set! selection-start cursor-position)
+                 (set! selection-end cursor-position)
+                 (on-callback this #f)
+                 (send this refresh-now))
+               ;; Delete character after cursor
+               (when (< cursor-position (string-length text-value))
+                 (set! text-value (string-append (substring text-value 0 cursor-position)
+                                                (substring text-value (add1 cursor-position))))
+                 (set! cursor-position cursor-position)
+                 (set! selection-start cursor-position)
+                 (set! selection-end cursor-position)
+                 (on-callback this #f)
+                 (send this refresh-now)))]
+          
+          ;; Handle left arrow
+          [(eq? key-code 'left)
+           (if (< selection-start selection-end)
+               ;; If text is selected, move cursor to selection start
+               (begin
+                 (set! cursor-position selection-start)
+                 (set! selection-end cursor-position)
+                 (send this refresh-now))
+               ;; Otherwise move cursor left
+               (when (> cursor-position 0)
+                 (set! cursor-position (sub1 cursor-position))
+                 (set! selection-start cursor-position)
+                 (set! selection-end cursor-position)
+                 (send this refresh-now)))]
+          
+          ;; Handle right arrow
+          [(eq? key-code 'right)
+           (if (< selection-start selection-end)
+               ;; If text is selected, move cursor to selection end
+               (begin
+                 (set! cursor-position selection-end)
+                 (set! selection-start cursor-position)
+                 (send this refresh-now))
+               ;; Otherwise move cursor right
+               (when (< cursor-position (string-length text-value))
+                 (set! cursor-position (add1 cursor-position))
+                 (set! selection-start cursor-position)
+                 (set! selection-end cursor-position)
+                 (send this refresh-now)))]
+          
+          ;; Handle home
+          [(eq? key-code 'home)
+           (set! cursor-position 0)
+           (set! selection-start cursor-position)
+           (set! selection-end cursor-position)
+           (send this refresh-now)]
+          
+          ;; Handle end
+          [(eq? key-code 'end)
+           (set! cursor-position (string-length text-value))
+           (set! selection-start cursor-position)
+           (set! selection-end cursor-position)
+           (send this refresh-now)]
+          
+          ;; Handle enter key for search and clear
+          [(eq? key-code 'return)
+           (on-callback this #f)
+           ;; Clear the input field after search
+           (set! text-value "")
+           (set! cursor-position 0)
+           (set! selection-start 0)
+           (set! selection-end 0)
+           (send this refresh-now)]
+          [(eq? key-code 'kp-enter)
+           (on-callback this #f)
+           ;; Clear the input field after search
+           (set! text-value "")
+           (set! cursor-position 0)
+           (set! selection-start 0)
+           (set! selection-end 0)
+           (send this refresh-now)])))
+    
     ;; Handle keyboard events for text input
     (define/override (handle-keyboard-event event)
-      (when is-focused?
+      (when (or is-focused? (send this has-focus?))
         (define event-type (send event get-event-type))
         
         (match event-type
@@ -147,7 +277,16 @@
           ['end
            ;; Move cursor to end
            (set! cursor-position (string-length text-value))
-           (send this refresh-now)])))
+           (send this refresh-now)]
+          
+          [_ ;; Ignore other event types
+           (void)])))
+    
+    ;; Focus event handlers
+    (define/override (on-focus event)
+      (super on-focus event)
+      (set! is-focused? #t)
+      (send this refresh-now))
     
     ;; Focus management methods
     (define/public (set-focused f)
@@ -165,47 +304,34 @@
     (define/override (render-control dc state theme)
       (match-define (cons width height) (get-size))
       
-      ;; Draw background
-      (send dc set-brush (make-brush #:color (theme-color 'surface-light)))
-      (send dc set-pen (make-pen #:color (theme-color 'border) #:width 1))
+      ;; Draw background with focus feedback
+      (define background-color (theme-color 'surface-light))
+      (define border-color (if (or is-focused? (send this has-focus?)) 
+                               (theme-color 'accent) 
+                               (theme-color 'border)))
+      
+      (send dc set-brush (make-brush #:color background-color))
+      (send dc set-pen (make-pen #:color border-color #:width 1.5))
       (send dc draw-rectangle 0 0 width height)
       
-      ;; Draw search icon (magnifying glass) - simplified representation
-      (send dc set-pen (make-pen #:color (theme-color 'text-light) #:width 1))
-      (send dc draw-ellipse 12 10 8 8)
-      (send dc draw-line 20 14 24 18)
+      ;; Draw search icon (magnifying glass) - improved flat design
+      (define icon-x 16)
+      (define icon-y 12)
+      (define icon-size 16)
       
-      ;; Calculate button dimensions
-      (define button-width 60)
-      (define button-height (max 20 (- height 8)))
-      (define button-left (max 8 (- width button-width 8)))
-      (define button-top 4)
+      ;; Draw magnifying glass circle
+      (send dc set-pen (make-pen #:color (theme-color 'text-light) #:width 1.5))
+      (send dc set-brush (make-brush #:style 'transparent))
+      (send dc draw-ellipse (- icon-x (/ icon-size 2) 2) (- icon-y (/ icon-size 2) 2) (+ icon-size 4) (+ icon-size 4))
       
-      ;; Update button rect for hit-testing
-      (set! search-button-rect (list button-left button-top (- width 8) (+ button-top button-height)))
-      
-      ;; Draw search button
-      (let ([button-state (if (equal? (send this get-hovered-region) 'search-button) 'hover 'normal)])
-        (match button-state
-          ['normal
-           (send dc set-brush (make-brush #:color (theme-color 'accent)))
-           (send dc set-pen (make-pen #:color (theme-color 'accent) #:width 1))]
-          ['hover
-           (send dc set-brush (make-brush #:color (theme-color 'accent-hover)))
-           (send dc set-pen (make-pen #:color (theme-color 'accent-hover) #:width 1))])
-        
-        ;; Draw button background
-        (send dc draw-rectangle button-left button-top button-width button-height)
-        
-        ;; Draw button text
-        (send dc set-text-foreground (theme-color 'background))
-        (send dc set-font (font-medium))
-        (send dc draw-text "Search" (+ button-left 12) (+ button-top 9)))
+      ;; Draw magnifying glass handle - more complete design
+      (send dc draw-line (+ icon-x 3) (+ icon-y 6) (+ icon-x 8) (+ icon-y 11))
+      (send dc draw-line (+ icon-x 8) (+ icon-y 11) (+ icon-x 11) (+ icon-y 8))
       
       ;; Draw text input area
       (define text-x 40)
       (define text-y 10)
-      (define text-width (- button-left text-x 8))
+      (define text-width (- width text-x 16))
       
       ;; Set font for text input
       (send dc set-font (font-regular))
@@ -221,9 +347,11 @@
       
       ;; Draw cursor if focused
       (when (and is-focused? (send this has-focus?))
-        (define cursor-x (+ text-x (send dc get-text-width (substring text-value 0 cursor-position))))
+        (define cursor-text (substring text-value 0 cursor-position))
+        (define-values (cursor-width cursor-height cursor-descent cursor-ascent) 
+          (send dc get-text-extent cursor-text))
+        (define cursor-x (+ text-x cursor-width))
         (define cursor-y text-y)
-        (define cursor-height (send dc get-font-height))
         
         (send dc set-pen (make-pen #:color (theme-color 'text-main) #:width 1))
         (send dc draw-line cursor-x cursor-y cursor-x (+ cursor-y cursor-height))))

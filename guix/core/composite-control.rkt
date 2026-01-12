@@ -78,7 +78,22 @@
          (when hovered-region
            (on-region-hover-exit hovered-region)
            (set! hovered-region #f)
-           (send this refresh-now))]))
+           (send this refresh-now))]
+        
+        ;; Mouse enter - update hover state
+        ['enter
+         (define current-region (hit-test x y))
+         (unless (equal? current-region hovered-region)
+           (when hovered-region
+             (on-region-hover-exit hovered-region))
+           (set! hovered-region current-region)
+           (when current-region
+             (on-region-hover-enter current-region))
+           (send this refresh-now))]
+        
+        [_ ;; Ignore other events
+         (void)])
+  )
     
     ;; Handle keyboard events - focus management
     (define/override (handle-keyboard-event event)

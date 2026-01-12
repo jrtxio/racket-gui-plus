@@ -26,7 +26,7 @@
     ;; ===========================
     ;; Initialization
     ;; ===========================
-    (super-new [style '(no-focus)]
+    (super-new [style null]
                [min-width min-width]
                [min-height min-height])
     
@@ -77,6 +77,15 @@
       (when enabled?
         (handle-mouse-event event)
         (handle-keyboard-event event)))
+    
+    ;; Focus event handlers
+    (define/public (handle-focus-event event)
+      (void))
+    
+    ;; Override on-focus method from canvas%
+    (define/override (on-focus event)
+      (when enabled?
+        (handle-focus-event event)))
     
     ;; ===========================
     ;; Drawing
