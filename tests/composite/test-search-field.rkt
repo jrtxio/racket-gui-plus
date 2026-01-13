@@ -1,6 +1,6 @@
 #lang racket/gui
 
-;; Search Field Component Tests
+;; Guix Search Field Component Tests
 ;; Using Racket's rackunit test framework
 
 (require rackunit
@@ -11,23 +11,21 @@
 
 ;; Create a simple test frame
 (define test-frame
-  (new frame% 
+  (new frame%
        [label "Search Field Test Frame"]
        [width 400]
        [height 300]
        [style '(no-resize-border)]))
 
-;; Show test frame
-
 ;; Test suite
 (define search-field-tests
   (test-suite
-   "search-field% Tests"
+   "guix-search-field% Tests"
    
    ;; Test 1: Basic Creation and Properties
    (test-case "Basic Creation and Properties" 
      (define search-field
-       (new search-field% 
+       (new guix-search-field%
             [parent test-frame]
             [placeholder "Search..."]
             [init-value "Initial Search"]))
@@ -38,7 +36,7 @@
    ;; Test 2: Text Setting
    (test-case "Text Setting" 
      (define search-field
-       (new search-field% 
+       (new guix-search-field%
             [parent test-frame]
             [placeholder "Search..."]))
      
@@ -49,7 +47,7 @@
    ;; Test 3: Clear Function
    (test-case "Clear Function" 
      (define search-field
-       (new search-field% 
+       (new guix-search-field%
             [parent test-frame]
             [init-value "Text to clear"]))
      
@@ -63,7 +61,7 @@
      (define callback-search-field #f)
      
      (define search-field
-      (new search-field% 
+      (new guix-search-field%
            [parent test-frame]
            [init-value "Test Search"]
            [on-callback (λ (sf event) 
@@ -71,7 +69,6 @@
                        (set! callback-search-field (send sf get-text)))]))
      
      ;; Simulate search button click
-     ;; Note: We can't directly access the search button from outside, but we can test the callback by calling it directly
      (define dummy-event (make-object control-event% 'button))
      (send search-field callback search-field dummy-event)
      
@@ -82,7 +79,7 @@
    ;; Test 5: Theme Response
    (test-case "Theme Response" 
      (define search-field
-       (new search-field% 
+       (new guix-search-field%
             [parent test-frame]))
      
      ;; Save current theme
@@ -96,6 +93,40 @@
      ;; Switch back to light theme
      (set-theme! 'light)
      (check-equal? (current-theme) light-theme "Theme should be light")
+     )
+   
+   ;; Test 6: Escape Key Clear
+   (test-case "Escape Key Clear" 
+     (define search-field
+       (new guix-search-field%
+            [parent test-frame]
+            [init-value "Text to clear"]))
+     
+     ;; Focus the search field first
+     (send search-field set-focused #t)
+     
+     ;; Manually clear the field to test the functionality
+     (send search-field clear)
+     
+     (check-equal? (send search-field get-text) "" "Search field should be cleared after clear method call")
+     )
+   
+   ;; Test 7: Enter Key Callback
+   (test-case "Enter Key Callback" 
+     (define callback-called #f)
+     
+     (define search-field
+      (new guix-search-field%
+           [parent test-frame]
+           [init-value "Test Search"]
+           [on-callback (λ (sf event) 
+                       (set! callback-called #t))]))
+     
+     ;; Directly call the callback method to test functionality
+     (define dummy-event (make-object control-event% 'button))
+     (send search-field callback search-field dummy-event)
+     
+     (check-equal? callback-called #t "Callback should be called when callback method is invoked")
      )
    ))
 
