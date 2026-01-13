@@ -32,7 +32,7 @@
            [cursor-position (string-length init-value)]
            [selection-start 0]           ; Selection start position
            [selection-end (string-length init-value)] ; Selection end position
-           [is-focused? #f])
+           [is-focused #f])
     
     ;; ===========================
     ;; Region Definitions
@@ -71,7 +71,7 @@
       (match region
         ['search-input
          ;; Focus the control when input region is clicked
-         (set! is-focused? #t)
+         (set! is-focused #t)
          (send this set-focused-region 'search-input)
          (send this focus) ;; 获取系统焦点
          (send this refresh-now)]))
@@ -86,7 +86,7 @@
     
     ;; Handle character input for text entry
     (define/override (on-char event)
-      (when (or is-focused? (send this has-focus?))
+      (when (or is-focused (send this has-focus?))
         (define key-code (send event get-key-code))
         (define control-down? (send event get-control-down))
         
@@ -184,6 +184,7 @@
                (begin
                  (set! cursor-position selection-end)
                  (set! selection-start cursor-position)
+                 (set! selection-end cursor-position)
                  (send this refresh-now))
                ;; Otherwise move cursor right
                (when (< cursor-position (string-length text-value))
@@ -224,77 +225,19 @@
            (set! selection-end 0)
            (send this refresh-now)])))
     
-    ;; Handle keyboard events for text input
-    (define/override (handle-keyboard-event event)
-      (when (or is-focused? (send this has-focus?))
-        (define event-type (send event get-event-type))
-        
-        (match event-type
-          ['char
-           (define char (send event get-key-code))
-           ;; Insert character at cursor position
-           (set! text-value (string-append (substring text-value 0 cursor-position)
-                                          (string char)
-                                          (substring text-value cursor-position)))
-           (set! cursor-position (add1 cursor-position))
-           (on-callback this #f)
-           (send this refresh-now)]
-          
-          ['backspace
-           ;; Delete character before cursor
-           (when (> cursor-position 0)
-             (set! text-value (string-append (substring text-value 0 (sub1 cursor-position))
-                                            (substring text-value cursor-position)))
-             (set! cursor-position (sub1 cursor-position))
-             (on-callback this #f)
-             (send this refresh-now))]
-          
-          ['delete
-           ;; Delete character after cursor
-           (when (< cursor-position (string-length text-value))
-             (set! text-value (string-append (substring text-value 0 cursor-position)
-                                            (substring text-value (add1 cursor-position))))
-             (on-callback this #f)
-             (send this refresh-now))]
-          
-          ['left
-           ;; Move cursor left
-           (when (> cursor-position 0)
-             (set! cursor-position (sub1 cursor-position))
-             (send this refresh-now))]
-          
-          ['right
-           ;; Move cursor right
-           (when (< cursor-position (string-length text-value))
-             (set! cursor-position (add1 cursor-position))
-             (send this refresh-now))]
-          
-          ['home
-           ;; Move cursor to start
-           (set! cursor-position 0)
-           (send this refresh-now)]
-          
-          ['end
-           ;; Move cursor to end
-           (set! cursor-position (string-length text-value))
-           (send this refresh-now)]
-          
-          [_ ;; Ignore other event types
-           (void)])))
-    
     ;; Focus event handlers
     (define/override (on-focus event)
       (super on-focus event)
-      (set! is-focused? #t)
+      (set! is-focused #t)
       (send this refresh-now))
     
     ;; Focus management methods
     (define/public (set-focused f)
-      (set! is-focused? f)
+      (set! is-focused f)
       (send this refresh-now))
     
-    (define/public (is-focused)
-      is-focused?)
+    (define/public (is-focused?)
+      is-focused)
     
     ;; ===========================
     ;; Rendering
@@ -306,7 +249,7 @@
       
       ;; Draw background with focus feedback
       (define background-color (theme-color 'surface-light))
-      (define border-color (if (or is-focused? (send this has-focus?)) 
+      (define border-color (if (or is-focused (send this has-focus?)) 
                                (theme-color 'accent) 
                                (theme-color 'border)))
       
@@ -346,7 +289,7 @@
          (send dc draw-text placeholder text-x text-y)])
       
       ;; Draw cursor if focused
-      (when (and is-focused? (send this has-focus?))
+      (when (and is-focused (send this has-focus?))
         (define cursor-text (substring text-value 0 cursor-position))
         (define-values (cursor-width cursor-height cursor-descent cursor-ascent) 
           (send dc get-text-extent cursor-text))

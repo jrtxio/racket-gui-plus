@@ -74,6 +74,7 @@
     
     ;; Event dispatcher
     (define/override (on-event event)
+      (super on-event event) ; Call parent's on-event to ensure on-char gets called
       (when enabled?
         (handle-mouse-event event)
         (handle-keyboard-event event)))
