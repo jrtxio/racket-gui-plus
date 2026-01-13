@@ -16,9 +16,10 @@
          "../core/composite-control.rkt"
          "../style/config.rkt")
 
-(provide guix-search-field%)
-
-(define guix-search-field%
+;; ===========================
+;; Search Field - Single Canvas Implementation
+;; ===========================
+(define search-field%
   (class guix-composite-control%
     (init-field [placeholder "Search..."]
                 [on-callback (λ (sf event) (void))]
@@ -93,7 +94,8 @@
            (on-callback this #f)
            (send this refresh-now)]
           
-          [(char? key-code)
+          [(and (char? key-code)
+            (not (eq? key-code #\backspace)))
            (if (< selection-start selection-end)
                (begin
                  (set! text-value (string-append (substring text-value 0 selection-start)
@@ -109,7 +111,6 @@
                  (set! cursor-position (add1 cursor-position))
                  (set! selection-start cursor-position)
                  (set! selection-end cursor-position)))
-           (on-callback this #f)
            (send this refresh-now)]
           
           [(eq? key-code #\backspace)
@@ -120,7 +121,6 @@
                  (set! cursor-position selection-start)
                  (set! selection-start cursor-position)
                  (set! selection-end cursor-position)
-                 (on-callback this #f)
                  (send this refresh-now))
                (when (> cursor-position 0)
                  (set! text-value (string-append (substring text-value 0 (sub1 cursor-position))
@@ -128,7 +128,6 @@
                  (set! cursor-position (sub1 cursor-position))
                  (set! selection-start cursor-position)
                  (set! selection-end cursor-position)
-                 (on-callback this #f)
                  (send this refresh-now)))
            ]
           
@@ -140,7 +139,6 @@
                  (set! cursor-position selection-start)
                  (set! selection-start cursor-position)
                  (set! selection-end cursor-position)
-                 (on-callback this #f)
                  (send this refresh-now))
                (when (< cursor-position (string-length text-value))
                  (set! text-value (string-append (substring text-value 0 cursor-position)
@@ -148,7 +146,6 @@
                  (set! cursor-position cursor-position)
                  (set! selection-start cursor-position)
                  (set! selection-end cursor-position)
-                 (on-callback this #f)
                  (send this refresh-now)))
            ]
           
@@ -294,3 +291,9 @@
                [min-height (input-height)])
     )
   )
+
+;; Alias for backward compatibility
+(define guix-search-field% search-field%)
+
+(provide search-field%
+         guix-search-field%)

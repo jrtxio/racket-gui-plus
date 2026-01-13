@@ -29,7 +29,8 @@
          "composite/progress-bar.rkt"
          "composite/search-field.rkt"
          "composite/stepper-input.rkt"
-         "composite/segmented-control.rkt")
+         "composite/segmented-control.rkt"
+         "composite/todo-item.rkt")
 
 ;; Container Widgets
 (require "container/custom-list-box.rkt"
@@ -72,6 +73,7 @@
          (all-from-out "composite/search-field.rkt")
          (all-from-out "composite/stepper-input.rkt")
          (all-from-out "composite/segmented-control.rkt")
+         (all-from-out "composite/todo-item.rkt")
          
          (all-from-out "container/custom-list-box.rkt")
          (all-from-out "container/side-panel.rkt")
@@ -91,6 +93,8 @@
          label%
          modern-button%
          category-card%
+         todo-item%
+         guix-todo-item%
          modern-progress-bar%
          modern-slider%
          sidebar-list%
